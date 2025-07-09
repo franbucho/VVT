@@ -1,0 +1,8 @@
+{
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "name": "Virtual Vision Test: AI Eye Health Analysis",
+  "description": "",
+  "prompt": ""
+}
