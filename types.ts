@@ -1,16 +1,15 @@
 
 
+import React from 'react';
+import firebase from 'firebase/compat/app';
+
 export enum Page {
   Home = 'HOME',
   Auth = 'AUTH',
   Exam = 'EXAM',
   Results = 'RESULTS',
   Payment = 'PAYMENT',
-}
-
-export interface User {
-  id: string;
-  email: string;
+  History = 'HISTORY',
 }
 
 export interface EyeAnalysisResult {
@@ -27,11 +26,13 @@ export interface Feature {
 }
 
 export interface HealthData {
-  primaryReason: string;
-  wearsLenses: 'yes' | 'no' | '';
+  birthMonth: string;
+  birthYear: string;
+  primaryReason: string; // Will hold value from radio button
+  wearsLenses: 'yes' | 'no' | 'other' | '';
   lensesSatisfaction: string;
   lensesLastUpdate: string;
-  hadSurgeryOrInjury: 'yes' | 'no' | '';
+  hadSurgeryOrInjury: 'yes' | 'no' | 'other' | '';
   surgeryOrInjuryDetails: string;
   illnesses: {
     diabetes: boolean;
@@ -39,14 +40,14 @@ export interface HealthData {
     highCholesterol: boolean;
     thyroid: boolean;
     arthritis: boolean;
-    other: string;
+    otherOrNotSure: boolean;
   };
   familyHistory: {
     glaucoma: boolean;
     macularDegeneration: boolean;
     strabismus: boolean;
     highMyopia: boolean;
-    other: string;
+    otherOrNotSure: boolean;
   };
   symptoms: {
     pain: boolean;
@@ -57,5 +58,14 @@ export interface HealthData {
     lightSensitivity: boolean;
     doubleVision: boolean;
     none: boolean;
+    otherOrNotSure: boolean;
   };
+}
+
+export interface EvaluationHistoryItem {
+  id: string;
+  createdAt: firebase.firestore.Timestamp;
+  analysisResults: EyeAnalysisResult[];
+  healthData: HealthData;
+  capturedImage: string;
 }

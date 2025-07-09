@@ -1,54 +1,118 @@
 
+
+
 import React, { useState, useEffect } from 'react';
-import { Page, User, EyeAnalysisResult } from './types';
+import firebase, { auth } from './firebase';
+import { User as FirebaseUser } from 'firebase/auth';
+
+import { Page, EyeAnalysisResult, HealthData } from './types';
 import { EyeIcon } from './constants';
 import { HomePage } from './pages/HomePage';
 import { AuthPage } from './pages/AuthPage';
 import { ExamPage } from './pages/ExamPage';
 import { ResultsPage } from './pages/ResultsPage';
 import { PaymentPage } from './pages/PaymentPage';
+import { HistoryPage } from './pages/HistoryPage';
 import { useLanguage } from './contexts/LanguageContext';
 import { LanguageSwitcher } from './components/common/LanguageSwitcher';
+import { Button } from './components/common/Button';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [analysisResults, setAnalysisResults] = useState<EyeAnalysisResult[] | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [healthData, setHealthData] = useState<HealthData | null>(null);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [isPaymentComplete, setIsPaymentComplete] = useState(false);
   const { t } = useLanguage();
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      setCurrentUser(user);
+      setIsAuthLoading(false);
+    });
+    return () => unsubscribe(); // Cleanup subscription on unmount
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await auth.signOut();
+      setAnalysisResults(null);
+      setHealthData(null);
+      setCapturedImage(null);
+      setIsPaymentComplete(false); // Reset payment status on sign out
+      setCurrentPage(Page.Home);
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   const renderPage = () => {
+    if (isAuthLoading) {
+      return (
+        <div className="flex justify-center items-center h-full pt-20">
+            <EyeIcon className="w-16 h-16 text-primary animate-pulse" />
+        </div>
+      );
+    }
+
     switch (currentPage) {
       case Page.Home:
         return <HomePage setCurrentPage={setCurrentPage} />;
+      
       case Page.Auth:
-        return <AuthPage setCurrentPage={setCurrentPage} setCurrentUser={setCurrentUser} />;
+        if (currentUser) {
+            setCurrentPage(Page.Exam);
+            return null; // Redirect logged-in users away from Auth page
+        }
+        return <AuthPage setCurrentPage={setCurrentPage} />;
+
       case Page.Exam:
-        if (!currentUser) { 
-            setCurrentPage(Page.Auth);
-            return <AuthPage setCurrentPage={setCurrentPage} setCurrentUser={setCurrentUser} />;
+        if (!currentUser) {
+          setCurrentPage(Page.Auth);
+          return null;
         }
-        return <ExamPage setCurrentPage={setCurrentPage} setAnalysisResults={setAnalysisResults} />;
+        return (
+          <ExamPage
+            setCurrentPage={setCurrentPage}
+            setAnalysisResults={setAnalysisResults}
+            setHealthData={setHealthData}
+            healthData={healthData}
+            setCapturedImage={setCapturedImage}
+            currentUser={currentUser}
+          />
+        );
       case Page.Results:
-         if (!currentUser || !analysisResults) { 
-            setCurrentPage(Page.Exam); 
-            return <ExamPage setCurrentPage={setCurrentPage} setAnalysisResults={setAnalysisResults} />;
+        if (!currentUser) {
+          setCurrentPage(Page.Auth);
+          return null;
         }
-        return <ResultsPage setCurrentPage={setCurrentPage} analysisResults={analysisResults} />;
+        return (
+          <ResultsPage
+            setCurrentPage={setCurrentPage}
+            analysisResults={analysisResults}
+            currentUser={currentUser}
+            healthData={healthData}
+            capturedImage={capturedImage}
+            isPaymentComplete={isPaymentComplete}
+          />
+        );
+       case Page.History:
+        if (!currentUser) {
+          setCurrentPage(Page.Auth);
+          return null;
+        }
+        return <HistoryPage currentUser={currentUser} />;
       case Page.Payment:
-         if (!currentUser) { 
-            setCurrentPage(Page.Auth);
-            return <AuthPage setCurrentPage={setCurrentPage} setCurrentUser={setCurrentUser} />;
+        if (!currentUser) {
+          setCurrentPage(Page.Auth);
+          return null;
         }
-        return <PaymentPage setCurrentPage={setCurrentPage} />;
+        return <PaymentPage setCurrentPage={setCurrentPage} setIsPaymentComplete={setIsPaymentComplete} />;
       default:
         return <HomePage setCurrentPage={setCurrentPage} />;
     }
-  };
-  
-  const handleLogout = () => {
-    setCurrentUser(null);
-    setAnalysisResults(null);
-    setCurrentPage(Page.Home);
   };
 
   return (
@@ -63,29 +127,38 @@ const App: React.FC = () => {
             <EyeIcon className="w-8 h-8 text-primary" />
             <span className="text-xl font-bold text-primary">{t('appName')}</span>
           </div>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-4">
             <LanguageSwitcher />
-            {currentUser ? (
+            {isAuthLoading ? (
+              <div className="w-32 h-9 bg-gray-200 rounded-lg animate-pulse"></div>
+            ) : currentUser ? (
               <div className="flex items-center space-x-2 sm:space-x-4">
-                <span className="text-sm text-gray-600 hidden sm:inline">
-                  {t('header_welcomeMessage', { email: currentUser.email })}
+                 <button 
+                  onClick={() => setCurrentPage(Page.History)}
+                  className="text-sm font-medium text-primary hover:text-primary-dark transition-colors"
+                >
+                  {t('header_myResultsLink')}
+                </button>
+                <span className="text-sm text-gray-600 hidden sm:inline" title={currentUser.email || ''}>
+                  {t('header_welcomeMessage', { email: currentUser.displayName?.split(' ')[0] || 'User' })}
                 </span>
-                <button
-                  onClick={handleLogout}
-                  className="px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary-light/10 rounded-md transition-colors"
+                <Button
+                  onClick={handleSignOut}
+                  variant="outline"
+                  size="sm"
+                  className="px-3 py-1.5"
                 >
                   {t('header_logoutButton')}
-                </button>
+                </Button>
               </div>
             ) : (
-              currentPage !== Page.Auth && (
-                 <button
-                  onClick={() => setCurrentPage(Page.Auth)}
-                  className="px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
-                >
-                  {t('header_loginRegisterButton')}
-                </button>
-              )
+              <Button
+                onClick={() => setCurrentPage(Page.Auth)}
+                variant="primary"
+                className="text-sm px-3 py-1.5"
+              >
+                {t('header_loginRegisterButton')}
+              </Button>
             )}
           </div>
         </nav>
