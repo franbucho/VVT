@@ -12,12 +12,13 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "@google/genai": "^1.5.1",
-    "firebase/app": "10.12.2",
-    "firebase/auth": "10.12.2",
-    "firebase/firestore": "10.12.2",
+    "firebase/app": "^11.10.0",
+    "firebase/auth": "^11.10.0",
+    "firebase/firestore": "^11.10.0",
     "firebase": "^11.10.0",
     "jspdf": "^2.5.1",
-    "html2canvas": "^1.4.1"
+    "html2canvas": "^1.4.1",
+    "@stripe/stripe-js": "^3.5.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

@@ -10,6 +10,7 @@ export enum Page {
   Payment = 'PAYMENT',
   History = 'HISTORY',
   Admin = 'ADMIN',
+  Support = 'SUPPORT',
 }
 
 export interface EyeAnalysisResult {

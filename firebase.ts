@@ -1,8 +1,8 @@
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { getFunctions } from "firebase/functions";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDtr3DaY28OXbtMb9RJ_KI6Smwgattk8Z8",
   authDomain: "virtual-vision-test-app.firebaseapp.com",
@@ -13,12 +13,8 @@ const firebaseConfig = {
   measurementId: "G-XDE2RTRKK9"
 };
 
-// Initialize the Firebase App
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
+const app = initializeApp(firebaseConfig);
 
-// Initialize and export the Firebase services you need
-export const auth = firebase.auth();
-export const firestore = firebase.firestore();
-export default firebase;
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const functions = getFunctions(app);

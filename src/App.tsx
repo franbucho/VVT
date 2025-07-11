@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth } from './firebase';
@@ -11,6 +12,7 @@ import { ResultsPage } from './pages/ResultsPage';
 import { PaymentPage } from './pages/PaymentPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { AdminPage } from './pages/AdminPage';
+import { SupportPage } from './pages/SupportPage';
 import { useLanguage } from './contexts/LanguageContext';
 import { LanguageSwitcher } from './components/common/LanguageSwitcher';
 import { Button } from './components/common/Button';
@@ -27,7 +29,6 @@ const App: React.FC = () => {
   const [ophthalmologistSummary, setOphthalmologistSummary] = useState<string>('');
   const [isPaymentComplete, setIsPaymentComplete] = useState(false);
   
-  // New admin role state
   const [isAdmin, setIsAdmin] = useState(false);
   
   const { t } = useLanguage();
@@ -37,28 +38,26 @@ const App: React.FC = () => {
       if (user) {
         setCurrentUser(user);
         try {
-          // Force refresh the token to get the latest custom claims
           const idTokenResult = await user.getIdTokenResult(true); 
           setIsAdmin(!!idTokenResult.claims.admin);
         } catch (error) {
           console.error("Error fetching user claims:", error);
-          setIsAdmin(false); // Default to non-admin on error
+          setIsAdmin(false);
         }
       } else {
         setCurrentUser(null);
-        setIsAdmin(false); // Clear admin status on logout
+        setIsAdmin(false);
       }
       setIsAuthLoading(false);
     });
 
-    // Handle redirects from Stripe after payment
     const queryParams = new URLSearchParams(window.location.search);
     if (queryParams.get('payment_success') === 'true') {
         setIsPaymentComplete(true);
-        setCurrentPage(Page.History); // Go to history to see the new report
+        setCurrentPage(Page.History);
         window.history.replaceState({}, document.title, window.location.pathname);
     } else if (queryParams.get('payment_cancelled') === 'true' || queryParams.has('payment_cancel')) {
-        setCurrentPage(Page.Exam); // Let user retry from exam page
+        setCurrentPage(Page.Exam);
         window.history.replaceState({}, document.title, window.location.pathname);
     }
     
@@ -68,7 +67,6 @@ const App: React.FC = () => {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      // Reset all states on logout
       setHealthData(null);
       setCapturedImage(null);
       setAnalysisResults(null);
@@ -146,13 +144,15 @@ const App: React.FC = () => {
           setCurrentPage(Page.Auth);
           return null;
         }
-        return <PaymentPage />;
+        return <PaymentPage setCurrentPage={setCurrentPage} />;
       case Page.Admin:
         if (!currentUser || !isAdmin) {
           setCurrentPage(Page.Home);
           return null;
         }
         return <AdminPage currentUser={currentUser} />;
+      case Page.Support:
+        return <SupportPage setCurrentPage={setCurrentPage} />;
       default:
         return <HomePage setCurrentPage={setCurrentPage} />;
     }
@@ -168,7 +168,7 @@ const App: React.FC = () => {
             aria-label={t('appName')}
           >
             <EyeIcon className="w-8 h-8 text-accent" />
-            <span className="text-xl font-bold text-primary">{t('appName')}</span>
+            <span className="text-xl font-bold text-primary-dark">{t('appName')}</span>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
             <LanguageSwitcher />
@@ -178,7 +178,7 @@ const App: React.FC = () => {
               <div className="flex items-center space-x-2 sm:space-x-4">
                  <button 
                   onClick={() => setCurrentPage(Page.History)}
-                  className="text-sm font-medium text-primary hover:text-accent transition-colors"
+                  className="text-sm font-medium text-primary-dark hover:text-accent transition-colors"
                 >
                   {t('header_myResultsLink')}
                 </button>
@@ -192,7 +192,7 @@ const App: React.FC = () => {
                     {t('header_adminPanel')}
                   </Button>
                 )}
-                <span className="text-sm text-primary/80 hidden md:inline" title={currentUser.email || ''}>
+                <span className="text-sm text-primary-dark/80 hidden md:inline" title={currentUser.email || ''}>
                   {t('header_welcomeMessage', { email: currentUser.displayName?.split(' ')[0] || 'User' })}
                 </span>
                 <Button
@@ -221,9 +221,15 @@ const App: React.FC = () => {
         {renderPage()}
       </main>
 
-      <footer className="bg-primary text-white py-8 text-center mt-auto">
+      <footer className="bg-primary-dark text-white py-4 text-center mt-auto">
         <div className="container mx-auto px-4">
           <p className="text-sm opacity-80">&copy; {new Date().getFullYear()} {t('footerText')} {t('footerDisclaimer')}</p>
+           <button 
+              onClick={() => setCurrentPage(Page.Support)}
+              className="text-sm text-accent hover:underline mt-2 inline-block"
+            >
+              {t('footer_supportLink')}
+            </button>
         </div>
       </footer>
     </div>

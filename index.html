@@ -10,17 +10,18 @@
       theme: {
         extend: {
           colors: {
-            primary: {
-              DEFAULT: '#007AFF', // Example: Apple Blue
-              light: '#58AFFF',
-              dark: '#0056B3',
-            },
-            secondary: '#00C7BE', // Teal accent
-            neutral: {
-              light: '#F8F9FA',
-              DEFAULT: '#E9ECEF',
-              dark: '#343A40',
-            },
+            'primary-dark': '#17365D', // Main text color
+            'accent': '#3BBBD9',       // Main accent color
+            'accent-hover': '#2aa9c4', // Darker accent for hover state
+            'neutral-light': '#FFFFFF', // General background and card background
+            'neutral-dark': '#17365D',  // Alias for main text color
+
+            // High-contrast button colors
+            'btn-primary-bg': '#17365D',
+            'btn-primary-text': '#FFFFFF',
+            'btn-primary-hover': '#255a9d',
+            
+            // System colors
             success: '#28A745',
             warning: '#FFC107',
             danger: '#DC3545',
@@ -29,7 +30,7 @@
             sans: ['Inter', 'sans-serif'],
           },
           accentColor: {
-            primary: '#007AFF',
+            primary: '#3BBBD9', // For form elements to match the accent color
           },
         }
       }
@@ -48,12 +49,13 @@
     "react": "https://esm.sh/react@^19.1.0",
     "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
     "@google/genai": "https://esm.sh/@google/genai@^1.5.1",
-    "firebase/app": "https://esm.sh/firebase@10.12.2/app",
-    "firebase/auth": "https://esm.sh/firebase@10.12.2/auth",
-    "firebase/firestore": "https://esm.sh/firebase@10.12.2/firestore",
+    "firebase/app": "https://esm.sh/firebase@^11.10.0/app",
+    "firebase/auth": "https://esm.sh/firebase@^11.10.0/auth",
+    "firebase/firestore": "https://esm.sh/firebase@^11.10.0/firestore",
     "firebase/": "https://esm.sh/firebase@^11.10.0/",
     "jspdf": "https://esm.sh/jspdf@^2.5.1",
-    "html2canvas": "https://esm.sh/html2canvas@^1.4.1"
+    "html2canvas": "https://esm.sh/html2canvas@^1.4.1",
+    "@stripe/stripe-js": "https://esm.sh/@stripe/stripe-js@^3.5.0"
   }
 }
 </script>
