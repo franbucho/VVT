@@ -1,5 +1,4 @@
 
-
 import { TranslationKeys } from './en';
 
 export const es: TranslationKeys = {
@@ -233,7 +232,17 @@ export const es: TranslationKeys = {
   admin_no_name: "Sin Nombre",
   admin_action_remove: "Quitar Admin",
   admin_action_make: "Hacer Admin",
-  
+  admin_tab_users: "Gestión de Usuarios",
+  admin_tab_feedback: "Feedback",
+  admin_feedback_title: "Feedback de Usuarios",
+  admin_feedback_table_header_rating: "Calificación",
+  admin_feedback_table_header_comment: "Comentario",
+  admin_feedback_table_header_date: "Fecha",
+
+
+  language_switcher_en: "EN",
+  language_switcher_es: "ES",
+
   support_title: "Soporte y Ayuda",
   support_heading: "¿Necesitas Ayuda?",
   support_intro: "Lamentamos que hayas tenido un problema. Nuestro equipo está aquí para ayudarte.",
@@ -259,15 +268,15 @@ export const es: TranslationKeys = {
   report_no_findings: "El análisis de imagen inicial no detectó signos inmediatos de condiciones mayores basados en la imagen proporcionada.",
   questionnaire_reason: "Motivo de la evaluación",
   questionnaire_lenses: "Usa lentes",
+  questionnaire_satisfactionLabel: "Satisfacción",
+  questionnaire_lastUpdateLabel: "Última actualización",
   questionnaire_surgery: "Tuvo cirugía/lesión",
+  questionnaire_surgeryOrInjuryDetails: "Detalles",
   questionnaire_illnesses: "Enfermedades generales",
   questionnaire_familyHistory: "Historial ocular familiar",
   questionnaire_symptoms: "Síntomas actuales",
   questionnaire_not_answered: "No respondido",
   date_locale: "es-ES",
-
-  language_switcher_en: "EN",
-  language_switcher_es: "ES",
 
   error_generic_api_key_missing: "El servicio de IA no está disponible: Falta la clave de API. Por favor, contacte al soporte.",
   error_generic_api_key_invalid: "El servicio de IA no está disponible: La clave de API configurada no es válida. Por favor, contacte al soporte.",
@@ -275,4 +284,16 @@ export const es: TranslationKeys = {
   error_generic_unexpected_api: "Ocurrió un error inesperado al comunicarse con el servicio de IA. Por favor, inténtelo de nuevo.",
   error_generic_no_tips_received: "No se recibieron consejos de la IA. Por favor, inténtelo de nuevo más tarde.",
   error_analysis_blocked: "El análisis no se pudo completar porque la imagen enviada no era clara o era inapropiada. Por favor, inténtelo de nuevo con una foto clara de solo su ojo.",
+  
+  report_download_pdf_button: "Descargar Reporte PDF",
+  report_downloading_pdf: "Descargando...",
+  feedback_button: "Dar Feedback",
+  feedback_submitted: "Feedback Enviado",
+  feedback_thanks_title: "¡Gracias!",
+  feedback_thanks_message: "Tu opinión ha sido enviada con éxito.",
+  feedback_title: "Valora tu Experiencia",
+  feedback_subtitle: "Tu opinión nos ayuda a mejorar.",
+  feedback_comment_placeholder: "Deja un comentario (opcional)...",
+  feedback_close_button: "Cerrar",
+  feedback_submit_button: "Enviar Feedback",
 };

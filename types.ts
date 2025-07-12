@@ -3,13 +3,14 @@ import React from 'react';
 import { Timestamp } from 'firebase/firestore';
 
 export enum Page {
-  Home = 'HOME',
-  Auth = 'AUTH',
-  Exam = 'EXAM',
-  Results = 'RESULTS',
-  Payment = 'PAYMENT',
-  History = 'HISTORY',
-  Admin = 'ADMIN',
+  Home = 'home',
+  Auth = 'auth',
+  Exam = 'exam',
+  Results = 'results',
+  Payment = 'payment',
+  History = 'history',
+  Admin = 'admin',
+  Support = 'support',
 }
 
 export interface EyeAnalysisResult {
@@ -28,44 +29,20 @@ export interface Feature {
 export interface HealthData {
   firstName: string;
   lastName: string;
-  birthDate: {
-    day: string;
-    month: string;
-    year: string;
-  };
-  primaryReason: string; // Will hold value from radio button
+  birthDate: { day: string; month: string; year: string };
+  primaryReason: string[]; // <-- Changed to string array
   wearsLenses: 'yes' | 'no' | 'other' | '';
   lensesSatisfaction: string;
   lensesLastUpdate: string;
   hadSurgeryOrInjury: 'yes' | 'no' | 'other' | '';
   surgeryOrInjuryDetails: string;
-  illnesses: {
-    diabetes: boolean;
-    highBloodPressure: boolean;
-    highCholesterol: boolean;
-    thyroid: boolean;
-    arthritis: boolean;
-    otherOrNotSure: boolean;
-  };
-  familyHistory: {
-    glaucoma: boolean;
-    macularDegeneration: boolean;
-    strabismus: boolean;
-    highMyopia: boolean;
-    otherOrNotSure: boolean;
-  };
-  symptoms: {
-    pain: boolean;
-    itching: boolean;
-    burning: boolean;
-    tearing: boolean;
-    gritty: boolean;
-    lightSensitivity: boolean;
-    doubleVision: boolean;
-    none: boolean;
-    otherOrNotSure: boolean;
-  };
+  illnesses: string[];
+  familyHistory: string[];
+  symptoms: string[];
+  screenTime: string;
+  occupationalHazards: string[];
 }
+
 
 export interface EvaluationHistoryItem {
   id: string;

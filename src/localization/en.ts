@@ -1,5 +1,4 @@
 
-
 export const en = {
   appName: "Virtual Vision Test",
   appMotto: "The future of eye care starts with a photo.",
@@ -178,7 +177,7 @@ export const en = {
   results_backToHomeButton: "Back to Home",
   results_loadingSummary: "Loading summary...",
   results_error_loading: "We were unable to load your results. If you have already paid, please",
-  
+
   results_condition_cornealAbrasion: "Corneal Abrasion",
   results_details_cornealAbrasion: "Minor surface irregularities detected, likely superficial.",
   results_condition_cataract: "Cataract Development",
@@ -231,7 +230,17 @@ export const en = {
   admin_no_name: "No Name",
   admin_action_remove: "Remove Admin",
   admin_action_make: "Make Admin",
-  
+  admin_tab_users: "User Management",
+  admin_tab_feedback: "Feedback",
+  admin_feedback_title: "User Feedback",
+  admin_feedback_table_header_rating: "Rating",
+  admin_feedback_table_header_comment: "Comment",
+  admin_feedback_table_header_date: "Date",
+
+
+  language_switcher_en: "EN",
+  language_switcher_es: "ES",
+
   support_title: "Support & Help",
   support_heading: "Need Assistance?",
   support_intro: "We're sorry you're experiencing an issue. Our team is here to help.",
@@ -257,22 +266,35 @@ export const en = {
   report_no_findings: "The initial image analysis did not detect any immediate signs of major conditions based on the provided image.",
   questionnaire_reason: "Reason for evaluation",
   questionnaire_lenses: "Wears lenses",
+  questionnaire_satisfactionLabel: "Satisfaction",
+  questionnaire_lastUpdateLabel: "Last update",
   questionnaire_surgery: "Had surgery/injury",
+  questionnaire_surgeryOrInjuryDetails: "Details",
   questionnaire_illnesses: "General illnesses",
   questionnaire_familyHistory: "Family eye history",
   questionnaire_symptoms: "Current symptoms",
   questionnaire_not_answered: "Not answered",
   date_locale: "en-US",
 
-  language_switcher_en: "EN",
-  language_switcher_es: "ES",
-
+  // Generic
   error_generic_api_key_missing: "AI service is unavailable: API Key is missing. Please contact support.",
   error_generic_api_key_invalid: "AI service is unavailable: The configured API key is invalid. Please contact support.",
   error_generic_api_fetch_failed: "Failed to fetch tips due to an API error: {errorMessage}",
   error_generic_unexpected_api: "An unexpected error occurred while communicating with the AI service. Please try again.",
   error_generic_no_tips_received: "No tips received from the AI. Please try again later.",
   error_analysis_blocked: "Analysis could not be completed because the submitted image was unclear or inappropriate. Please try again with a clear photo of just your eye.",
+
+  report_download_pdf_button: "Download PDF Report",
+  report_downloading_pdf: "Downloading...",
+  feedback_button: "Give Feedback",
+  feedback_submitted: "Feedback Submitted",
+  feedback_thanks_title: "Thank You!",
+  feedback_thanks_message: "Your feedback has been submitted successfully.",
+  feedback_title: "Rate Your Experience",
+  feedback_subtitle: "Your opinion helps us improve.",
+  feedback_comment_placeholder: "Leave an optional comment...",
+  feedback_close_button: "Close",
+  feedback_submit_button: "Submit Feedback",
 };
 
 export type TranslationKeys = typeof en;

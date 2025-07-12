@@ -40,6 +40,24 @@ function getAiInstance(): GoogleGenAI {
   }
 }
 
+function timeoutPromise<T>(promise: Promise<T>, ms: number, timeoutErrorKey: keyof TranslationKeys): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(timeoutErrorKey));
+    }, ms);
+
+    promise
+      .then(value => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch(reason => {
+        clearTimeout(timer);
+        reject(reason);
+      });
+  });
+}
+
 const getLocalizedPrompt = (language: Language): string => {
   if (language === 'es') {
     return "Proporciona 5 consejos concisos y prácticos sobre salud ocular general para adultos. Cada consejo en una nueva línea, comenzando con una viñeta o guion.";
@@ -52,7 +70,7 @@ export const getGeneralEyeHealthTips = async (language: Language): Promise<strin
     const ai = getAiInstance();
     const localizedPrompt = getLocalizedPrompt(language);
 
-    const response: GenerateContentResponse = await ai.models.generateContent({
+    const responsePromise = ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: localizedPrompt,
       config: {
@@ -61,6 +79,8 @@ export const getGeneralEyeHealthTips = async (language: Language): Promise<strin
         topP: 0.95,
       }
     });
+
+    const response = await timeoutPromise(responsePromise, 20000, 'error_generic_api_timeout');
     
     const text = response.text;
     
@@ -93,7 +113,7 @@ export const analyzeEyeImage = async (base64Image: string): Promise<EyeAnalysisR
     const ai = getAiInstance();
     
     const prompt = `You are an AI assistant specialized in analyzing eye images for potential health indicators. Analyze the following image and identify potential signs of common conditions like cataracts, corneal abrasions, or glaucoma indicators. For each potential finding, provide a condition name and a risk level.
-    Respond ONLY with a valid JSON array of objects based on the provided schema. The "condition" property must be one of: "cornealAbrasion", "cataract", or "glaucoma". If you detect nothing of significance, return an empty array [].`;
+    Respond ONLY with a valid JSON array of objects based on the provided schema. If you detect nothing of significance, return an empty array [].`;
 
     const imagePart = {
       inlineData: {
@@ -104,7 +124,7 @@ export const analyzeEyeImage = async (base64Image: string): Promise<EyeAnalysisR
 
     const textPart = { text: prompt };
 
-    const response = await ai.models.generateContent({
+    const responsePromise = ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: [{ parts: [textPart, imagePart] }],
       config: {
@@ -116,7 +136,8 @@ export const analyzeEyeImage = async (base64Image: string): Promise<EyeAnalysisR
             properties: {
               condition: {
                 type: Type.STRING,
-                description: 'A machine-readable key for the condition, must be one of: "cornealAbrasion", "cataract", "glaucoma".',
+                description: 'A machine-readable key for the condition.',
+                enum: ["cornealAbrasion", "cataract", "glaucoma"],
               },
               riskLevel: {
                 type: Type.STRING,
@@ -130,7 +151,9 @@ export const analyzeEyeImage = async (base64Image: string): Promise<EyeAnalysisR
       },
     });
     
+    const response = await timeoutPromise(responsePromise, 30000, 'error_generic_api_timeout');
     const rawJsonString = response.text.trim();
+
     if (!rawJsonString) {
         return [];
     }
@@ -160,6 +183,9 @@ export const analyzeEyeImage = async (base64Image: string): Promise<EyeAnalysisR
   } catch (error) {
     console.error("Error analyzing eye image with Gemini:", error);
     if (error instanceof Error) {
+      if (error.message.startsWith('error_')) {
+          throw error;
+      }
       if (error.message.includes("API key not valid")) {
         throw new Error('error_generic_api_key_invalid');
       }
@@ -196,13 +222,14 @@ export const getOphthalmologistSummary = async (
 
       **Instructions:**
       1. Start by addressing the patient warmly (e.g., "Hello,").
-      2. Review the patient's questionnaire data provided below.
+      2. Review the patient's questionnaire data provided below. Note that for illnesses, family history, symptoms, and occupational hazards, an empty array [] or an array containing just "none" means the patient reports none of those.
       3. Review the AI's image analysis findings provided below.
-      4. Synthesize both pieces of information into a cohesive summary.
+      4. Synthesize all information into a cohesive summary.
       5. If the image analysis found specific conditions (e.g., "High" risk for "cataract"), highlight this finding and explain what it means in simple terms. Correlate it with any relevant questionnaire answers (e.g., "Given your age and reported blurry vision...").
       6. If the image analysis returned no significant findings (the findings list is empty), state this clearly and positively (e.g., "The initial image analysis did not detect any immediate signs of major conditions...").
-      7. **Crucially**, even if the image analysis is clear, you MUST highlight 1-2 key risk factors or symptoms from their questionnaire (e.g., "However, based on your family history of glaucoma and reported eye pressure...") that they should still discuss with a doctor.
-      8. Conclude with a clear and strong recommendation to consult a qualified ophthalmologist for a complete examination. Do NOT provide a diagnosis.
+      7. **Crucially, pay special attention to 'screenTime' and 'occupationalHazards'.** If the user reports long screen time (e.g., '4-8 hours', '>8 hours'), connect it to symptoms like 'Tired or fatigued eyes'. If they report occupational hazards, mention the potential risks (e.g., chemical exposure, foreign bodies) and the importance of protective eyewear.
+      8. Even if the image analysis is clear, you MUST highlight 1-2 key risk factors or symptoms from their questionnaire (e.g., family history of glaucoma, reported symptoms, high-risk job) that they should still discuss with a doctor.
+      9. Conclude with a clear and strong recommendation to consult a qualified ophthalmologist for a complete examination. Do NOT provide a diagnosis.
 
       **Patient Questionnaire Data:**
       ${JSON.stringify(healthData)}
@@ -213,13 +240,15 @@ export const getOphthalmologistSummary = async (
       **Final instruction:** ${responseLanguageInstruction}
     `;
     
-    const response = await ai.models.generateContent({
+    const responsePromise = ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         temperature: 0.5,
       }
     });
+
+    const response = await timeoutPromise(responsePromise, 30000, 'error_generic_api_timeout');
 
     const text = response.text;
     if (!text) {

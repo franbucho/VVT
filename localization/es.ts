@@ -1,4 +1,3 @@
-
 import { TranslationKeys } from './en';
 
 export const es: TranslationKeys = {
@@ -71,7 +70,7 @@ export const es: TranslationKeys = {
   exam_livePreviewTitle: "Vista Previa de la Cámara en Vivo",
   exam_analyzeButton: "Analizar Foto del Ojo",
   exam_analyzingText: "Analizando su foto...",
-  exam_error_fileTooLarge: "El archivo es demasiado grande. El tamaño máximo es 5MB.",
+  exam_error_fileTooLarge: "El archivo es demasiado grande. El tamaño máximo es 10MB.",
   exam_error_invalidFileType: "Tipo de archivo inválido. Por favor suba una imagen JPG, PNG, o WEBP.",
   exam_error_noPhoto: "Por favor suba o tome una foto de su ojo primero.",
   exam_error_cameraAccess: "No se pudo acceder a la cámara. Por favor asegúrese de que los permisos están concedidos.",
@@ -102,6 +101,7 @@ export const es: TranslationKeys = {
   questionnaire_submitButton: "Continuar a la Captura de Foto",
 
   q_option_other_not_sure: "Otro / No estoy seguro",
+  q_option_none_of_the_above: "Ninguna de las anteriores",
   
   q_firstNameLabel: "Nombre",
   q_firstNamePlaceholder: "Juana",
@@ -125,10 +125,11 @@ export const es: TranslationKeys = {
   month_december: "Diciembre",
 
   q1_label_new: "1. ¿Cuál es el motivo para realizar esta evaluación?",
-  q1_option_blurry: "Visión borrosa o alterada",
-  q1_option_tired: "Ojos cansados o fatigados",
-  q1_option_redness: "Enrojecimiento o irritación",
-  q1_option_checkup: "Chequeo periódico",
+  q1_reason_blurry_vision: "Visión borrosa o alterada",
+  q1_reason_tired_eyes: "Ojos cansados o fatigados",
+  q1_reason_redness_irritation: "Enrojecimiento o irritación",
+  q1_reason_periodic_checkup: "Chequeo periódico",
+  q1_reason_other: "Otro",
 
   q2_label: "2. ¿Usa lentes (gafas o lentes de contacto)?",
   q2_yes: "Sí",
@@ -159,10 +160,24 @@ export const es: TranslationKeys = {
   q6_symptom_gritty: "Sensación de arenilla",
   q6_symptom_lightSensitivity: "Sensibilidad a la luz",
   q6_symptom_doubleVision: "Visión doble",
-  q6_symptom_none: "Ninguno de los anteriores",
 
-  error_validation_name: "Por favor, ingrese su nombre y apellido.",
-  error_validation_dob_full: "Por favor, seleccione su fecha de nacimiento completa (día, mes y año).",
+  questionnaire_screenTime: "7. En promedio, ¿cuántas horas al día pasa frente a pantallas (computadora, teléfono, tablet, etc.)?",
+  screen_time_less_than_2: "Menos de 2 horas",
+  screen_time_2_4: "2-4 horas",
+  screen_time_4_8: "4-8 horas",
+  screen_time_more_than_8: "Más de 8 horas",
+
+  questionnaire_occupationalHazards: "8. ¿Está expuesto a alguno de los siguientes riesgos laborales en su trabajo?",
+  hazards_oil_gas: "Industria del petróleo o gas",
+  hazards_mining: "Minería",
+  hazards_agro: "Agroindustria (crianza de animales, etc.)",
+  hazards_chemicals: "Exposición a químicos (piscinas, laboratorios, etc.)",
+  hazards_outdoor_elements: "Exposición a elementos externos (buceo, salvavidas, etc.)",
+  hazards_none: "Ninguna de las anteriores",
+
+  validation_name_required: "Por favor, ingrese su nombre y apellido.",
+  validation_dob_required: "Por favor, seleccione su fecha de nacimiento completa.",
+  validation_reason_required: "Por favor, seleccione al menos un motivo para la evaluación.",
 
   results_title: "Su Análisis de Salud Ocular",
   results_summaryTitle: "Resumen Impulsado por IA",
@@ -178,6 +193,7 @@ export const es: TranslationKeys = {
   results_performAnotherAnalysisButton: "Realizar Otro Análisis",
   results_backToHomeButton: "Volver al Inicio",
   results_loadingSummary: "Cargando resumen...",
+  results_error_loading: "No pudimos cargar sus resultados. Si ya ha pagado, por favor",
 
   results_condition_cornealAbrasion: "Abrasión Corneal",
   results_details_cornealAbrasion: "Se detectaron irregularidades menores en la superficie, probablemente superficiales.",
@@ -196,9 +212,8 @@ export const es: TranslationKeys = {
   payment_unlock_description: "Por un pago único, obtenga un PDF descargable de su análisis detallado y guárdelo para sus registros.",
   payment_pay_now_button: "Pagar $10.00 Ahora",
   payment_processing: "Procesando...",
-  payment_simulatePaymentButton: "Simular Pago",
-  payment_returnToHomeLink: "Volver al Inicio",
-  payment_processedAlert: "¡Pago Procesado (Simulado)! Gracias.",
+  payment_support_prompt: "¿Problemas con tu pago?",
+  payment_support_link: "Contacta a Soporte",
 
   header_welcomeMessage: "Bienvenido, {email}",
   header_logoutButton: "Cerrar Sesión",
@@ -236,10 +251,50 @@ export const es: TranslationKeys = {
   language_switcher_en: "EN",
   language_switcher_es: "ES",
 
+  support_title: "Soporte y Ayuda",
+  support_heading: "¿Necesitas Ayuda?",
+  support_intro: "Lamentamos que hayas tenido un problema. Nuestro equipo está aquí para ayudarte.",
+  support_instruction_email: "Para resolver tu problema lo más rápido posible, por favor envíanos un correo a:",
+  support_instruction_include: "Por favor, asegúrate de incluir la siguiente información:",
+  support_info_1: "El correo electrónico que usaste para registrarte.",
+  support_info_2: "La fecha y hora aproximada de la transacción.",
+  support_info_3: "Una breve descripción del problema que experimentaste.",
+  support_backToHomeButton: "Volver a la Página Principal",
+  
+  footer_supportLink: "Soporte",
+
+  report_confidential_title: "Reporte Confidencial de Salud Ocular",
+  report_date_generated: "Fecha de Generación",
+  report_patient_info: "Información del Paciente",
+  report_patient_name: "Nombre",
+  report_patient_dob: "Fecha de Nacimiento",
+  report_patient_email: "Correo Electrónico",
+  report_ai_summary_title: "Resumen Impulsado por IA",
+  report_questionnaire_summary: "Resumen del Cuestionario",
+  report_image_analysis_details: "Detalles del Análisis de Imagen",
+  report_submitted_image: "Imagen Enviada",
+  report_no_findings: "El análisis de imagen inicial no detectó signos inmediatos de condiciones mayores basados en la imagen proporcionada.",
+  questionnaire_reason: "Motivo de la evaluación",
+  questionnaire_lenses: "Usa lentes",
+  questionnaire_satisfactionLabel: "Satisfacción",
+  questionnaire_lastUpdateLabel: "Última actualización",
+  questionnaire_surgery: "Tuvo cirugía/lesión",
+  questionnaire_surgeryOrInjuryDetails: "Detalles",
+  questionnaire_illnesses: "Enfermedades generales",
+  questionnaire_familyHistory: "Historial ocular familiar",
+  questionnaire_symptoms: "Síntomas actuales",
+  questionnaire_not_answered: "No respondido",
+  date_locale: "es-ES",
+  questionnaire_screenTime_label: "Tiempo diario en pantalla",
+  questionnaire_occupationalHazards_label: "Riesgos laborales",
+  report_page2_header: "Análisis Detallado y Cuestionario",
+
   error_generic_api_key_missing: "El servicio de IA no está disponible: Falta la clave de API. Por favor, contacte al soporte.",
   error_generic_api_key_invalid: "El servicio de IA no está disponible: La clave de API configurada no es válida. Por favor, contacte al soporte.",
   error_generic_api_fetch_failed: "Error al obtener consejos debido a un error de API: {errorMessage}",
   error_generic_unexpected_api: "Ocurrió un error inesperado al comunicarse con el servicio de IA. Por favor, inténtelo de nuevo.",
+  error_generic_api_timeout: "El servicio de IA tardó demasiado en responder. Esto puede deberse a una conexión de red lenta. Por favor, inténtelo de nuevo.",
+  error_image_processing: "No se pudo procesar la imagen subida. Por favor, asegúrese de que es un archivo de imagen válido y vuelva a intentarlo.",
   error_generic_no_tips_received: "No se recibieron consejos de la IA. Por favor, inténtelo de nuevo más tarde.",
   error_analysis_blocked: "El análisis no se pudo completar porque la imagen enviada no era clara o era inapropiada. Por favor, inténtelo de nuevo con una foto clara de solo su ojo.",
 };

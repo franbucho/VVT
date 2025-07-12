@@ -1,3 +1,5 @@
+
+
 import React, { useState, useRef, useCallback, useEffect, useReducer } from 'react';
 import { User } from 'firebase/auth';
 import { Page, EyeAnalysisResult, HealthData } from '../types';
@@ -156,14 +158,34 @@ export const ExamPage: React.FC<ExamPageProps> = ({
     if (videoRef.current && canvasRef.current && isCameraOn) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      
+      const MAX_DIMENSION = 1024;
+      let { videoWidth: width, videoHeight: height } = video;
+      
+      if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+        if (width > height) {
+          height = Math.round((height * MAX_DIMENSION) / width);
+          width = MAX_DIMENSION;
+        } else {
+          width = Math.round((width * MAX_DIMENSION) / height);
+          height = MAX_DIMENSION;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
       const context = canvas.getContext('2d');
       if (context) {
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL('image/jpeg');
+        // Draw the video frame to the canvas, resizing it in the process.
+        context.drawImage(video, 0, 0, width, height);
+        
+        // Get the resized image data URL with controlled quality.
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        
         setPreviewUrl(dataUrl);
         setCapturedImage(dataUrl);
+        
         fetch(dataUrl)
           .then(res => res.blob())
           .then(blob => {
@@ -349,7 +371,7 @@ export const ExamPage: React.FC<ExamPageProps> = ({
     dispatch({ type: 'RESET' });
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
+      if (file.size > 10 * 1024 * 1024) { // Increased limit slightly
         setError(t('exam_error_fileTooLarge'));
         return;
       }
@@ -362,9 +384,41 @@ export const ExamPage: React.FC<ExamPageProps> = ({
       
       const reader = new FileReader();
       reader.onloadend = () => {
-        const dataUrl = reader.result as string;
-        setPreviewUrl(dataUrl);
-        setCapturedImage(dataUrl);
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const MAX_DIMENSION = 1024;
+            let { width, height } = img;
+            if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+              if (width > height) {
+                height = Math.round((height * MAX_DIMENSION) / width);
+                width = MAX_DIMENSION;
+              } else {
+                width = Math.round((width * MAX_DIMENSION) / height);
+                height = MAX_DIMENSION;
+              }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+              throw new Error('Could not get canvas context');
+            }
+            ctx.drawImage(img, 0, 0, width, height);
+            const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            
+            setPreviewUrl(resizedDataUrl);
+            setCapturedImage(resizedDataUrl);
+          } catch(e) {
+            console.error("Error resizing image:", e);
+            setError(t('error_image_processing'));
+          }
+        }
+        img.onerror = () => {
+          setError(t('error_image_processing'));
+        }
+        img.src = reader.result as string;
       };
       reader.readAsDataURL(file);
     }
@@ -385,7 +439,7 @@ export const ExamPage: React.FC<ExamPageProps> = ({
     try {
         const base64Image = previewUrl.split(',')[1];
         if (!base64Image) {
-            throw new Error(t('exam_error_invalid_image_data'));
+            throw new Error('exam_error_invalid_image_data');
         }
 
         // 1. Analyze the image first.
@@ -420,7 +474,7 @@ export const ExamPage: React.FC<ExamPageProps> = ({
         console.error("Analysis or save failed:", err);
         const messageKey = (err instanceof Error && (err.message as keyof TranslationKeys).startsWith('error_')) 
           ? err.message as keyof TranslationKeys 
-          : 'exam_error_analysisFailed' as keyof TranslationKeys;
+          : 'error_generic_unexpected_api' as keyof TranslationKeys;
         setError(t(messageKey));
     } finally {
         setIsLoading(false);
@@ -531,7 +585,7 @@ export const ExamPage: React.FC<ExamPageProps> = ({
             )}
             
             {/* Step 4: Loading/Error States */}
-            {error && <p className="text-danger text-sm mb-4 text-center">{error}</p>}
+            {error && <p className="text-danger text-sm my-4 p-3 bg-red-50 border border-danger rounded-md text-center">{error}</p>}
             {isLoading && <LoadingSpinner text={t('exam_analyzingText')} className="my-6" />}
             {guidedState.currentState === CaptureState.Timeout && (
               <Button onClick={resetAndRetry} variant="primary" size="lg" className="w-full">

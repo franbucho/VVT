@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth } from './firebase';
@@ -11,6 +12,7 @@ import { ResultsPage } from './pages/ResultsPage';
 import { PaymentPage } from './pages/PaymentPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { AdminPage } from './pages/AdminPage';
+import { SupportPage } from './pages/SupportPage';
 import { useLanguage } from './contexts/LanguageContext';
 import { LanguageSwitcher } from './components/common/LanguageSwitcher';
 import { Button } from './components/common/Button';
@@ -146,13 +148,15 @@ const App: React.FC = () => {
           setCurrentPage(Page.Auth);
           return null;
         }
-        return <PaymentPage />;
+        return <PaymentPage setCurrentPage={setCurrentPage} />;
       case Page.Admin:
         if (!currentUser || !isAdmin) {
           setCurrentPage(Page.Home);
           return null;
         }
         return <AdminPage currentUser={currentUser} />;
+      case Page.Support:
+        return <SupportPage setCurrentPage={setCurrentPage} />;
       default:
         return <HomePage setCurrentPage={setCurrentPage} />;
     }
@@ -168,7 +172,7 @@ const App: React.FC = () => {
             aria-label={t('appName')}
           >
             <EyeIcon className="w-8 h-8 text-accent" />
-            <span className="text-xl font-bold text-primary">{t('appName')}</span>
+            <span className="text-xl font-bold text-primary-dark">{t('appName')}</span>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
             <LanguageSwitcher />
@@ -178,7 +182,7 @@ const App: React.FC = () => {
               <div className="flex items-center space-x-2 sm:space-x-4">
                  <button 
                   onClick={() => setCurrentPage(Page.History)}
-                  className="text-sm font-medium text-primary hover:text-accent transition-colors"
+                  className="text-sm font-medium text-primary-dark hover:text-accent transition-colors"
                 >
                   {t('header_myResultsLink')}
                 </button>
@@ -192,7 +196,7 @@ const App: React.FC = () => {
                     {t('header_adminPanel')}
                   </Button>
                 )}
-                <span className="text-sm text-primary/80 hidden md:inline" title={currentUser.email || ''}>
+                <span className="text-sm text-primary-dark/80 hidden md:inline" title={currentUser.email || ''}>
                   {t('header_welcomeMessage', { email: currentUser.displayName?.split(' ')[0] || 'User' })}
                 </span>
                 <Button
@@ -221,9 +225,15 @@ const App: React.FC = () => {
         {renderPage()}
       </main>
 
-      <footer className="bg-primary text-white py-8 text-center mt-auto">
+      <footer className="bg-primary-dark text-white py-4 text-center mt-auto">
         <div className="container mx-auto px-4">
           <p className="text-sm opacity-80">&copy; {new Date().getFullYear()} {t('footerText')} {t('footerDisclaimer')}</p>
+           <button 
+              onClick={() => setCurrentPage(Page.Support)}
+              className="text-sm text-accent hover:underline mt-2 inline-block"
+            >
+              {t('footer_supportLink')}
+            </button>
         </div>
       </footer>
     </div>

@@ -29,6 +29,7 @@ const App: React.FC = () => {
   const [ophthalmologistSummary, setOphthalmologistSummary] = useState<string>('');
   const [isPaymentComplete, setIsPaymentComplete] = useState(false);
   
+  // New admin role state
   const [isAdmin, setIsAdmin] = useState(false);
   
   const { t } = useLanguage();
@@ -38,26 +39,28 @@ const App: React.FC = () => {
       if (user) {
         setCurrentUser(user);
         try {
+          // Force refresh the token to get the latest custom claims
           const idTokenResult = await user.getIdTokenResult(true); 
           setIsAdmin(!!idTokenResult.claims.admin);
         } catch (error) {
           console.error("Error fetching user claims:", error);
-          setIsAdmin(false);
+          setIsAdmin(false); // Default to non-admin on error
         }
       } else {
         setCurrentUser(null);
-        setIsAdmin(false);
+        setIsAdmin(false); // Clear admin status on logout
       }
       setIsAuthLoading(false);
     });
 
+    // Handle redirects from Stripe after payment
     const queryParams = new URLSearchParams(window.location.search);
     if (queryParams.get('payment_success') === 'true') {
         setIsPaymentComplete(true);
-        setCurrentPage(Page.History);
+        setCurrentPage(Page.Results); // Go to results to see the new report
         window.history.replaceState({}, document.title, window.location.pathname);
     } else if (queryParams.get('payment_cancelled') === 'true' || queryParams.has('payment_cancel')) {
-        setCurrentPage(Page.Exam);
+        setCurrentPage(Page.Exam); // Let user retry from exam page
         window.history.replaceState({}, document.title, window.location.pathname);
     }
     
@@ -67,6 +70,7 @@ const App: React.FC = () => {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
+      // Reset all states on logout
       setHealthData(null);
       setCapturedImage(null);
       setAnalysisResults(null);

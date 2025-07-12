@@ -17,27 +17,21 @@ export const SupportPage: React.FC<SupportPageProps> = ({ setCurrentPage }) => {
     <PageContainer title={t('support_title')}>
       <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md text-center">
         <h2 className="text-2xl font-bold text-primary-dark mb-4">{t('support_heading')}</h2>
-        <p className="text-primary-dark/80 mb-6">
-          {t('support_intro')}
-        </p>
-        <div className="bg-primary-dark/5 p-6 rounded-lg text-left">
-          <p className="text-primary-dark mb-4">
-            {t('support_instruction_email')}
-          </p>
-          <a href={`mailto:${supportEmail}`} className="text-lg font-bold text-accent hover:text-accent-hover break-all">
+        <p className="text-neutral-dark mb-6">{t('support_intro')}</p>
+        <div className="bg-gray-50 p-6 rounded-lg text-left">
+          <p className="text-neutral-dark mb-4">{t('support_instruction')}</p>
+          <a href={`mailto:${supportEmail}`} className="text-lg font-bold text-accent hover:underline break-all">
             {supportEmail}
           </a>
-          <p className="text-sm text-primary-dark/70 mt-4">
-            {t('support_instruction_include')}
-          </p>
-          <ul className="list-disc list-inside text-sm text-primary-dark/80 mt-2 space-y-1">
-            <li>{t('support_info_1')}</li>
-            <li>{t('support_info_2')}</li>
-            <li>{t('support_info_3')}</li>
+          <p className="text-sm text-gray-500 mt-4">{t('support_include_info')}</p>
+          <ul className="list-disc list-inside text-sm text-gray-600 mt-2 space-y-1">
+            <li>{t('support_info_email')}</li>
+            <li>{t('support_info_date')}</li>
+            <li>{t('support_info_problem')}</li>
           </ul>
         </div>
-        <Button onClick={() => setCurrentPage(Page.Home)} className="mt-8" variant="primary">
-          {t('support_backToHomeButton')}
+        <Button onClick={() => setCurrentPage(Page.Home)} className="mt-8">
+          {t('support_back_home_button')}
         </Button>
       </div>
     </PageContainer>

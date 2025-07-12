@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { User } from 'firebase/auth';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -47,16 +48,42 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
     setIsGeneratingPdf(true);
     
     try {
-      const canvas = await html2canvas(reportRef.current, { scale: 2, useCORS: true });
+      const canvas = await html2canvas(reportRef.current, {
+        scale: 2, // Higher scale for better quality
+        useCORS: true,
+        windowWidth: reportRef.current.scrollWidth,
+        windowHeight: reportRef.current.scrollHeight,
+      });
+
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdf = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: 'a4',
+      });
+
       const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      
       const canvasWidth = canvas.width;
       const canvasHeight = canvas.height;
-      const ratio = canvasWidth / canvasHeight;
-      const imgHeight = pdfWidth / ratio;
       
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
+      const ratio = canvasWidth / canvasHeight;
+      const totalPdfHeight = pdfWidth / ratio;
+      
+      let position = 0;
+      let heightLeft = totalPdfHeight;
+
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, totalPdfHeight);
+      heightLeft -= pdfHeight;
+
+      while (heightLeft > 0) {
+        position -= pdfHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, totalPdfHeight);
+        heightLeft -= pdfHeight;
+      }
+      
       pdf.save(`VirtualVisionTest-Report-${selectedEvaluation.id}.pdf`);
 
     } catch (error) {
@@ -70,25 +97,26 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
   
   // This effect triggers the download once the ReportContents component is rendered and its ref is set
   useEffect(() => {
-    if (selectedEvaluation && reportRef.current) {
+    if (selectedEvaluation && reportRef.current && !isGeneratingPdf) {
       handleDownloadPdf();
     }
-  }, [selectedEvaluation]);
+  }, [selectedEvaluation, isGeneratingPdf]);
 
   const handleViewReportClick = (evaluation: EvaluationHistoryItem) => {
+    if (isGeneratingPdf) return;
     setSelectedEvaluation(evaluation);
   };
 
   const renderSummary = () => (
     <div className="bg-card-bg p-6 rounded-xl shadow-lg mb-8 grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
       <div>
-        <h3 className="text-sm font-semibold text-primary/80 uppercase tracking-wider">{t('history_totalEvaluations')}</h3>
+        <h3 className="text-sm font-semibold text-primary-dark/80 uppercase tracking-wider">{t('history_totalEvaluations')}</h3>
         <p className="text-3xl font-bold text-accent">{evaluations.length}</p>
       </div>
       <div>
-        <h3 className="text-sm font-semibold text-primary/80 uppercase tracking-wider">{t('history_lastEvaluation')}</h3>
+        <h3 className="text-sm font-semibold text-primary-dark/80 uppercase tracking-wider">{t('history_lastEvaluation')}</h3>
         <p className="text-3xl font-bold text-accent">
-          {evaluations.length > 0 ? evaluations[0].createdAt.toDate().toLocaleDateString() : 'N/A'}
+          {evaluations.length > 0 ? evaluations[0].createdAt.toDate().toLocaleDateString(t('date_locale' as any)) : 'N/A'}
         </p>
       </div>
     </div>
@@ -100,12 +128,11 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
         <div style={{ position: 'absolute', left: '-9999px', top: 0 }}>
           <ReportContents
             ref={reportRef}
-            user={currentUser}
-            questionnaireAnswers={selectedEvaluation.healthData}
+            currentUser={currentUser}
+            healthData={selectedEvaluation.healthData}
             analysisResults={selectedEvaluation.analysisResults}
-            summary={selectedEvaluation.summary}
-            imageSrc={selectedEvaluation.capturedImage}
-            t={t}
+            summary={selectedEvaluation.summary || ''}
+            capturedImage={selectedEvaluation.capturedImage}
           />
         </div>
       )}
@@ -118,16 +145,16 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
           <>
             {renderSummary()}
             <div className="bg-card-bg p-6 rounded-xl shadow-lg">
-                <h2 className="text-2xl font-semibold text-primary mb-4">{t('history_historyTitle')}</h2>
+                <h2 className="text-2xl font-semibold text-primary-dark mb-4">{t('history_historyTitle')}</h2>
                 {evaluations.length === 0 ? (
-                  <p className="text-center text-primary/70 py-8">{t('history_noHistory')}</p>
+                  <p className="text-center text-primary-dark/70 py-8">{t('history_noHistory')}</p>
                 ) : (
                   <ul className="divide-y divide-gray-200">
                     {evaluations.map((evaluation) => (
-                      <li key={evaluation.id} className="py-4 flex items-center justify-between">
+                      <li key={evaluation.id} className="py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div>
-                          <p className="text-lg font-medium text-primary">{t('history_evaluationDate')}</p>
-                          <p className="text-primary/80">{evaluation.createdAt.toDate().toLocaleString()}</p>
+                          <p className="text-lg font-medium text-primary-dark">{t('history_evaluationDate')}</p>
+                          <p className="text-primary-dark/80">{evaluation.createdAt.toDate().toLocaleString(t('date_locale' as any), { dateStyle: 'long', timeStyle: 'short' })}</p>
                         </div>
                         <Button 
                             onClick={() => handleViewReportClick(evaluation)}

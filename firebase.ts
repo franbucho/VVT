@@ -13,8 +13,10 @@ const firebaseConfig = {
   measurementId: "G-XDE2RTRKK9"
 };
 
+// Initialize Firebase v9 modular
 const app = initializeApp(firebaseConfig);
 
+// Export modular services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const functions = getFunctions(app);

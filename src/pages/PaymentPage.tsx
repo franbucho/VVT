@@ -10,6 +10,7 @@ interface PaymentPageProps {
   setCurrentPage: (page: Page) => void;
 }
 
+// Load Stripe with your PUBLISHABLE key
 const stripePromise = loadStripe('pk_test_51RZlfLRwyUm5uH9otzGh1HF24S9DgPloL7w7dypTw7TUSfT4ry1UdvnqrzgdhFWd6wT9rFt7kaILS0brbtdI9gfe00HSOUNEYJ');
 
 export const PaymentPage: React.FC<PaymentPageProps> = ({ setCurrentPage }) => {
@@ -22,8 +23,10 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ setCurrentPage }) => {
         setError(null);
 
         try {
+            // URL of the deployed Cloud Function.
             const functionUrl = 'https://us-central1-virtual-vision-test-app.cloudfunctions.net/createCheckoutSession';
 
+            // Call your backend to create the checkout session
             const response = await fetch(functionUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -35,6 +38,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ setCurrentPage }) => {
                 throw new Error(session.error || 'Failed to create checkout session.');
             }
 
+            // Redirect user to Stripe Checkout
             const stripe = await stripePromise;
             if (stripe) {
                 const { error } = await stripe.redirectToCheckout({
@@ -71,7 +75,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ setCurrentPage }) => {
                     {isLoading ? t('payment_processing') : t('payment_pay_now_button')}
                 </Button>
                 {error && <p className="text-danger mt-4 text-sm">{error}</p>}
-                
+
                 <div className="mt-6 text-center text-xs text-primary-dark/60">
                     <span>{t('payment_support_prompt')} </span>
                     <button onClick={() => setCurrentPage(Page.Support)} className="font-semibold text-accent hover:underline">

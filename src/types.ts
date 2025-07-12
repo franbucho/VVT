@@ -76,3 +76,12 @@ export interface EvaluationHistoryItem {
   capturedImage: string;
   summary?: string; // AI-generated text summary
 }
+
+export interface Feedback {
+  id: string;
+  userId: string;
+  userEmail: string;
+  rating: number;
+  comment?: string;
+  createdAt: string; // Stored as an ISO string from Firestore timestamp
+}
