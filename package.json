@@ -18,7 +18,8 @@
     "firebase": "^11.10.0",
     "jspdf": "^2.5.1",
     "html2canvas": "^1.4.1",
-    "@stripe/stripe-js": "^3.5.0"
+    "@stripe/stripe-js": "^3.5.0",
+    "browser-image-compression": "^2.0.2"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
