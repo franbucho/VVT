@@ -83,6 +83,23 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
                     <p className="text-base text-primary-dark leading-relaxed whitespace-pre-wrap">{summary || t('results_loadingSummary')}</p>
                 </div>
             </section>
+             {ophthalmologists && ophthalmologists.length > 0 && (
+              <section>
+                  <h2 className="text-lg font-semibold mb-2 text-primary-dark">
+                      {t('report_nearby_ophthalmologists')}
+                  </h2>
+                  <ul className="space-y-2 max-h-72 overflow-y-auto border p-3 rounded-lg bg-gray-50">
+                      {ophthalmologists.map((doc, idx) => (
+                          <li key={idx} className="border-b p-3 rounded-lg bg-white shadow-sm">
+                              <p className="font-bold text-primary-dark">{doc.name}</p>
+                              <p className="text-sm text-gray-600">{doc.specialty}</p>
+                              <p className="text-sm text-gray-600 mt-1">{doc.address}</p>
+                              <p className="text-sm text-gray-600">{t('report_phone')}: {doc.phone}</p>
+                          </li>
+                      ))}
+                  </ul>
+              </section>
+            )}
             <section>
                 <p className="text-sm text-center text-primary-dark/70 p-4 bg-gray-50 rounded-lg">
                     {t('results_download_for_details')}
