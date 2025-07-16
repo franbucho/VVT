@@ -6,6 +6,7 @@ import { PageContainer } from '../components/common/PageContainer';
 import { EyeIcon, ShowPasswordIcon, HidePasswordIcon } from '../constants';
 import { signInWithEmail, signUpWithEmailPassword, signInWithGoogle, sendPasswordReset } from '../services/authService';
 import { useLanguage } from '../contexts/LanguageContext';
+import { FirebaseError } from 'firebase/app';
 
 interface AuthPageProps {
   setCurrentPage: (page: Page) => void;
@@ -25,25 +26,29 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleAuthError = (err: any) => {
-    switch (err.code) {
-      case 'auth/email-already-in-use':
-        setError(t('auth_error_email_in_use'));
-        break;
-      case 'auth/weak-password':
-        setError(t('auth_error_weak_password'));
-        break;
-      case 'auth/user-not-found':
-        setError(t('auth_error_user_not_found'));
-        break;
-      case 'auth/wrong-password':
-        setError(t('auth_error_wrong_password'));
-        break;
-      case 'auth/invalid-email':
-        setError(t('auth_error_invalid_email'));
-        break;
-      default:
-        setError(t('auth_error_unexpected'));
-        break;
+    if (err instanceof FirebaseError) {
+        switch (err.code) {
+        case 'auth/email-already-in-use':
+            setError(t('auth_error_email_in_use'));
+            break;
+        case 'auth/weak-password':
+            setError(t('auth_error_weak_password'));
+            break;
+        case 'auth/user-not-found':
+            setError(t('auth_error_user_not_found'));
+            break;
+        case 'auth/wrong-password':
+            setError(t('auth_error_wrong_password'));
+            break;
+        case 'auth/invalid-email':
+            setError(t('auth_error_invalid_email'));
+            break;
+        default:
+            setError(t('auth_error_unexpected'));
+            break;
+        }
+    } else {
+         setError(t('auth_error_unexpected'));
     }
   };
 

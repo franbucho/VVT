@@ -1,11 +1,12 @@
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
+
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   sendPasswordResetEmail,
   signInWithPopup,
   updateProfile,
   GoogleAuthProvider,
-  UserCredential
+  UserCredential,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase';
@@ -13,7 +14,7 @@ import { auth, db } from '../firebase';
 export const signUpWithEmailPassword = async (email: string, password: string, firstName: string, lastName: string): Promise<UserCredential> => {
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const user = userCredential.user;
-  
+
   const displayName = `${firstName} ${lastName}`;
   await updateProfile(user, { displayName });
 

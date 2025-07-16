@@ -15,6 +15,7 @@
     "firebase/app": "^11.10.0",
     "firebase/auth": "^11.10.0",
     "firebase/firestore": "^11.10.0",
+    "firebase/functions": "^11.10.0",
     "firebase": "^11.10.0",
     "jspdf": "^2.5.1",
     "html2canvas": "^1.4.1",

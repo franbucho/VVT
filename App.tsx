@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
-import { User } from 'firebase/auth';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth } from './firebase';
 
-import { Page, EyeAnalysisResult, HealthData } from './types';
+import { Page, EyeAnalysisResult, HealthData, Ophthalmologist } from './types';
 import { EyeIcon } from './constants';
 import { HomePage } from './pages/HomePage';
 import { AuthPage } from './pages/AuthPage';
@@ -16,6 +15,7 @@ import { SupportPage } from './pages/SupportPage';
 import { useLanguage } from './contexts/LanguageContext';
 import { LanguageSwitcher } from './components/common/LanguageSwitcher';
 import { Button } from './components/common/Button';
+import { getEvaluationsCount } from './services/firestoreService';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
@@ -27,28 +27,38 @@ const App: React.FC = () => {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [analysisResults, setAnalysisResults] = useState<EyeAnalysisResult[] | null>(null);
   const [ophthalmologistSummary, setOphthalmologistSummary] = useState<string>('');
+  const [ophthalmologists, setOphthalmologists] = useState<Ophthalmologist[] | null>(null);
   const [isPaymentComplete, setIsPaymentComplete] = useState(false);
+  const [newEvaluationId, setNewEvaluationId] = useState<string | null>(null);
   
-  // New admin role state
+  // Role and usage state
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
+  const [evaluationsCount, setEvaluationsCount] = useState(0);
   
   const { t } = useLanguage();
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setCurrentUser(user);
         try {
           // Force refresh the token to get the latest custom claims
           const idTokenResult = await user.getIdTokenResult(true); 
           setIsAdmin(!!idTokenResult.claims.admin);
+          setIsPremium(!!idTokenResult.claims.premium);
+          const count = await getEvaluationsCount(user.uid);
+          setEvaluationsCount(count);
         } catch (error) {
-          console.error("Error fetching user claims:", error);
-          setIsAdmin(false); // Default to non-admin on error
+          console.error("Error fetching user claims or evaluation count:", error);
+          setIsAdmin(false);
+          setIsPremium(false);
         }
       } else {
         setCurrentUser(null);
-        setIsAdmin(false); // Clear admin status on logout
+        setIsAdmin(false);
+        setIsPremium(false);
+        setEvaluationsCount(0);
       }
       setIsAuthLoading(false);
     });
@@ -57,7 +67,7 @@ const App: React.FC = () => {
     const queryParams = new URLSearchParams(window.location.search);
     if (queryParams.get('payment_success') === 'true') {
         setIsPaymentComplete(true);
-        setCurrentPage(Page.History); // Go to history to see the new report
+        setCurrentPage(Page.Results); // Go to results to see the new report
         window.history.replaceState({}, document.title, window.location.pathname);
     } else if (queryParams.get('payment_cancelled') === 'true' || queryParams.has('payment_cancel')) {
         setCurrentPage(Page.Exam); // Let user retry from exam page
@@ -69,14 +79,18 @@ const App: React.FC = () => {
 
   const handleSignOut = async () => {
     try {
-      await auth.signOut();
+      await signOut(auth);
       // Reset all states on logout
       setHealthData(null);
       setCapturedImage(null);
       setAnalysisResults(null);
       setOphthalmologistSummary('');
+      setOphthalmologists(null);
+      setNewEvaluationId(null);
       setIsPaymentComplete(false);
       setIsAdmin(false);
+      setIsPremium(false);
+      setEvaluationsCount(0);
       setCurrentPage(Page.Home);
     } catch (error) {
       console.error("Error signing out:", error);
@@ -116,9 +130,13 @@ const App: React.FC = () => {
             healthData={healthData}
             setCapturedImage={setCapturedImage}
             setOphthalmologistSummary={setOphthalmologistSummary}
+            setOphthalmologists={setOphthalmologists}
+            setNewEvaluationId={setNewEvaluationId}
             setIsPaymentComplete={setIsPaymentComplete}
             currentUser={currentUser}
             isAdmin={isAdmin}
+            isPremium={isPremium}
+            evaluationsCount={evaluationsCount}
           />
         );
       case Page.Results:
@@ -131,10 +149,12 @@ const App: React.FC = () => {
             setCurrentPage={setCurrentPage}
             analysisResults={analysisResults}
             summary={ophthalmologistSummary}
+            ophthalmologists={ophthalmologists}
             currentUser={currentUser}
             healthData={healthData}
             capturedImage={capturedImage}
             isPaymentComplete={isPaymentComplete}
+            newEvaluationId={newEvaluationId}
           />
         );
        case Page.History:
