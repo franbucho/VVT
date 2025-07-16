@@ -1,7 +1,5 @@
 
 import React, { useState, useRef } from 'react';
-import { httpsCallable } from 'firebase/functions';
-import { functions } from '../firebase';
 import { PageContainer } from '../components/common/PageContainer';
 import { Button } from '../components/common/Button';
 import { FeedbackModal } from '../components/common/FeedbackModal';
@@ -57,12 +55,28 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
   const handleFeedbackSubmit = async (rating: number, comment: string) => {
     if (!currentUser || !newEvaluationId) return;
     try {
-      const submitFeedbackCallable = httpsCallable(functions, 'submitFeedback');
-      await submitFeedbackCallable({ rating, comment, evaluationId: newEvaluationId });
+      const token = await currentUser.getIdToken();
+      const functionUrl = 'https://us-central1-virtual-vision-test-app.cloudfunctions.net/submitFeedback';
+
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ rating, comment, evaluationId: newEvaluationId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit feedback');
+      }
+
       setHasSubmittedFeedback(true);
       setIsFeedbackModalOpen(false);
     } catch (error) {
       console.error("Failed to submit feedback:", error);
+      // Optionally show an error to the user in the modal
+      throw error; // Re-throw to be caught in the modal
     }
   };
 

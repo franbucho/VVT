@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { httpsCallable } from 'firebase/functions';
 import { User } from 'firebase/auth';
-import { functions } from '../firebase';
 import { PageContainer } from '../components/common/PageContainer';
 import { Button } from '../components/common/Button';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
@@ -44,35 +42,60 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(true);
 
   const fetchUsers = useCallback(async () => {
+    if (!currentUser) return;
     setIsUsersLoading(true);
     setUserError('');
     try {
-      const listUsersCallable = httpsCallable(functions, 'listAllUsers');
-      const result = await listUsersCallable();
-      setUsers((result.data as any).users);
-    } catch (err) {
-      setUserError(t('admin_error_load_users'));
+      const token = await currentUser.getIdToken();
+      const functionUrl = 'https://us-central1-virtual-vision-test-app.cloudfunctions.net/listAllUsers';
+      const response = await fetch(functionUrl, {
+        method: 'POST', // POST is okay, but GET would be more semantic here. No change needed.
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to fetch users');
+      }
+      const result = await response.json();
+      setUsers(result.users);
+    } catch (err: any) {
+      setUserError(err.message || t('admin_error_load_users'));
       console.error(err);
     } finally {
       setIsUsersLoading(false);
     }
-  }, [t]);
+  }, [t, currentUser]);
 
   const fetchFeedback = useCallback(async () => {
+    if (!currentUser) return;
     setIsFeedbackLoading(true);
     setFeedbackError('');
     try {
-      const getFeedbackCallable = httpsCallable(functions, 'getFeedback');
-      const result = await getFeedbackCallable();
-      const data = (result.data as { feedbackList: Feedback[] }).feedbackList;
-      setFeedbackList(data);
-    } catch (err) {
-      setFeedbackError('Failed to load feedback.');
+      const token = await currentUser.getIdToken();
+      const functionUrl = 'https://us-central1-virtual-vision-test-app.cloudfunctions.net/getFeedback';
+      const response = await fetch(functionUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to load feedback');
+      }
+      const result = await response.json();
+      setFeedbackList(result.feedbackList);
+    } catch (err: any) {
+      setFeedbackError(err.message || 'Failed to load feedback.');
       console.error(err);
     } finally {
       setIsFeedbackLoading(false);
     }
-  }, []);
+  }, [currentUser]);
+
 
   useEffect(() => {
     if (activeTab === 'users') {
@@ -82,7 +105,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
     }
   }, [activeTab, fetchUsers, fetchFeedback]);
 
-  const handleToggleRole = async (uid: string, role: 'admin' | 'premium', status: boolean) => {
+  const handleToggleRole = useCallback(async (uid: string, role: 'admin' | 'premium', status: boolean) => {
+    if (!currentUser) return;
     setUserMessage('');
     setUserError('');
 
@@ -94,8 +118,21 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
     setUpdatingUid(uid);
 
     try {
-      const toggleRoleCallable = httpsCallable(functions, 'toggleUserRole');
-      await toggleRoleCallable({ uid, role, status });
+      const token = await currentUser.getIdToken();
+      const functionUrl = 'https://us-central1-virtual-vision-test-app.cloudfunctions.net/toggleUserRole';
+      const response = await fetch(functionUrl, {
+          method: 'POST',
+          headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ uid, role, status })
+      });
+
+      if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.error || 'Failed to toggle role');
+      }
 
       setUsers((current) =>
         current.map((u) =>
@@ -114,7 +151,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
     } finally {
       setUpdatingUid(null);
     }
-  };
+  }, [currentUser, t]);
 
   const RoleBadge: React.FC<{ user: AppUser }> = ({ user }) => {
     if (user.isAdmin) {

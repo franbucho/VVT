@@ -1,45 +1,68 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const fetch = require("node-fetch");
+const stripe = require('stripe')('sk_test_51RZlfLRwyUm5uH9oKkSjJ9GUCjdKZEBFY9sVd8w8gL9pBplK2pgeC44wHhMse8A6T6QzD4f2iPEABG4y1aRcmS1z00Q2YnJ2IL');
 
 admin.initializeApp();
+
+// Helper to add CORS headers and handle OPTIONS preflight for all onRequest functions
+const handleRequest = (handler) => functions.https.onRequest(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
+    if (req.method === 'OPTIONS') {
+        res.set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+        res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.set('Access-Control-Max-Age', '3600');
+        return res.status(204).send('');
+    }
+    return handler(req, res);
+});
+
+// Helper to verify Firebase ID token from Authorization header
+const authenticateUser = async (req) => {
+    if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
+        throw new functions.https.HttpsError('unauthenticated', 'Unauthorized: No token provided.');
+    }
+    const idToken = req.headers.authorization.split('Bearer ')[1];
+    try {
+        return await admin.auth().verifyIdToken(idToken);
+    } catch (error) {
+        console.error("Error verifying token", error);
+        throw new functions.https.HttpsError('unauthenticated', 'Unauthorized: Invalid token.');
+    }
+};
 
 /**
  * Saves feedback from a user to Firestore.
  * Requires the user to be authenticated.
  */
-exports.submitFeedback = functions.https.onCall(async (data, context) => {
-  if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'You must be logged in to submit feedback.');
-  }
-
-  const { rating, comment, evaluationId } = data;
-  if (typeof rating !== 'number' || rating < 1 || rating > 5) {
-    throw new functions.https.HttpsError('invalid-argument', 'Rating must be a number between 1 and 5.');
-  }
-  if (comment && typeof comment !== 'string') {
-      throw new functions.https.HttpsError('invalid-argument', 'Comment must be a string.');
-  }
-  if (!evaluationId || typeof evaluationId !== 'string') {
-    throw new functions.https.HttpsError('invalid-argument', 'A valid evaluationId is required.');
-  }
-
-
+exports.submitFeedback = handleRequest(async (req, res) => {
   try {
+    const decodedToken = await authenticateUser(req);
+    const { rating, comment, evaluationId } = req.body;
+
+    if (typeof rating !== 'number' || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: 'Rating must be a number between 1 and 5.' });
+    }
+    if (comment && typeof comment !== 'string') {
+      return res.status(400).json({ error: 'Comment must be a string.' });
+    }
+    if (!evaluationId || typeof evaluationId !== 'string') {
+      return res.status(400).json({ error: 'A valid evaluationId is required.' });
+    }
+
     const feedbackRef = admin.firestore().collection('feedback').doc(evaluationId);
-    
     await feedbackRef.set({
-      userId: context.auth.uid,
-      userEmail: context.auth.token.email || 'N/A',
+      userId: decodedToken.uid,
+      userEmail: decodedToken.email || 'N/A',
       rating: rating,
       comment: comment || '',
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
-
-    return { success: true, message: 'Feedback submitted successfully.' };
+    return res.status(200).json({ success: true, message: 'Feedback submitted successfully.' });
   } catch (error) {
     console.error("Error saving feedback:", error);
-    throw new functions.https.HttpsError('internal', 'Could not save feedback.');
+    const status = error.code === 'unauthenticated' ? 403 : 500;
+    return res.status(status).json({ error: error.message || 'Could not save feedback.' });
   }
 });
 
@@ -47,37 +70,33 @@ exports.submitFeedback = functions.https.onCall(async (data, context) => {
  * Returns all feedback for the admin panel.
  * Requires the user to be an admin.
  */
-exports.getFeedback = functions.https.onCall(async (data, context) => {
-  if (!context.auth?.token?.admin) {
-    throw new functions.https.HttpsError('permission-denied', 'You must be an admin to view this list.');
-  }
-
+exports.getFeedback = handleRequest(async (req, res) => {
   try {
+    const decodedToken = await authenticateUser(req);
+    if (!decodedToken.admin) {
+        throw new functions.https.HttpsError('permission-denied', 'Permission denied: User is not an admin.');
+    }
+
     const snapshot = await admin.firestore().collection('feedback').orderBy('createdAt', 'desc').get();
     const feedbackList = snapshot.docs.map(doc => {
-        const docData = doc.data();
-        return {
-            id: doc.id,
-            ...docData,
-            // Convert timestamp to a serializable format (ISO string) for the client
-            createdAt: docData.createdAt.toDate().toISOString(),
-        };
+      const docData = doc.data();
+      return {
+        id: doc.id,
+        ...docData,
+        createdAt: docData.createdAt.toDate().toISOString(),
+      };
     });
-    return { feedbackList };
+    return res.status(200).json({ feedbackList });
   } catch (error) {
     console.error("Error getting feedback:", error);
-    throw new functions.https.HttpsError('internal', 'Could not retrieve the feedback list.');
+    const status = error.code === 'unauthenticated' || error.code === 'permission-denied' ? 403 : 500;
+    return res.status(status).json({ error: error.message || 'Could not retrieve the feedback list.' });
   }
 });
 
 
-// NOTE: Assume other functions like listAllUsers and toggleAdminRole are here.
-const stripe = require('stripe')('sk_test_51RZlfLRwyUm5uH9oKkSjJ9GUCjdKZEBFY9sVd8w8gL9pBplK2pgeC44wHhMse8A6T6QzD4f2iPEABG4y1aRcmS1z00Q2YnJ2IL');
-
 exports.createCheckoutSession = functions.https.onRequest(async (req, res) => {
-    // Definitive manual CORS handling
     res.set('Access-Control-Allow-Origin', '*');
-
     if (req.method === 'OPTIONS') {
         res.set('Access-Control-Allow-Methods', 'POST');
         res.set('Access-Control-Allow-Headers', 'Content-Type');
@@ -117,11 +136,13 @@ exports.createCheckoutSession = functions.https.onRequest(async (req, res) => {
     }
 });
 
-exports.listAllUsers = functions.https.onCall(async (data, context) => {
-    if (!context.auth?.token?.admin) {
-      throw new functions.https.HttpsError('permission-denied', 'You must be an admin to view this list.');
-    }
+exports.listAllUsers = handleRequest(async (req, res) => {
     try {
+        const decodedToken = await authenticateUser(req);
+        if (!decodedToken.admin) {
+            throw new functions.https.HttpsError('permission-denied', 'Permission denied: User is not an admin.');
+        }
+
         const listUsersResult = await admin.auth().listUsers(1000);
         const users = listUsersResult.users.map(userRecord => ({
             uid: userRecord.uid,
@@ -130,38 +151,44 @@ exports.listAllUsers = functions.https.onCall(async (data, context) => {
             isAdmin: !!userRecord.customClaims?.admin,
             isPremium: !!userRecord.customClaims?.premium,
         }));
-        return { users };
+        return res.status(200).json({ users });
     } catch (error) {
         console.error('Error listing users:', error);
-        throw new functions.https.HttpsError('internal', 'Unable to list users.');
+        const status = error.code === 'unauthenticated' || error.code === 'permission-denied' ? 403 : 500;
+        return res.status(status).json({ error: error.message || 'Unable to list users.' });
     }
 });
 
-exports.toggleUserRole = functions.https.onCall(async (data, context) => {
-    if (!context.auth?.token?.admin) {
-        throw new functions.https.HttpsError('permission-denied', 'You must be an admin to modify roles.');
-    }
-    const { uid, role, status } = data;
-    if (!uid || typeof status !== 'boolean' || !['admin', 'premium'].includes(role)) {
-        throw new functions.https.HttpsError('invalid-argument', 'The function must be called with a "uid", a "role" (admin/premium), and a "status" boolean.');
-    }
-
+exports.toggleUserRole = handleRequest(async (req, res) => {
     try {
+        const decodedToken = await authenticateUser(req);
+        if (!decodedToken.admin) {
+             throw new functions.https.HttpsError('permission-denied', 'Permission denied: User is not an admin.');
+        }
+
+        const { uid, role, status } = req.body;
+        if (!uid || typeof status !== 'boolean' || !['admin', 'premium'].includes(role)) {
+            return res.status(400).json({ error: 'The function must be called with a "uid", a "role" (admin/premium), and a "status" boolean.' });
+        }
+        if (decodedToken.uid === uid && role === 'admin' && !status) {
+            return res.status(400).json({ error: 'Admins cannot remove their own admin status.' });
+        }
+
         const user = await admin.auth().getUser(uid);
         const currentClaims = user.customClaims || {};
         const newClaims = { ...currentClaims, [role]: status };
 
         await admin.auth().setCustomUserClaims(uid, newClaims);
-        return { message: `Success! User ${uid}'s ${role} status is now ${status}.` };
+        return res.status(200).json({ message: `Success! User ${uid}'s ${role} status is now ${status}.` });
     } catch (error) {
         console.error('Error setting custom claims:', error);
-        throw new functions.https.HttpsError('internal', 'Unable to set custom claims.');
+        const status = error.code === 'unauthenticated' || error.code === 'permission-denied' ? 403 : 500;
+        return res.status(status).json({ error: error.message || 'Unable to set custom claims.' });
     }
 });
 
 
 exports.getNearbyOphthalmologistsProxy = functions.https.onRequest(async (req, res) => {
-    // Definitive manual CORS handling
     res.set('Access-Control-Allow-Origin', '*');
 
     if (req.method === 'OPTIONS') {

@@ -8,8 +8,6 @@ import { Button } from '../components/common/Button';
 import { FeedbackModal } from '../components/common/FeedbackModal';
 import { ReportContents } from '../components/ReportContents';
 import { useLanguage } from '../contexts/LanguageContext';
-import { httpsCallable } from 'firebase/functions';
-import { functions } from '../firebase';
 import { EvaluationHistoryItem } from '../types';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -68,14 +66,30 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
   };
 
   const handleFeedbackSubmit = async (rating: number, comment: string) => {
-    if (!selectedEvaluationId) return;
+    if (!selectedEvaluationId || !currentUser) return;
     try {
-      const submitFeedbackCallable = httpsCallable(functions, 'submitFeedback');
-      await submitFeedbackCallable({ rating, comment, evaluationId: selectedEvaluationId });
+      const token = await currentUser.getIdToken();
+      const functionUrl = 'https://us-central1-virtual-vision-test-app.cloudfunctions.net/submitFeedback';
+      
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ rating, comment, evaluationId: selectedEvaluationId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit feedback');
+      }
+
       setSubmittedFeedbackIds(prev => [...prev, selectedEvaluationId]);
       setIsFeedbackModalOpen(false);
     } catch (error) {
       console.error("Failed to submit feedback:", error);
+      // Re-throw to be caught in the modal
+      throw error;
     }
   };
 
@@ -86,7 +100,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
         {error && <p className="text-center text-danger">{error}</p>}
         {!isLoading && !error && (
             <div className="space-y-4">
-            {evaluations.map((evaluation) => (
+            {evaluations.length > 0 ? evaluations.map((evaluation) => (
                 <div key={evaluation.id} className="bg-white p-4 rounded-lg shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center">
                 <div>
                     <p className="font-semibold text-primary-dark">{t('history_evaluationDate')}: {evaluation.createdAt.toDate().toLocaleDateString(t('date_locale' as any))}</p>
@@ -105,7 +119,9 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
                     </Button>
                 </div>
                 </div>
-            ))}
+            )) : (
+              <p className="text-center text-primary-dark/70 py-10">{t('history_noHistory')}</p>
+            )}
             </div>
         )}
       </PageContainer>
