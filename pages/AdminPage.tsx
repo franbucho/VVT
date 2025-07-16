@@ -33,14 +33,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'users' | 'feedback'>('users');
 
-  // User management state
   const [users, setUsers] = useState<AppUser[]>([]);
   const [userMessage, setUserMessage] = useState('');
   const [userError, setUserError] = useState('');
   const [isUsersLoading, setIsUsersLoading] = useState(true);
   const [updatingUid, setUpdatingUid] = useState<string | null>(null);
 
-  // Feedback state
   const [feedbackList, setFeedbackList] = useState<Feedback[]>([]);
   const [feedbackError, setFeedbackError] = useState('');
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(true);
@@ -64,15 +62,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
     setIsFeedbackLoading(true);
     setFeedbackError('');
     try {
-        const getFeedbackCallable = httpsCallable(functions, 'getFeedback');
-        const result = await getFeedbackCallable();
-        const data = (result.data as { feedbackList: Feedback[] }).feedbackList;
-        setFeedbackList(data);
+      const getFeedbackCallable = httpsCallable(functions, 'getFeedback');
+      const result = await getFeedbackCallable();
+      const data = (result.data as { feedbackList: Feedback[] }).feedbackList;
+      setFeedbackList(data);
     } catch (err) {
-        setFeedbackError('Failed to load feedback.');
-        console.error(err);
+      setFeedbackError('Failed to load feedback.');
+      console.error(err);
     } finally {
-        setIsFeedbackLoading(false);
+      setIsFeedbackLoading(false);
     }
   }, []);
 
@@ -98,18 +96,26 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
     try {
       const toggleRoleCallable = httpsCallable(functions, 'toggleUserRole');
       await toggleRoleCallable({ uid, role, status });
-      
-      setUsers(currentUsers =>
-        currentUsers.map(u => u.uid === uid ? { ...u, [role === 'admin' ? 'isAdmin' : 'isPremium']: status } : u)
+
+      setUsers((current) =>
+        current.map((u) =>
+          u.uid === uid ? { ...u, [role === 'admin' ? 'isAdmin' : 'isPremium']: status } : u
+        )
       );
-      setUserMessage(role === 'admin' ? t('admin_success_role_update') : t('admin_success_premium_update'));
+
+      setUserMessage(
+        role === 'admin' ? t('admin_success_role_update') : t('admin_success_premium_update')
+      );
     } catch (err: any) {
-      setUserError(err.message || (role === 'admin' ? t('admin_error_role_update') : t('admin_error_premium_update')));
+      console.error('toggleUserRole error:', err);
+      setUserError(
+        err?.message || (role === 'admin' ? t('admin_error_role_update') : t('admin_error_premium_update'))
+      );
     } finally {
       setUpdatingUid(null);
     }
   };
-  
+
   const RoleBadge: React.FC<{ user: AppUser }> = ({ user }) => {
     if (user.isAdmin) {
       return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">{t('admin_role_admin')}</span>;
@@ -138,11 +144,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
             <tbody className="bg-white divide-y divide-gray-200">
               {users.map(user => (
                 <tr key={user.uid}>
-                  <td className="px-6 py-4 whitespace-nowrap"><div className="text-sm font-medium text-primary">{user.displayName || t('admin_no_name')}</div><div className="text-sm text-primary/70">{user.email}</div></td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-primary">{user.displayName || t('admin_no_name')}</div>
+                    <div className="text-sm text-primary/70">{user.email}</div>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap"><RoleBadge user={user} /></td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    <Button onClick={() => handleToggleRole(user.uid, 'premium', !user.isPremium)} variant={user.isPremium ? 'danger' : 'secondary'} size="sm" isLoading={updatingUid === user.uid}>{user.isPremium ? t('admin_action_remove_premium') : t('admin_action_make_premium')}</Button>
-                    <Button onClick={() => handleToggleRole(user.uid, 'admin', !user.isAdmin)} variant={user.isAdmin ? 'danger' : 'secondary'} size="sm" isLoading={updatingUid === user.uid} disabled={currentUser?.uid === user.uid} title={currentUser?.uid === user.uid ? t('admin_error_self_remove') : ''}>{user.isAdmin ? t('admin_action_remove') : t('admin_action_make')}</Button>
+                    <Button onClick={() => handleToggleRole(user.uid, 'premium', !user.isPremium)} variant={user.isPremium ? 'danger' : 'secondary'} size="sm" isLoading={updatingUid === user.uid}>
+                      {user.isPremium ? t('admin_action_remove_premium') : t('admin_action_make_premium')}
+                    </Button>
+                    <Button onClick={() => handleToggleRole(user.uid, 'admin', !user.isAdmin)} variant={user.isAdmin ? 'danger' : 'secondary'} size="sm" isLoading={updatingUid === user.uid} disabled={currentUser?.uid === user.uid} title={currentUser?.uid === user.uid ? t('admin_error_self_remove') : ''}>
+                      {user.isAdmin ? t('admin_action_remove') : t('admin_action_make')}
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -186,19 +199,19 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
 
   return (
     <PageContainer title={t('admin_title')} className="max-w-6xl mx-auto">
-        <div className="mb-6 border-b border-gray-200">
-            <nav className="flex space-x-4 -mb-px" aria-label="Tabs">
-                <button onClick={() => setActiveTab('users')} className={`py-3 px-4 text-sm font-medium text-center border-b-2 ${activeTab === 'users' ? 'border-accent text-accent' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
-                    {t('admin_tab_users')}
-                </button>
-                <button onClick={() => setActiveTab('feedback')} className={`py-3 px-4 text-sm font-medium text-center border-b-2 ${activeTab === 'feedback' ? 'border-accent text-accent' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
-                    {t('admin_tab_feedback')}
-                </button>
-            </nav>
-        </div>
-        <div className="bg-white p-6 sm:p-8 rounded-xl shadow-2xl space-y-6">
-            {activeTab === 'users' ? renderUsersTab() : renderFeedbackTab()}
-        </div>
+      <div className="mb-6 border-b border-gray-200">
+        <nav className="flex space-x-4 -mb-px" aria-label="Tabs">
+          <button onClick={() => setActiveTab('users')} className={`py-3 px-4 text-sm font-medium text-center border-b-2 ${activeTab === 'users' ? 'border-accent text-accent' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
+            {t('admin_tab_users')}
+          </button>
+          <button onClick={() => setActiveTab('feedback')} className={`py-3 px-4 text-sm font-medium text-center border-b-2 ${activeTab === 'feedback' ? 'border-accent text-accent' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
+            {t('admin_tab_feedback')}
+          </button>
+        </nav>
+      </div>
+      <div className="bg-white p-6 sm:p-8 rounded-xl shadow-2xl space-y-6">
+        {activeTab === 'users' ? renderUsersTab() : renderFeedbackTab()}
+      </div>
     </PageContainer>
   );
 };
