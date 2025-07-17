@@ -13,7 +13,8 @@ interface ReportContentsProps {
   summary: string;
   capturedImage: string | null;
   ophthalmologists: Ophthalmologist[] | null;
-  isForPdf?: boolean; // New prop to control content
+  isForPdf?: boolean;
+  hideOphthalmologistSection?: boolean;
 }
 
 export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsProps>(({
@@ -23,7 +24,8 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
   summary,
   capturedImage,
   ophthalmologists,
-  isForPdf = false
+  isForPdf = false,
+  hideOphthalmologistSection = false
 }, ref) => {
   const { t } = useLanguage();
   const reportDate = new Date().toLocaleDateString(t('date_locale' as any) || 'en-US');
@@ -183,8 +185,8 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
           </section>
         </div>
 
-        {ophthalmologists && ophthalmologists.length > 0 && (
-            <section className="mt-8" style={{pageBreakBefore: 'always'}}>
+        {!hideOphthalmologistSection && ophthalmologists && ophthalmologists.length > 0 && (
+            <section className="mt-8">
                 <h2 className="text-lg font-bold text-primary-dark border-b border-gray-200 pb-2 mb-4">
                     {t('report_nearby_ophthalmologists')}
                 </h2>
