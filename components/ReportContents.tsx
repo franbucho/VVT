@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { EyeAnalysisResult, HealthData, Ophthalmologist } from '../types';
+import { EyeAnalysisResult, HealthData, Ophthalmologist, DoctorNote } from '../types';
 import { User } from 'firebase/auth';
 import { EyeIcon } from '../constants';
 import { TranslationKeys } from '../localization/en';
@@ -13,6 +13,7 @@ interface ReportContentsProps {
   summary: string;
   capturedImage: string | null;
   ophthalmologists: Ophthalmologist[] | null;
+  doctorNotes?: DoctorNote[];
   isForPdf?: boolean;
   hideOphthalmologistSection?: boolean;
 }
@@ -24,6 +25,7 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
   summary,
   capturedImage,
   ophthalmologists,
+  doctorNotes,
   isForPdf = false,
   hideOphthalmologistSection = false
 }, ref) => {
@@ -85,6 +87,19 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
                     <p className="text-base text-primary-dark leading-relaxed whitespace-pre-wrap">{summary || t('results_loadingSummary')}</p>
                 </div>
             </section>
+             {doctorNotes && doctorNotes.length > 0 && (
+                <section>
+                    <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-r-lg shadow-sm">
+                        <h2 className="text-xl font-bold text-green-800 mb-3">{t('report_doctor_notes_title')}</h2>
+                        {doctorNotes.map((note, index) => (
+                           <div key={index} className={`text-sm text-green-900 ${index > 0 ? 'mt-3 pt-3 border-t border-green-200' : ''}`}>
+                               <p className="italic">"{note.text}"</p>
+                               <p className="text-xs text-right mt-1 font-semibold">- {note.doctorName}</p>
+                           </div>
+                       ))}
+                    </div>
+                </section>
+            )}
              {ophthalmologists && ophthalmologists.length > 0 && (
               <section>
                   <h2 className="text-lg font-semibold mb-2 text-primary-dark">
@@ -144,6 +159,20 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
           </div>
         </section>
 
+        {doctorNotes && doctorNotes.length > 0 && (
+            <section className="mt-8">
+                <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+                    <h2 className="text-lg font-bold text-green-800 mb-2">{t('report_doctor_notes_title')}</h2>
+                     {doctorNotes.map((note, index) => (
+                        <div key={index} className={`text-sm text-green-900 ${index > 0 ? 'mt-2 pt-2 border-t border-green-200' : ''}`}>
+                            <p className="italic">"{note.text}"</p>
+                            <p className="text-xs text-right mt-1 font-semibold">- {note.doctorName}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        )}
+
         <div className="mt-8 grid grid-cols-5 gap-8">
           <section className="col-span-3">
             <h2 className="text-lg font-bold text-primary-dark border-b border-gray-200 pb-2 mb-4">
@@ -186,7 +215,7 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
         </div>
 
         {!hideOphthalmologistSection && ophthalmologists && ophthalmologists.length > 0 && (
-            <section className="mt-8">
+            <section className="mt-8" style={{ breakInside: 'avoid' }}>
                 <h2 className="text-lg font-bold text-primary-dark border-b border-gray-200 pb-2 mb-4">
                     {t('report_nearby_ophthalmologists')}
                 </h2>

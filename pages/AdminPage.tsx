@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { User } from 'firebase/auth';
 import { PageContainer } from '../components/common/PageContainer';
@@ -6,6 +7,7 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Feedback } from '../types';
 import { StarIcon } from '../constants';
+import { auth } from '../firebase';
 
 interface AppUser {
   uid: string;
@@ -13,6 +15,7 @@ interface AppUser {
   displayName?: string;
   isAdmin: boolean;
   isPremium: boolean;
+  isDoctor: boolean;
 }
 
 interface AdminPageProps {
@@ -49,7 +52,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
       const token = await currentUser.getIdToken();
       const functionUrl = 'https://us-central1-virtual-vision-test-app.cloudfunctions.net/listAllUsers';
       const response = await fetch(functionUrl, {
-        method: 'POST', // POST is okay, but GET would be more semantic here. No change needed.
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -105,7 +108,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
     }
   }, [activeTab, fetchUsers, fetchFeedback]);
 
-  const handleToggleRole = useCallback(async (uid: string, role: 'admin' | 'premium', status: boolean) => {
+  const handleToggleRole = useCallback(async (uid: string, role: 'admin' | 'premium' | 'doctor', status: boolean) => {
     if (!currentUser) return;
     setUserMessage('');
     setUserError('');
@@ -135,19 +138,22 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
       }
 
       setUsers((current) =>
-        current.map((u) =>
-          u.uid === uid ? { ...u, [role === 'admin' ? 'isAdmin' : 'isPremium']: status } : u
-        )
+        current.map((u) => {
+          if (u.uid === uid) {
+            const updatedUser = { ...u };
+            if (role === 'admin') updatedUser.isAdmin = status;
+            if (role === 'premium') updatedUser.isPremium = status;
+            if (role === 'doctor') updatedUser.isDoctor = status;
+            return updatedUser;
+          }
+          return u;
+        })
       );
 
-      setUserMessage(
-        role === 'admin' ? t('admin_success_role_update') : t('admin_success_premium_update')
-      );
+      setUserMessage(t('admin_success_role_update'));
     } catch (err: any) {
       console.error('toggleUserRole error:', err);
-      setUserError(
-        err?.message || (role === 'admin' ? t('admin_error_role_update') : t('admin_error_premium_update'))
-      );
+      setUserError(err?.message || t('admin_error_role_update'));
     } finally {
       setUpdatingUid(null);
     }
@@ -156,6 +162,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
   const RoleBadge: React.FC<{ user: AppUser }> = ({ user }) => {
     if (user.isAdmin) {
       return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">{t('admin_role_admin')}</span>;
+    }
+    if (user.isDoctor) {
+      return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">{t('admin_role_doctor')}</span>;
     }
     if (user.isPremium) {
       return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">{t('admin_role_premium')}</span>;
@@ -189,6 +198,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                     <Button onClick={() => handleToggleRole(user.uid, 'premium', !user.isPremium)} variant={user.isPremium ? 'danger' : 'secondary'} size="sm" isLoading={updatingUid === user.uid}>
                       {user.isPremium ? t('admin_action_remove_premium') : t('admin_action_make_premium')}
+                    </Button>
+                    <Button onClick={() => handleToggleRole(user.uid, 'doctor', !user.isDoctor)} variant={user.isDoctor ? 'danger' : 'secondary'} size="sm" isLoading={updatingUid === user.uid}>
+                      {user.isDoctor ? t('admin_action_remove_doctor') : t('admin_action_make_doctor')}
                     </Button>
                     <Button onClick={() => handleToggleRole(user.uid, 'admin', !user.isAdmin)} variant={user.isAdmin ? 'danger' : 'secondary'} size="sm" isLoading={updatingUid === user.uid} disabled={currentUser?.uid === user.uid} title={currentUser?.uid === user.uid ? t('admin_error_self_remove') : ''}>
                       {user.isAdmin ? t('admin_action_remove') : t('admin_action_make')}

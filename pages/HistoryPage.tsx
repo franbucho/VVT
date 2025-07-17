@@ -8,7 +8,7 @@ import { Button } from '../components/common/Button';
 import { FeedbackModal } from '../components/common/FeedbackModal';
 import { ReportContents } from '../components/ReportContents';
 import { useLanguage } from '../contexts/LanguageContext';
-import { EvaluationHistoryItem, Ophthalmologist } from '../types';
+import { EvaluationHistoryItem, Ophthalmologist, Page } from '../types';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -16,7 +16,6 @@ interface HistoryPageProps {
   currentUser: User | null;
 }
 
-// A dedicated component for the ophthalmologist list PDF page to keep the code clean.
 const OphthalmologistPdfPage = React.forwardRef<HTMLDivElement, { ophthalmologists: Ophthalmologist[]; t: (key: any) => string; }>(({ ophthalmologists, t }, ref) => {
     return (
         <div ref={ref} className="p-8 font-sans text-base bg-white" style={{ width: '800px' }}>
@@ -129,7 +128,9 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
             setReportToDownload(null); // Reset after download
         }
     };
-    generatePdf();
+    if (reportToDownload) {
+        generatePdf();
+    }
   }, [reportToDownload]);
 
   const openFeedbackModal = (evaluationId: string) => {
@@ -171,25 +172,36 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
         {isLoading && <LoadingSpinner />}
         {error && <p className="text-center text-danger">{error}</p>}
         {!isLoading && !error && (
-            <div className="space-y-4">
+            <div className="space-y-6">
             {evaluations.length > 0 ? evaluations.map((evaluation) => (
-                <div key={evaluation.id} className="bg-white p-4 rounded-lg shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center">
-                <div>
-                    <p className="font-semibold text-primary-dark">{t('history_evaluationDate')}: {evaluation.createdAt.toDate().toLocaleDateString(t('date_locale' as any))}</p>
-                </div>
-                <div className="flex gap-2 mt-4 sm:mt-0">
-                    <Button onClick={() => handleDownload(evaluation)} variant="outline" size="sm">
-                    {t('report_download_pdf_button')}
-                    </Button>
-                    <Button 
-                    onClick={() => openFeedbackModal(evaluation.id)}
-                    disabled={submittedFeedbackIds.includes(evaluation.id)}
-                    variant="secondary" 
-                    size="sm"
-                    >
-                    {submittedFeedbackIds.includes(evaluation.id) ? t('feedback_submitted') : t('feedback_button')}
-                    </Button>
-                </div>
+                <div key={evaluation.id} className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                        <p className="font-semibold text-primary-dark">{t('history_evaluationDate')}: {evaluation.createdAt.toDate().toLocaleDateString(t('date_locale' as any))}</p>
+                        <div className="flex gap-2 mt-4 sm:mt-0 flex-shrink-0">
+                            <Button onClick={() => handleDownload(evaluation)} variant="outline" size="sm">
+                            {t('report_download_pdf_button')}
+                            </Button>
+                            <Button 
+                            onClick={() => openFeedbackModal(evaluation.id)}
+                            disabled={submittedFeedbackIds.includes(evaluation.id)}
+                            variant="secondary" 
+                            size="sm"
+                            >
+                            {submittedFeedbackIds.includes(evaluation.id) ? t('feedback_submitted') : t('feedback_button')}
+                            </Button>
+                        </div>
+                    </div>
+                    {evaluation.doctorNotes && evaluation.doctorNotes.length > 0 && (
+                        <div className="mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg">
+                            <h4 className="font-bold text-green-800">{t('history_doctor_note_title')}</h4>
+                            {evaluation.doctorNotes.map((note, index) => (
+                                <div key={index} className="mt-2 pt-2 border-t border-green-200 first:border-t-0 first:pt-0">
+                                    <p className="text-sm text-green-900 italic">"{note.text}"</p>
+                                    <p className="text-xs text-right text-gray-500 mt-1">- {note.doctorName} on {note.createdAt.toDate().toLocaleDateString()}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )) : (
               <p className="text-center text-primary-dark/70 py-10">{t('history_noHistory')}</p>
@@ -198,7 +210,6 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
         )}
       </PageContainer>
       
-      {/* Contenedor oculto para la generación del PDF */}
       {reportToDownload && (
         <div style={{ position: 'fixed', left: '-9999px', top: '0', zIndex: -10, opacity: 0, pointerEvents: 'none' }}>
           <div ref={reportRef}>
@@ -209,6 +220,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
               summary={reportToDownload.summary || ''} 
               capturedImage={reportToDownload.capturedImage}
               ophthalmologists={reportToDownload.ophthalmologists || null}
+              doctorNotes={reportToDownload.doctorNotes || []}
               isForPdf={true}
               hideOphthalmologistSection={true}
             />

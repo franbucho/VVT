@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth } from './firebase';
 
-import { Page, EyeAnalysisResult, HealthData, Ophthalmologist } from './types';
+import { Page, EyeAnalysisResult, HealthData, Ophthalmologist, EvaluationHistoryItem } from './types';
 import { EyeIcon } from './constants';
 import { HomePage } from './pages/HomePage';
 import { AuthPage } from './pages/AuthPage';
@@ -12,6 +13,8 @@ import { PaymentPage } from './pages/PaymentPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { AdminPage } from './pages/AdminPage';
 import { SupportPage } from './pages/SupportPage';
+import { DoctorPortal } from './pages/DoctorPortal';
+import { EvaluationDetailPage } from './pages/EvaluationDetailPage';
 import { useLanguage } from './contexts/LanguageContext';
 import { LanguageSwitcher } from './components/common/LanguageSwitcher';
 import { Button } from './components/common/Button';
@@ -34,7 +37,11 @@ const App: React.FC = () => {
   // Role and usage state
   const [isAdmin, setIsAdmin] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
+  const [isDoctor, setIsDoctor] = useState(false);
   const [evaluationsCount, setEvaluationsCount] = useState(0);
+
+  // Doctor portal state
+  const [selectedEvaluation, setSelectedEvaluation] = useState<EvaluationHistoryItem | null>(null);
   
   const { t } = useLanguage();
 
@@ -47,17 +54,20 @@ const App: React.FC = () => {
           const idTokenResult = await user.getIdTokenResult(true); 
           setIsAdmin(!!idTokenResult.claims.admin);
           setIsPremium(!!idTokenResult.claims.premium);
+          setIsDoctor(!!idTokenResult.claims.doctor);
           const count = await getEvaluationsCount(user.uid);
           setEvaluationsCount(count);
         } catch (error) {
           console.error("Error fetching user claims or evaluation count:", error);
           setIsAdmin(false);
           setIsPremium(false);
+          setIsDoctor(false);
         }
       } else {
         setCurrentUser(null);
         setIsAdmin(false);
         setIsPremium(false);
+        setIsDoctor(false);
         setEvaluationsCount(0);
       }
       setIsAuthLoading(false);
@@ -90,11 +100,22 @@ const App: React.FC = () => {
       setIsPaymentComplete(false);
       setIsAdmin(false);
       setIsPremium(false);
+      setIsDoctor(false);
+      setSelectedEvaluation(null);
       setEvaluationsCount(0);
       setCurrentPage(Page.Home);
     } catch (error) {
       console.error("Error signing out:", error);
     }
+  };
+
+  const handleSetCurrentPage = (page: Page, data?: any) => {
+    if (page === Page.EvaluationDetail && data?.evaluation) {
+        setSelectedEvaluation(data.evaluation);
+    } else {
+        setSelectedEvaluation(null);
+    }
+    setCurrentPage(page);
   };
 
   const renderPage = () => {
@@ -177,6 +198,18 @@ const App: React.FC = () => {
         return <AdminPage currentUser={currentUser} />;
       case Page.Support:
         return <SupportPage setCurrentPage={setCurrentPage} />;
+      case Page.DoctorPortal:
+        if (!currentUser || !isDoctor) {
+            setCurrentPage(Page.Home);
+            return null;
+        }
+        return <DoctorPortal setCurrentPage={handleSetCurrentPage} />;
+      case Page.EvaluationDetail:
+          if (!currentUser || !isDoctor || !selectedEvaluation) {
+              handleSetCurrentPage(Page.DoctorPortal);
+              return null;
+          }
+          return <EvaluationDetailPage evaluation={selectedEvaluation} setCurrentPage={handleSetCurrentPage} />;
       default:
         return <HomePage setCurrentPage={setCurrentPage} />;
     }
@@ -214,6 +247,16 @@ const App: React.FC = () => {
                     className="px-3 py-1.5"
                   >
                     {t('header_adminPanel')}
+                  </Button>
+                )}
+                 {isDoctor && (
+                  <Button 
+                    onClick={() => setCurrentPage(Page.DoctorPortal)} 
+                    variant="ghost" 
+                    size="sm"
+                    className="px-3 py-1.5"
+                  >
+                    {t('header_doctorPortal')}
                   </Button>
                 )}
                 <span className="text-sm text-primary-dark/80 hidden md:inline" title={currentUser.email || ''}>

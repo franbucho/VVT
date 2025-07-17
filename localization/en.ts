@@ -1,3 +1,4 @@
+
 export const en = {
   appName: "Virtual Vision Test",
   appMotto: "The future of eye care starts with a photo.",
@@ -202,6 +203,7 @@ export const en = {
   header_loginRegisterButton: "Sign In / Sign Up",
   header_myResultsLink: "My Results",
   header_adminPanel: "Admin Panel",
+  header_doctorPortal: "Doctor Portal",
 
   history_title: "My Results",
   history_summaryTitle: "Summary",
@@ -214,6 +216,7 @@ export const en = {
   history_noHistory: "You have no past evaluations.",
   history_loading: "Loading your history...",
   history_fetchError: "Could not load your evaluation history. Please try again later.",
+  history_doctor_note_title: "Doctor's Note",
 
   admin_title: "Admin Dashboard",
   admin_manageUsers: "Manage Users",
@@ -227,11 +230,14 @@ export const en = {
   admin_role_admin: "Admin",
   admin_role_user: "User",
   admin_role_premium: "Premium",
+  admin_role_doctor: "Doctor",
   admin_no_name: "No Name",
   admin_action_remove: "Remove Admin",
   admin_action_make: "Make Admin",
   admin_action_make_premium: "Make Premium",
   admin_action_remove_premium: "Remove Premium",
+  admin_action_make_doctor: "Make Doctor",
+  admin_action_remove_doctor: "Remove Doctor",
   admin_success_premium_update: "Premium status updated successfully.",
   admin_error_premium_update: "An error occurred while changing premium status.",
   admin_tab_users: "User Management",
@@ -240,6 +246,25 @@ export const en = {
   admin_feedback_table_header_rating: "Rating",
   admin_feedback_table_header_comment: "Comment",
   admin_feedback_table_header_date: "Date",
+
+  doctor_portal_title: "Doctor Portal",
+  doctor_portal_loading: "Loading patient evaluations...",
+  doctor_portal_error: "Could not load evaluations. Please try again later.",
+  doctor_portal_no_evals: "No patient evaluations found.",
+  doctor_portal_table_patient: "Patient",
+  doctor_portal_table_date: "Date",
+  doctor_portal_table_action: "Action",
+  doctor_portal_review_button: "Review",
+  doctor_portal_back_button: "Back to Portal",
+
+  evaluation_detail_title: "Review Evaluation",
+  evaluation_detail_add_note: "Add Doctor's Note",
+  evaluation_detail_note_placeholder: "Enter your professional diagnosis or comments here...",
+  evaluation_detail_add_button: "Add Note",
+  evaluation_detail_adding_note: "Adding note...",
+  evaluation_detail_previous_notes: "Previous Notes",
+  evaluation_detail_no_notes: "No notes have been added to this evaluation yet.",
+  evaluation_detail_error: "Could not add note. Please try again.",
 
 
   language_switcher_en: "EN",
@@ -270,6 +295,7 @@ export const en = {
   report_no_findings: "The initial image analysis did not detect any immediate signs of major conditions based on the provided image.",
   report_nearby_ophthalmologists: "Nearby Ophthalmologists",
   report_phone: "Phone",
+  report_doctor_notes_title: "Doctor's Notes",
   questionnaire_reason: "Reason for evaluation",
   questionnaire_lenses: "Wears lenses",
   questionnaire_satisfactionLabel: "Satisfaction",

@@ -11,6 +11,15 @@ export enum Page {
   History = 'HISTORY',
   Admin = 'ADMIN',
   Support = 'SUPPORT',
+  DoctorPortal = 'DOCTOR_PORTAL',
+  EvaluationDetail = 'EVALUATION_DETAIL',
+}
+
+export interface DoctorNote {
+  text: string;
+  doctorId: string;
+  doctorName: string;
+  createdAt: Timestamp;
 }
 
 export interface EyeAnalysisResult {
@@ -86,12 +95,15 @@ export interface HealthData {
 
 export interface EvaluationHistoryItem {
   id: string;
+  userId: string;
+  patientName: string;
   createdAt: Timestamp;
   analysisResults: EyeAnalysisResult[];
   healthData: HealthData;
   capturedImage: string;
   summary?: string; // AI-generated text summary
   ophthalmologists?: Ophthalmologist[];
+  doctorNotes?: DoctorNote[];
 }
 
 export interface Feedback {

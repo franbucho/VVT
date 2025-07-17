@@ -1,3 +1,4 @@
+
 import { TranslationKeys } from './en';
 
 export const es: TranslationKeys = {
@@ -203,6 +204,7 @@ export const es: TranslationKeys = {
   header_loginRegisterButton: "Iniciar Sesión / Registrarse",
   header_myResultsLink: "Mis Resultados",
   header_adminPanel: "Panel de Admin",
+  header_doctorPortal: "Portal de Doctores",
 
   history_title: "Mis Resultados",
   history_summaryTitle: "Resumen",
@@ -215,6 +217,7 @@ export const es: TranslationKeys = {
   history_noHistory: "No tienes evaluaciones pasadas.",
   history_loading: "Cargando su historial...",
   history_fetchError: "No se pudo cargar su historial de evaluaciones. Por favor, inténtelo de nuevo más tarde.",
+  history_doctor_note_title: "Nota del Doctor",
 
   admin_title: "Panel de Administración",
   admin_manageUsers: "Gestionar Usuarios",
@@ -228,11 +231,14 @@ export const es: TranslationKeys = {
   admin_role_admin: "Admin",
   admin_role_user: "Usuario",
   admin_role_premium: "Premium",
+  admin_role_doctor: "Doctor",
   admin_no_name: "Sin Nombre",
   admin_action_remove: "Quitar Admin",
   admin_action_make: "Hacer Admin",
   admin_action_make_premium: "Hacer Premium",
   admin_action_remove_premium: "Quitar Premium",
+  admin_action_make_doctor: "Hacer Doctor",
+  admin_action_remove_doctor: "Quitar Doctor",
   admin_success_premium_update: "Estado premium actualizado correctamente.",
   admin_error_premium_update: "Ocurrió un error al cambiar el estado premium.",
   admin_tab_users: "Gestión de Usuarios",
@@ -242,6 +248,25 @@ export const es: TranslationKeys = {
   admin_feedback_table_header_comment: "Comentario",
   admin_feedback_table_header_date: "Fecha",
 
+  doctor_portal_title: "Portal de Doctores",
+  doctor_portal_loading: "Cargando evaluaciones de pacientes...",
+  doctor_portal_error: "No se pudieron cargar las evaluaciones. Por favor, inténtelo de nuevo más tarde.",
+  doctor_portal_no_evals: "No se encontraron evaluaciones de pacientes.",
+  doctor_portal_table_patient: "Paciente",
+  doctor_portal_table_date: "Fecha",
+  doctor_portal_table_action: "Acción",
+  doctor_portal_review_button: "Revisar",
+  doctor_portal_back_button: "Volver al Portal",
+
+
+  evaluation_detail_title: "Revisar Evaluación",
+  evaluation_detail_add_note: "Añadir Nota del Doctor",
+  evaluation_detail_note_placeholder: "Ingrese su diagnóstico profesional o comentarios aquí...",
+  evaluation_detail_add_button: "Añadir Nota",
+  evaluation_detail_adding_note: "Añadiendo nota...",
+  evaluation_detail_previous_notes: "Notas Anteriores",
+  evaluation_detail_no_notes: "Aún no se han añadido notas a esta evaluación.",
+  evaluation_detail_error: "No se pudo añadir la nota. Por favor, inténtelo de nuevo.",
 
   language_switcher_en: "EN",
   language_switcher_es: "ES",
@@ -271,6 +296,7 @@ export const es: TranslationKeys = {
   report_no_findings: "El análisis de imagen inicial no detectó signos inmediatos de condiciones mayores basados en la imagen proporcionada.",
   report_nearby_ophthalmologists: "Oftalmólogos Cercanos",
   report_phone: "Teléfono",
+  report_doctor_notes_title: "Notas del Doctor",
   questionnaire_reason: "Motivo de la evaluación",
   questionnaire_lenses: "Usa lentes",
   questionnaire_satisfactionLabel: "Satisfacción",

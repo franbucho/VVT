@@ -5,18 +5,75 @@ import {
     query, 
     orderBy, 
     serverTimestamp,
-    doc,
+    where,
     Timestamp,
     getCountFromServer
 } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 import { EvaluationHistoryItem, HealthData, EyeAnalysisResult, Ophthalmologist } from '../types';
 
+const getAuthToken = async (): Promise<string> => {
+    const user = auth.currentUser;
+    if (!user) throw new Error("User not authenticated.");
+    return user.getIdToken();
+};
+
+export const getAllEvaluations = async (): Promise<EvaluationHistoryItem[]> => {
+    try {
+        const token = await getAuthToken();
+        const functionUrl = 'https://us-central1-virtual-vision-test-app.cloudfunctions.net/listAllEvaluations';
+        const response = await fetch(functionUrl, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Failed to fetch evaluations");
+        }
+
+        const result = await response.json();
+        return (result as any[]).map((item: any) => ({
+            ...item,
+            createdAt: new Timestamp(item.createdAt._seconds, item.createdAt._nanoseconds),
+            doctorNotes: (item.doctorNotes || []).map((note: any) => ({
+                ...note,
+                createdAt: new Timestamp(note.createdAt._seconds, note.createdAt._nanoseconds),
+            }))
+        })) as EvaluationHistoryItem[];
+    } catch (error) {
+        console.error("Error fetching all evaluations:", error);
+        throw new Error("Failed to fetch all evaluations.");
+    }
+};
+
+export const addDoctorNote = async (evaluationId: string, noteText: string): Promise<void> => {
+    try {
+        const token = await getAuthToken();
+        const functionUrl = 'https://us-central1-virtual-vision-test-app.cloudfunctions.net/addDoctorNote';
+        const response = await fetch(functionUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ evaluationId, noteText })
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Failed to add note");
+        }
+    } catch (error) {
+        console.error("Error adding doctor note:", error);
+        throw new Error("Failed to add doctor note.");
+    }
+};
 
 export const getEvaluationHistory = async (userId: string): Promise<EvaluationHistoryItem[]> => {
   try {
-    const historyCollectionRef = collection(db, 'users', userId, 'evaluations');
-    const q = query(historyCollectionRef, orderBy('createdAt', 'desc'));
+    const historyCollectionRef = collection(db, 'evaluations');
+    const q = query(historyCollectionRef, where("userId", "==", userId), orderBy('createdAt', 'desc'));
     const querySnapshot = await getDocs(q);
     
     const history: EvaluationHistoryItem[] = [];
@@ -30,6 +87,12 @@ export const getEvaluationHistory = async (userId: string): Promise<EvaluationHi
         capturedImage: data.capturedImage,
         summary: data.summary,
         ophthalmologists: data.ophthalmologists || [],
+        doctorNotes: (data.doctorNotes || []).map((note: any) => ({
+            ...note,
+            createdAt: note.createdAt instanceof Timestamp ? note.createdAt : new Timestamp(note.createdAt._seconds, note.createdAt._nanoseconds)
+        })),
+        userId: data.userId,
+        patientName: data.patientName
       } as EvaluationHistoryItem);
     });
     
@@ -42,8 +105,9 @@ export const getEvaluationHistory = async (userId: string): Promise<EvaluationHi
 
 export const getEvaluationsCount = async (userId: string): Promise<number> => {
     try {
-        const historyCollectionRef = collection(db, 'users', userId, 'evaluations');
-        const snapshot = await getCountFromServer(historyCollectionRef);
+        const historyCollectionRef = collection(db, 'evaluations');
+        const q = query(historyCollectionRef, where("userId", "==", userId));
+        const snapshot = await getCountFromServer(q);
         return snapshot.data().count;
     } catch (error) {
         console.error("Error getting evaluations count:", error);
@@ -63,10 +127,13 @@ export const saveEvaluationResult = async (
   }
 ): Promise<string> => {
   try {
-    const historyCollectionRef = collection(db, 'users', userId, 'evaluations');
+    const historyCollectionRef = collection(db, 'evaluations');
     const docRef = await addDoc(historyCollectionRef, {
       ...data,
+      userId: userId,
+      patientName: `${data.healthData.firstName} ${data.healthData.lastName}`,
       createdAt: serverTimestamp(),
+      doctorNotes: [],
     });
     return docRef.id;
   } catch (error) {
