@@ -276,7 +276,7 @@ exports.listAllEvaluations = functions.https.onRequest((req, res) => {
   });
 });
 
-// Añadir nota del doctor
+// Añadir nota del doctor (versión robusta)
 exports.addDoctorNote = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
     if (handleCorsPreflight(req, res)) return;
@@ -287,27 +287,47 @@ exports.addDoctorNote = functions.https.onRequest((req, res) => {
       if (!idToken) return res.status(401).json({ error: 'Token no enviado' });
 
       const decoded = await admin.auth().verifyIdToken(idToken);
-      if (!decoded.doctor) return res.status(403).json({ error: 'Solo los doctores pueden añadir notas.' });
+      if (!decoded.doctor && !decoded.admin) {
+        return res.status(403).json({ error: 'Solo los doctores o administradores pueden añadir notas.' });
+      }
 
       const { evaluationId, noteText } = req.body;
-      if (!evaluationId || !noteText) return res.status(400).json({ error: 'Faltan datos.' });
+
+      if (!evaluationId || typeof evaluationId !== 'string') {
+        return res.status(400).json({ error: 'evaluationId es requerido y debe ser un string' });
+      }
+
+      if (!noteText || typeof noteText !== 'string') {
+        return res.status(400).json({ error: 'noteText es requerido y debe ser un string' });
+      }
+
+      const evaluationRef = admin.firestore().collection('evaluations').doc(evaluationId);
+      const docSnapshot = await evaluationRef.get();
+
+      if (!docSnapshot.exists) {
+        return res.status(404).json({ error: 'Evaluación no encontrada' });
+      }
 
       const note = {
         text: noteText,
         doctorId: decoded.uid,
-        doctorName: decoded.name || 'Dr. Anónimo',
+        doctorName: decoded.name || decoded.email || 'Dr. Anónimo',
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       };
 
-      const evaluationRef = admin.firestore().collection('evaluations').doc(evaluationId);
       await evaluationRef.update({
-        doctorNotes: admin.firestore.FieldValue.arrayUnion(note)
+        doctorNotes: admin.firestore.FieldValue.arrayUnion(note),
+        status: 'responded',
+        respondedBy: note.doctorName,
+        respondedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
 
+
+      console.log(`Nota añadida a la evaluación ${evaluationId} por el usuario ${decoded.uid}`);
       return res.status(200).json({ success: true });
     } catch (error) {
       console.error("Error al añadir nota:", error);
-      return res.status(500).json({ error: 'Error interno al añadir nota' });
+      return res.status(500).json({ error: 'Error interno al añadir nota', details: error.message });
     }
   });
 });

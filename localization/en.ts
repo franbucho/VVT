@@ -246,6 +246,18 @@ export const en = {
   admin_feedback_table_header_rating: "Rating",
   admin_feedback_table_header_comment: "Comment",
   admin_feedback_table_header_date: "Date",
+  admin_search_placeholder: "Search by name or email...",
+  admin_no_users_found: "No users found.",
+  admin_no_users_match: "No users match your search.",
+  admin_feedback_filter_by_rating: "Filter by rating",
+  admin_feedback_filter_all: "All",
+  admin_feedback_filter_n_stars: "{count} Stars",
+  admin_no_feedback_found: "No feedback has been submitted yet.",
+  admin_no_feedback_match: "No feedback matches the selected filter.",
+
+  pagination_previous: "Previous",
+  pagination_next: "Next",
+  pagination_page_info: "Page {currentPage} of {totalPages}",
 
   doctor_portal_title: "Doctor Portal",
   doctor_portal_loading: "Loading patient evaluations...",
@@ -253,9 +265,15 @@ export const en = {
   doctor_portal_no_evals: "No patient evaluations found.",
   doctor_portal_table_patient: "Patient",
   doctor_portal_table_date: "Date",
+  doctor_portal_table_status: "Status",
   doctor_portal_table_action: "Action",
   doctor_portal_review_button: "Review",
+  doctor_portal_view_button: "View",
   doctor_portal_back_button: "Back to Portal",
+  doctor_portal_status_pending: "Pending Review",
+  doctor_portal_status_responded: "Responded",
+  doctor_portal_search_placeholder: "Search by patient name...",
+  doctor_portal_no_match: "No evaluations match your search.",
 
   evaluation_detail_title: "Review Evaluation",
   evaluation_detail_add_note: "Add Doctor's Note",
@@ -265,6 +283,8 @@ export const en = {
   evaluation_detail_previous_notes: "Previous Notes",
   evaluation_detail_no_notes: "No notes have been added to this evaluation yet.",
   evaluation_detail_error: "Could not add note. Please try again.",
+  evaluation_detail_your_note_title: "Your Submitted Note",
+  evaluation_detail_note_submitted_on: "Submitted on",
 
 
   language_switcher_en: "EN",

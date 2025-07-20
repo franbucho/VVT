@@ -104,6 +104,9 @@ export interface EvaluationHistoryItem {
   summary?: string; // AI-generated text summary
   ophthalmologists?: Ophthalmologist[];
   doctorNotes?: DoctorNote[];
+  status?: string; // e.g., 'pending', 'responded'
+  respondedBy?: string;
+  respondedAt?: Timestamp;
 }
 
 export interface Feedback {

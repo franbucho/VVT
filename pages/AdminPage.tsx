@@ -8,6 +8,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { Feedback } from '../types';
 import { StarIcon } from '../constants';
 import { auth } from '../firebase';
+import { InputField } from '../components/common/InputField';
 
 interface AppUser {
   uid: string;
@@ -39,10 +40,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
   const [userError, setUserError] = useState('');
   const [isUsersLoading, setIsUsersLoading] = useState(true);
   const [updatingUid, setUpdatingUid] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [userCurrentPage, setUserCurrentPage] = useState(1);
+  const usersPerPage = 5;
 
   const [feedbackList, setFeedbackList] = useState<Feedback[]>([]);
   const [feedbackError, setFeedbackError] = useState('');
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(true);
+  const [ratingFilter, setRatingFilter] = useState<number>(0); // 0 for all
+  const [feedbackCurrentPage, setFeedbackCurrentPage] = useState(1);
+  const feedbackPerPage = 5;
 
   const fetchUsers = useCallback(async () => {
     if (!currentUser) return;
@@ -172,55 +179,165 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
     return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{t('admin_role_user')}</span>;
   }
 
-  const renderUsersTab = () => (
+  const renderUsersTab = () => {
+    const filteredUsers = users.filter(
+      (user) =>
+        user.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    const paginatedUsers = filteredUsers.slice(
+      (userCurrentPage - 1) * usersPerPage,
+      userCurrentPage * usersPerPage
+    );
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value);
+      setUserCurrentPage(1);
+    };
+
+    const handleNextPage = () => {
+      if (userCurrentPage < totalPages) {
+        setUserCurrentPage(userCurrentPage + 1);
+      }
+    };
+    
+    const handlePrevPage = () => {
+      if (userCurrentPage > 1) {
+        setUserCurrentPage(userCurrentPage - 1);
+      }
+    };
+    
+    return (
     <>
-      <h2 className="text-2xl font-bold text-primary">{t('admin_manageUsers')}</h2>
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-4">
+        <h2 className="text-2xl font-bold text-primary">{t('admin_manageUsers')}</h2>
+        <div className="w-full sm:w-72">
+          <InputField
+            label=""
+            id="user-search"
+            type="search"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder={t('admin_search_placeholder')}
+            wrapperClassName="!mb-0"
+          />
+        </div>
+      </div>
+
       {userMessage && <p className="text-green-600 bg-green-50 p-3 rounded-md text-sm">{userMessage}</p>}
       {userError && <p className="text-danger bg-red-50 p-3 rounded-md text-sm">{userError}</p>}
+      
       <div className="overflow-x-auto border border-gray-200 rounded-lg">
-        {isUsersLoading ? <LoadingSpinner text="Loading users..." className="py-20" /> : (
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-primary/5">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('admin_table_header_user')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('admin_table_header_role')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('admin_table_header_action')}</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {users.map(user => (
-                <tr key={user.uid}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-primary">{user.displayName || t('admin_no_name')}</div>
-                    <div className="text-sm text-primary/70">{user.email}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap"><RoleBadge user={user} /></td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    <Button onClick={() => handleToggleRole(user.uid, 'premium', !user.isPremium)} variant={user.isPremium ? 'danger' : 'secondary'} size="sm" isLoading={updatingUid === user.uid}>
-                      {user.isPremium ? t('admin_action_remove_premium') : t('admin_action_make_premium')}
-                    </Button>
-                    <Button onClick={() => handleToggleRole(user.uid, 'doctor', !user.isDoctor)} variant={user.isDoctor ? 'danger' : 'secondary'} size="sm" isLoading={updatingUid === user.uid}>
-                      {user.isDoctor ? t('admin_action_remove_doctor') : t('admin_action_make_doctor')}
-                    </Button>
-                    <Button onClick={() => handleToggleRole(user.uid, 'admin', !user.isAdmin)} variant={user.isAdmin ? 'danger' : 'secondary'} size="sm" isLoading={updatingUid === user.uid} disabled={currentUser?.uid === user.uid} title={currentUser?.uid === user.uid ? t('admin_error_self_remove') : ''}>
-                      {user.isAdmin ? t('admin_action_remove') : t('admin_action_make')}
-                    </Button>
-                  </td>
+        {isUsersLoading ? (
+          <LoadingSpinner text="Loading users..." className="py-20" />
+        ) : (
+          <>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-primary/5">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('admin_table_header_user')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('admin_table_header_role')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('admin_table_header_action')}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {paginatedUsers.length > 0 ? (
+                  paginatedUsers.map((user) => (
+                    <tr key={user.uid}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-primary">{user.displayName || t('admin_no_name')}</div>
+                        <div className="text-sm text-primary/70">{user.email}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap"><RoleBadge user={user} /></td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                        <Button onClick={() => handleToggleRole(user.uid, 'premium', !user.isPremium)} variant={user.isPremium ? 'danger' : 'secondary'} size="sm" isLoading={updatingUid === user.uid}>
+                          {user.isPremium ? t('admin_action_remove_premium') : t('admin_action_make_premium')}
+                        </Button>
+                        <Button onClick={() => handleToggleRole(user.uid, 'doctor', !user.isDoctor)} variant={user.isDoctor ? 'danger' : 'secondary'} size="sm" isLoading={updatingUid === user.uid}>
+                          {user.isDoctor ? t('admin_action_remove_doctor') : t('admin_action_make_doctor')}
+                        </Button>
+                        <Button onClick={() => handleToggleRole(user.uid, 'admin', !user.isAdmin)} variant={user.isAdmin ? 'danger' : 'secondary'} size="sm" isLoading={updatingUid === user.uid} disabled={currentUser?.uid === user.uid} title={currentUser?.uid === user.uid ? t('admin_error_self_remove') : ''}>
+                          {user.isAdmin ? t('admin_action_remove') : t('admin_action_make')}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={3} className="text-center py-10 text-primary/70">
+                      {searchQuery ? t('admin_no_users_match') : t('admin_no_users_found')}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            {totalPages > 1 && (
+              <div className="px-6 py-3 bg-white border-t flex items-center justify-between">
+                <span className="text-sm text-primary/70">
+                  {t('pagination_page_info', { currentPage: userCurrentPage, totalPages })}
+                </span>
+                <div className="flex space-x-2">
+                  <Button onClick={handlePrevPage} disabled={userCurrentPage === 1} size="sm" variant="outline">{t('pagination_previous')}</Button>
+                  <Button onClick={handleNextPage} disabled={userCurrentPage === totalPages} size="sm" variant="outline">{t('pagination_next')}</Button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </>
-  );
+  )};
 
-  const renderFeedbackTab = () => (
+  const renderFeedbackTab = () => {
+    const filteredFeedback = ratingFilter > 0 
+      ? feedbackList.filter(fb => fb.rating === ratingFilter) 
+      : feedbackList;
+
+    const totalPages = Math.ceil(filteredFeedback.length / feedbackPerPage);
+    const paginatedFeedback = filteredFeedback.slice(
+        (feedbackCurrentPage - 1) * feedbackPerPage,
+        feedbackCurrentPage * feedbackPerPage
+    );
+
+    const handleRatingFilterChange = (rating: number) => {
+        setRatingFilter(rating);
+        setFeedbackCurrentPage(1);
+    };
+
+    const handleNextPage = () => {
+      if (feedbackCurrentPage < totalPages) {
+        setFeedbackCurrentPage(feedbackCurrentPage + 1);
+      }
+    };
+  
+    const handlePrevPage = () => {
+      if (feedbackCurrentPage > 1) {
+        setFeedbackCurrentPage(feedbackCurrentPage - 1);
+      }
+    };
+
+    return (
     <>
-      <h2 className="text-2xl font-bold text-primary">{t('admin_feedback_title')}</h2>
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-4">
+        <h2 className="text-2xl font-bold text-primary">{t('admin_feedback_title')}</h2>
+        <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-sm font-medium text-primary/80">{t('admin_feedback_filter_by_rating')}:</span>
+            <Button onClick={() => handleRatingFilterChange(0)} size="sm" variant={ratingFilter === 0 ? 'primary' : 'outline'}>{t('admin_feedback_filter_all')}</Button>
+            {[5, 4, 3, 2, 1].map(star => (
+                <Button key={star} onClick={() => handleRatingFilterChange(star)} size="sm" variant={ratingFilter === star ? 'primary' : 'outline'}>
+                    {star} <StarIcon className="w-4 h-4 ml-1 text-yellow-400"/>
+                </Button>
+            ))}
+        </div>
+      </div>
+
       {feedbackError && <p className="text-danger bg-red-50 p-3 rounded-md text-sm">{feedbackError}</p>}
       <div className="overflow-x-auto border border-gray-200 rounded-lg">
         {isFeedbackLoading ? <LoadingSpinner text="Loading feedback..." className="py-20" /> : (
+            <>
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-primary/5">
               <tr>
@@ -231,20 +348,38 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {feedbackList.map(fb => (
+              {paginatedFeedback.length > 0 ? paginatedFeedback.map(fb => (
                 <tr key={fb.id}>
                   <td className="px-6 py-4 whitespace-nowrap"><div className="text-sm text-primary/70">{fb.userEmail}</div></td>
                   <td className="px-6 py-4 whitespace-nowrap"><RatingStars rating={fb.rating} /></td>
                   <td className="px-6 py-4"><p className="text-sm text-primary max-w-sm whitespace-pre-wrap break-words">{fb.comment || 'N/A'}</p></td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-primary/70">{new Date(fb.createdAt).toLocaleDateString(t('date_locale' as any))}</td>
                 </tr>
-              ))}
+              )) : (
+                <tr>
+                    <td colSpan={4} className="text-center py-10 text-primary/70">
+                      {feedbackList.length === 0 ? t('admin_no_feedback_found') : t('admin_no_feedback_match')}
+                    </td>
+                </tr>
+              )}
             </tbody>
           </table>
+            {totalPages > 1 && (
+              <div className="px-6 py-3 bg-white border-t flex items-center justify-between">
+                <span className="text-sm text-primary/70">
+                  {t('pagination_page_info', { currentPage: feedbackCurrentPage, totalPages })}
+                </span>
+                <div className="flex space-x-2">
+                  <Button onClick={handlePrevPage} disabled={feedbackCurrentPage === 1} size="sm" variant="outline">{t('pagination_previous')}</Button>
+                  <Button onClick={handleNextPage} disabled={feedbackCurrentPage === totalPages} size="sm" variant="outline">{t('pagination_next')}</Button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </>
-  );
+  )};
 
   return (
     <PageContainer title={t('admin_title')} className="max-w-6xl mx-auto">

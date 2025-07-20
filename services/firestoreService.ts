@@ -1,3 +1,4 @@
+
 import { 
     collection, 
     addDoc, 
@@ -33,12 +34,19 @@ export const getAllEvaluations = async (): Promise<EvaluationHistoryItem[]> => {
         }
 
         const result = await response.json();
-        return (result as any[]).map((item: any) => ({
+        const evaluations = result.evaluations || [];
+        
+        return (evaluations as any[]).map((item: any) => ({
             ...item,
+            id: item.id,
+            patientName: item.patientName || `${item.healthData?.firstName} ${item.healthData?.lastName}`.trim() || 'Unknown Patient',
             createdAt: new Timestamp(item.createdAt._seconds, item.createdAt._nanoseconds),
+            respondedAt: item.respondedAt ? new Timestamp(item.respondedAt._seconds, item.respondedAt._nanoseconds) : undefined,
             doctorNotes: (item.doctorNotes || []).map((note: any) => ({
                 ...note,
-                createdAt: new Timestamp(note.createdAt._seconds, note.createdAt._nanoseconds),
+                createdAt: note.createdAt._seconds
+                    ? new Timestamp(note.createdAt._seconds, note.createdAt._nanoseconds)
+                    : Timestamp.fromDate(new Date(note.createdAt)), // Handles ISO strings
             }))
         })) as EvaluationHistoryItem[];
     } catch (error) {
@@ -89,10 +97,15 @@ export const getEvaluationHistory = async (userId: string): Promise<EvaluationHi
         ophthalmologists: data.ophthalmologists || [],
         doctorNotes: (data.doctorNotes || []).map((note: any) => ({
             ...note,
-            createdAt: note.createdAt instanceof Timestamp ? note.createdAt : new Timestamp(note.createdAt._seconds, note.createdAt._nanoseconds)
+            createdAt: note.createdAt instanceof Timestamp 
+                ? note.createdAt 
+                : Timestamp.fromDate(new Date(note.createdAt)) // Handle legacy strings
         })),
         userId: data.userId,
-        patientName: data.patientName
+        patientName: data.patientName,
+        status: data.status,
+        respondedBy: data.respondedBy,
+        respondedAt: data.respondedAt as Timestamp,
       } as EvaluationHistoryItem);
     });
     

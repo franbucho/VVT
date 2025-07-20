@@ -6,11 +6,12 @@ interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   endIcon?: React.ReactNode;
   onEndIconClick?: () => void;
+  wrapperClassName?: string;
 }
 
-export const InputField: React.FC<InputFieldProps> = ({ label, id, error, className, endIcon, onEndIconClick, ...props }) => {
+export const InputField: React.FC<InputFieldProps> = ({ label, id, error, className, endIcon, onEndIconClick, wrapperClassName, ...props }) => {
   return (
-    <div className="mb-4">
+    <div className={`mb-4 ${wrapperClassName || ''}`}>
       <label htmlFor={id} className="block text-sm font-medium text-primary-dark mb-1">
         {label}
       </label>
