@@ -34,17 +34,17 @@ interface AdminPageProps {
 const RatingStars: React.FC<{ rating: number }> = ({ rating }) => (
   <div className="flex">
     {[...Array(5)].map((_, i) => (
-      <StarIcon key={i} className={`w-5 h-5 ${i < rating ? 'text-yellow-400' : 'text-gray-300'}`} />
+      <StarIcon key={i} className={`w-5 h-5 ${i < rating ? 'text-yellow-400' : 'text-gray-300 dark:text-dark-border'}`} />
     ))}
   </div>
 );
 
 const StatCard: React.FC<{ icon: React.ReactNode; label: string; value: number | string, colorClass: string }> = ({ icon, label, value, colorClass }) => (
-    <div className={`p-4 bg-white rounded-xl shadow-lg flex items-center space-x-4 border-l-4 ${colorClass}`}>
+    <div className={`p-4 bg-white dark:bg-dark-card rounded-xl shadow-lg flex items-center space-x-4 border-l-4 ${colorClass}`}>
         <div className="flex-shrink-0">{icon}</div>
         <div>
-            <p className="text-sm font-medium text-gray-500">{label}</p>
-            <p className="text-2xl font-bold text-primary-dark">{value}</p>
+            <p className="text-sm font-medium text-gray-500 dark:text-dark-text-secondary">{label}</p>
+            <p className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary">{value}</p>
         </div>
     </div>
 );
@@ -222,15 +222,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
 
   const RoleBadge: React.FC<{ user: AppUser }> = ({ user }) => {
     if (user.isAdmin) {
-      return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">{t('admin_role_admin')}</span>;
+      return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300">{t('admin_role_admin')}</span>;
     }
     if (user.isDoctor) {
-      return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">{t('admin_role_doctor')}</span>;
+      return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-300">{t('admin_role_doctor')}</span>;
     }
     if (user.isPremium) {
-      return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">{t('admin_role_premium')}</span>;
+      return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-300">{t('admin_role_premium')}</span>;
     }
-    return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{t('admin_role_user')}</span>;
+    return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-dark-border/50 dark:text-dark-text-secondary">{t('admin_role_user')}</span>;
   }
 
   const renderUsersTab = () => {
@@ -266,7 +266,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
     return (
     <>
       <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-4">
-        <h2 className="text-2xl font-bold text-primary">{t('admin_manageUsers')}</h2>
+        <h2 className="text-2xl font-bold text-primary dark:text-dark-text-primary">{t('admin_manageUsers')}</h2>
         <div className="w-full sm:w-72">
           <InputField
             label=""
@@ -283,26 +283,26 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
       {userMessage && <p className="text-green-600 bg-green-50 p-3 rounded-md text-sm">{userMessage}</p>}
       {userError && <p className="text-danger bg-red-50 p-3 rounded-md text-sm">{userError}</p>}
       
-      <div className="overflow-x-auto border border-gray-200 rounded-lg">
+      <div className="overflow-x-auto border border-gray-200 dark:border-dark-border rounded-lg">
         {isUsersLoading ? (
           <LoadingSpinner text="Loading users..." className="py-20" />
         ) : (
           <>
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-primary/5">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+              <thead className="bg-primary/5 dark:bg-dark-card/50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('admin_table_header_user')}</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('admin_table_header_role')}</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('admin_table_header_action')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('admin_table_header_user')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('admin_table_header_role')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('admin_table_header_action')}</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-dark-card divide-y divide-gray-200 dark:divide-dark-border">
                 {paginatedUsers.length > 0 ? (
                   paginatedUsers.map((user) => (
                     <tr key={user.uid}>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-primary">{user.displayName || t('admin_no_name')}</div>
-                        <div className="text-sm text-primary/70">{user.email}</div>
+                        <div className="text-sm font-medium text-primary-dark dark:text-dark-text-primary">{user.displayName || t('admin_no_name')}</div>
+                        <div className="text-sm text-primary/70 dark:text-dark-text-secondary">{user.email}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap"><RoleBadge user={user} /></td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
@@ -320,7 +320,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={3} className="text-center py-10 text-primary/70">
+                    <td colSpan={3} className="text-center py-10 text-primary/70 dark:text-dark-text-secondary">
                       {searchQuery ? t('admin_no_users_match') : t('admin_no_users_found')}
                     </td>
                   </tr>
@@ -329,8 +329,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
             </table>
 
             {totalPages > 1 && (
-              <div className="px-6 py-3 bg-white border-t flex items-center justify-between">
-                <span className="text-sm text-primary/70">
+              <div className="px-6 py-3 bg-white dark:bg-dark-card border-t dark:border-dark-border flex items-center justify-between">
+                <span className="text-sm text-primary/70 dark:text-dark-text-secondary">
                   {t('pagination_page_info', { currentPage: userCurrentPage, totalPages })}
                 </span>
                 <div className="flex space-x-2">
@@ -376,9 +376,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
     return (
     <>
       <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-4">
-        <h2 className="text-2xl font-bold text-primary">{t('admin_feedback_title')}</h2>
+        <h2 className="text-2xl font-bold text-primary dark:text-dark-text-primary">{t('admin_feedback_title')}</h2>
         <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-medium text-primary/80">{t('admin_feedback_filter_by_rating')}:</span>
+            <span className="text-sm font-medium text-primary/80 dark:text-dark-text-secondary">{t('admin_feedback_filter_by_rating')}:</span>
             <Button onClick={() => handleRatingFilterChange(0)} size="sm" variant={ratingFilter === 0 ? 'primary' : 'outline'}>{t('admin_feedback_filter_all')}</Button>
             {[5, 4, 3, 2, 1].map(star => (
                 <Button key={star} onClick={() => handleRatingFilterChange(star)} size="sm" variant={ratingFilter === star ? 'primary' : 'outline'}>
@@ -389,29 +389,29 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
       </div>
 
       {feedbackError && <p className="text-danger bg-red-50 p-3 rounded-md text-sm">{feedbackError}</p>}
-      <div className="overflow-x-auto border border-gray-200 rounded-lg">
+      <div className="overflow-x-auto border border-gray-200 dark:border-dark-border rounded-lg">
         {isFeedbackLoading ? <LoadingSpinner text="Loading feedback..." className="py-20" /> : (
             <>
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-primary/5">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+            <thead className="bg-primary/5 dark:bg-dark-card/50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('admin_table_header_user')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('admin_feedback_table_header_rating')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('admin_feedback_table_header_comment')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('admin_feedback_table_header_date')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('admin_table_header_user')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('admin_feedback_table_header_rating')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('admin_feedback_table_header_comment')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('admin_feedback_table_header_date')}</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-dark-card divide-y divide-gray-200 dark:divide-dark-border">
               {paginatedFeedback.length > 0 ? paginatedFeedback.map(fb => (
                 <tr key={fb.id}>
-                  <td className="px-6 py-4 whitespace-nowrap"><div className="text-sm text-primary/70">{fb.userEmail}</div></td>
+                  <td className="px-6 py-4 whitespace-nowrap"><div className="text-sm text-primary/70 dark:text-dark-text-secondary">{fb.userEmail}</div></td>
                   <td className="px-6 py-4 whitespace-nowrap"><RatingStars rating={fb.rating} /></td>
-                  <td className="px-6 py-4"><p className="text-sm text-primary max-w-sm whitespace-pre-wrap break-words">{fb.comment || 'N/A'}</p></td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-primary/70">{new Date(fb.createdAt).toLocaleDateString(t('date_locale' as any))}</td>
+                  <td className="px-6 py-4"><p className="text-sm text-primary dark:text-dark-text-primary max-w-sm whitespace-pre-wrap break-words">{fb.comment || 'N/A'}</p></td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-primary/70 dark:text-dark-text-secondary">{new Date(fb.createdAt).toLocaleDateString(t('date_locale' as any))}</td>
                 </tr>
               )) : (
                 <tr>
-                    <td colSpan={4} className="text-center py-10 text-primary/70">
+                    <td colSpan={4} className="text-center py-10 text-primary/70 dark:text-dark-text-secondary">
                       {feedbackList.length === 0 ? t('admin_no_feedback_found') : t('admin_no_feedback_match')}
                     </td>
                 </tr>
@@ -419,8 +419,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
             </tbody>
           </table>
             {totalPages > 1 && (
-              <div className="px-6 py-3 bg-white border-t flex items-center justify-between">
-                <span className="text-sm text-primary/70">
+              <div className="px-6 py-3 bg-white dark:bg-dark-card border-t dark:border-dark-border flex items-center justify-between">
+                <span className="text-sm text-primary/70 dark:text-dark-text-secondary">
                   {t('pagination_page_info', { currentPage: feedbackCurrentPage, totalPages })}
                 </span>
                 <div className="flex space-x-2">
@@ -441,7 +441,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
             {isStatsLoading ? (
                 <LoadingSpinner text={t('admin_stats_loading')} />
             ) : statsError ? (
-                <p className="text-center text-danger bg-red-50 p-4 rounded-md">{statsError}</p>
+                <p className="text-center text-danger bg-red-50 dark:bg-red-500/10 dark:text-red-300 p-4 rounded-md">{statsError}</p>
             ) : stats ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     <StatCard icon={<UsersGroupIcon className="text-blue-500"/>} label={t('admin_stats_total_users')} value={stats.totalUsers} colorClass="border-blue-500" />
@@ -453,17 +453,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
                 </div>
             ) : null}
         </div>
-        <div className="mb-6 border-b border-gray-200">
+        <div className="mb-6 border-b border-gray-200 dark:border-dark-border">
             <nav className="flex space-x-4 -mb-px" aria-label="Tabs">
-            <button onClick={() => setActiveTab('users')} className={`py-3 px-4 text-sm font-medium text-center border-b-2 ${activeTab === 'users' ? 'border-accent text-accent' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
+            <button onClick={() => setActiveTab('users')} className={`py-3 px-4 text-sm font-medium text-center border-b-2 ${activeTab === 'users' ? 'border-accent text-accent dark:border-dark-accent dark:text-dark-accent' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-dark-text-secondary dark:hover:text-dark-text-primary dark:hover:border-dark-border'}`}>
                 {t('admin_tab_users')}
             </button>
-            <button onClick={() => setActiveTab('feedback')} className={`py-3 px-4 text-sm font-medium text-center border-b-2 ${activeTab === 'feedback' ? 'border-accent text-accent' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
+            <button onClick={() => setActiveTab('feedback')} className={`py-3 px-4 text-sm font-medium text-center border-b-2 ${activeTab === 'feedback' ? 'border-accent text-accent dark:border-dark-accent dark:text-dark-accent' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-dark-text-secondary dark:hover:text-dark-text-primary dark:hover:border-dark-border'}`}>
                 {t('admin_tab_feedback')}
             </button>
             </nav>
         </div>
-        <div className="bg-white p-6 sm:p-8 rounded-xl shadow-2xl space-y-6">
+        <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-xl shadow-2xl space-y-6">
             {activeTab === 'users' ? renderUsersTab() : renderFeedbackTab()}
         </div>
     </PageContainer>

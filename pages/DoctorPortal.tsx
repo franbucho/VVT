@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Page, EvaluationHistoryItem } from '../types';
 import { PageContainer } from '../components/common/PageContainer';
@@ -70,7 +69,7 @@ export const DoctorPortal: React.FC<DoctorPortalProps> = ({ setCurrentPage }) =>
 
   return (
     <PageContainer title={t('doctor_portal_title')}>
-        <div className="bg-white p-6 sm:p-8 rounded-xl shadow-2xl">
+        <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-xl shadow-2xl">
             {isLoading ? (
                 <LoadingSpinner text={t('doctor_portal_loading')} className="py-20" />
             ) : error ? (
@@ -90,30 +89,30 @@ export const DoctorPortal: React.FC<DoctorPortalProps> = ({ setCurrentPage }) =>
                             />
                         </div>
                     </div>
-                    <div className="overflow-x-auto border border-gray-200 rounded-lg">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-primary-dark/5">
+                    <div className="overflow-x-auto border border-gray-200 dark:border-dark-border rounded-lg">
+                        <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+                            <thead className="bg-primary-dark/5 dark:bg-dark-background/50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('doctor_portal_table_patient')}</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('doctor_portal_table_date')}</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 uppercase tracking-wider">{t('doctor_portal_table_status')}</th>
-                                    <th className="px-6 py-3 text-right text-xs font-medium text-primary/80 uppercase tracking-wider">{t('doctor_portal_table_action')}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('doctor_portal_table_patient')}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('doctor_portal_table_date')}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('doctor_portal_table_status')}</th>
+                                    <th className="px-6 py-3 text-right text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('doctor_portal_table_action')}</th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="bg-white dark:bg-dark-card divide-y divide-gray-200 dark:divide-dark-border">
                                 {paginatedEvaluations.length > 0 ? paginatedEvaluations.map((item) => {
                                     const isResponded = item.status === 'responded' || (item.doctorNotes && item.doctorNotes.length > 0);
                                     return (
                                     <tr key={item.id}>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-dark">{item.patientName}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-primary-dark/80">{item.createdAt.toDate().toLocaleString(t('date_locale' as any))}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-dark dark:text-dark-text-primary">{item.patientName}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-primary-dark/80 dark:text-dark-text-secondary">{item.createdAt.toDate().toLocaleString(t('date_locale' as any))}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             {isResponded ? (
-                                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300">
                                                     {t('doctor_portal_status_responded')}
                                                 </span>
                                             ) : (
-                                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-300">
                                                     {t('doctor_portal_status_pending')}
                                                 </span>
                                             )}
@@ -126,7 +125,7 @@ export const DoctorPortal: React.FC<DoctorPortalProps> = ({ setCurrentPage }) =>
                                     </tr>
                                 )}) : (
                                     <tr>
-                                        <td colSpan={4} className="text-center py-10 text-primary-dark/70">
+                                        <td colSpan={4} className="text-center py-10 text-primary-dark/70 dark:text-dark-text-secondary">
                                             {searchQuery ? t('doctor_portal_no_match') : t('doctor_portal_no_evals')}
                                         </td>
                                     </tr>
@@ -134,8 +133,8 @@ export const DoctorPortal: React.FC<DoctorPortalProps> = ({ setCurrentPage }) =>
                             </tbody>
                         </table>
                         {totalPages > 1 && (
-                            <div className="px-6 py-3 bg-white border-t flex items-center justify-between">
-                                <span className="text-sm text-primary/70">
+                            <div className="px-6 py-3 bg-white dark:bg-dark-card border-t dark:border-dark-border flex items-center justify-between">
+                                <span className="text-sm text-primary/70 dark:text-dark-text-secondary">
                                     {t('pagination_page_info', { currentPage, totalPages })}
                                 </span>
                                 <div className="flex space-x-2">

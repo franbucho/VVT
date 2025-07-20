@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { PageContainer } from '../components/common/PageContainer';
 import { Button } from '../components/common/Button';
@@ -49,7 +48,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
     try {
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfPageWidth = pdf.internal.pageSize.getWidth();
-        const canvasOptions = { scale: 2, useCORS: true };
+        const canvasOptions = { scale: 2, useCORS: true, backgroundColor: '#ffffff' }; // Force white background for PDF
 
         const addCanvasToPdf = async (canvas: HTMLCanvasElement) => {
             const imgData = canvas.toDataURL('image/png');
@@ -114,7 +113,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
   return (
     <>
       <PageContainer title={t('results_title')}>
-        <div className="bg-white p-6 sm:p-8 rounded-xl shadow-2xl space-y-8">
+        <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-xl shadow-2xl space-y-8">
           {/* Contenido del Reporte (visible en la página) */}
           <ReportContents
             currentUser={currentUser}
@@ -165,7 +164,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
               )}
           </div>
 
-          <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4 border-t pt-6">
+          <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4 border-t dark:border-dark-border pt-6">
             <Button onClick={handleDownloadPDF} variant="outline" isLoading={isDownloading}>
               {isDownloading ? t('report_downloading_pdf') : t('report_download_pdf_button')}
             </Button>

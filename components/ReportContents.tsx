@@ -36,9 +36,9 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
   const renderQuestionnaireItem = (labelKey: keyof TranslationKeys, value: string | undefined) => {
       const displayValue = value || t('questionnaire_not_answered');
       return (
-        <div className="py-2 grid grid-cols-3 gap-4 border-b border-gray-100">
-          <dt className="text-sm font-medium text-gray-500 col-span-1">{t(labelKey)}</dt>
-          <dd className="text-sm text-primary-dark col-span-2">{displayValue}</dd>
+        <div className="py-2 grid grid-cols-3 gap-4 border-b border-gray-100 dark:border-dark-border">
+          <dt className="text-sm font-medium text-gray-500 dark:text-dark-text-secondary col-span-1">{t(labelKey)}</dt>
+          <dd className="text-sm text-primary-dark dark:text-dark-text-primary col-span-2">{displayValue}</dd>
         </div>
       );
   };
@@ -81,19 +81,19 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
   // Simplified view for the webpage
   if (!isForPdf) {
     return (
-        <div ref={ref} className="bg-white space-y-8">
+        <div ref={ref} className="bg-white dark:bg-dark-card space-y-8">
             <section>
-                <div className="bg-blue-50 border-l-4 border-accent p-6 rounded-r-lg shadow-sm">
-                    <h2 className="text-xl font-bold text-primary-dark mb-3">{t('report_ai_summary_title')}</h2>
-                    <p className="text-base text-primary-dark leading-relaxed whitespace-pre-wrap">{summary || t('results_loadingSummary')}</p>
+                <div className="bg-blue-50 dark:bg-dark-accent/10 border-l-4 border-accent dark:border-dark-accent p-6 rounded-r-lg shadow-sm">
+                    <h2 className="text-xl font-bold text-primary-dark dark:text-dark-text-primary mb-3">{t('report_ai_summary_title')}</h2>
+                    <p className="text-base text-primary-dark dark:text-dark-text-secondary leading-relaxed whitespace-pre-wrap">{summary || t('results_loadingSummary')}</p>
                 </div>
             </section>
              {doctorNotes && doctorNotes.length > 0 && (
                 <section>
-                    <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-r-lg shadow-sm">
-                        <h2 className="text-xl font-bold text-green-800 mb-3">{t('report_doctor_notes_title')}</h2>
+                    <div className="bg-green-50 dark:bg-green-500/10 border-l-4 border-green-500 p-6 rounded-r-lg shadow-sm">
+                        <h2 className="text-xl font-bold text-green-800 dark:text-green-300 mb-3">{t('report_doctor_notes_title')}</h2>
                         {doctorNotes.map((note, index) => (
-                           <div key={index} className={`text-sm text-green-900 ${index > 0 ? 'mt-3 pt-3 border-t border-green-200' : ''}`}>
+                           <div key={index} className={`text-sm text-green-900 dark:text-green-200 ${index > 0 ? 'mt-3 pt-3 border-t border-green-200 dark:border-green-500/20' : ''}`}>
                                <p className="italic">"{note.text}"</p>
                                <p className="text-xs text-right mt-1 font-semibold">- {note.doctorName}</p>
                            </div>
@@ -103,23 +103,23 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
             )}
              {ophthalmologists && ophthalmologists.length > 0 && !hideOphthalmologistSection && (
               <section>
-                  <h2 className="text-lg font-semibold mb-2 text-primary-dark">
+                  <h2 className="text-lg font-semibold mb-2 text-primary-dark dark:text-dark-text-primary">
                       {t('report_nearby_ophthalmologists')}
                   </h2>
-                  <ul className="space-y-2 max-h-72 overflow-y-auto border p-3 rounded-lg bg-gray-50">
+                  <ul className="space-y-2 max-h-72 overflow-y-auto border dark:border-dark-border p-3 rounded-lg bg-gray-50 dark:bg-dark-background">
                       {ophthalmologists.map((doc, idx) => (
-                          <li key={idx} className="border-b p-3 rounded-lg bg-white shadow-sm">
-                              <p className="font-bold text-primary-dark">{doc.name}</p>
-                              <p className="text-sm text-gray-600">{doc.specialty}</p>
-                              <p className="text-sm text-gray-600 mt-1">{doc.address}</p>
-                              <p className="text-sm text-gray-600">{t('report_phone')}: {doc.phone}</p>
+                          <li key={idx} className="border-b dark:border-dark-border/50 p-3 rounded-lg bg-white dark:bg-dark-card shadow-sm">
+                              <p className="font-bold text-primary-dark dark:text-dark-text-primary">{doc.name}</p>
+                              <p className="text-sm text-gray-600 dark:text-dark-text-secondary">{doc.specialty}</p>
+                              <p className="text-sm text-gray-600 dark:text-dark-text-secondary mt-1">{doc.address}</p>
+                              <p className="text-sm text-gray-600 dark:text-dark-text-secondary">{t('report_phone')}: {doc.phone}</p>
                           </li>
                       ))}
                   </ul>
               </section>
             )}
             <section>
-                <p className="text-sm text-center text-primary-dark/70 p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-center text-primary-dark/70 dark:text-dark-text-secondary/70 p-4 bg-gray-50 dark:bg-dark-background rounded-lg">
                     {t('results_download_for_details')}
                 </p>
             </section>

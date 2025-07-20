@@ -54,9 +54,9 @@ export const EvaluationDetailPage: React.FC<EvaluationDetailPageProps> = ({ eval
 
   return (
     <PageContainer title={`${t('evaluation_detail_title')}: ${evaluation.patientName}`}>
-        <div className="bg-white p-6 sm:p-8 rounded-xl shadow-2xl space-y-8">
+        <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-xl shadow-2xl space-y-8">
             
-            <div className="border rounded-lg p-4 bg-gray-50 max-h-[60vh] overflow-y-auto">
+            <div className="border dark:border-dark-border rounded-lg p-4 bg-gray-50 dark:bg-dark-background max-h-[60vh] overflow-y-auto">
                  <ReportContents
                     currentUser={null}
                     healthData={evaluation.healthData}
@@ -70,24 +70,24 @@ export const EvaluationDetailPage: React.FC<EvaluationDetailPageProps> = ({ eval
                  />
             </div>
             
-            <div className="border-t pt-6 space-y-6">
+            <div className="border-t dark:border-dark-border pt-6 space-y-6">
                 {doctorAlreadyResponded && lastNoteByThisDoctor ? (
                     <div>
-                        <h3 className="text-lg font-semibold text-primary-dark mb-2">{t('evaluation_detail_your_note_title')}</h3>
-                        <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
-                            <p className="text-sm text-green-900 italic">"{lastNoteByThisDoctor.text}"</p>
-                            <p className="text-xs text-right text-gray-600 mt-1">
+                        <h3 className="text-lg font-semibold text-primary-dark dark:text-dark-text-primary mb-2">{t('evaluation_detail_your_note_title')}</h3>
+                        <div className="bg-green-50 dark:bg-green-500/10 border-l-4 border-green-500 p-4 rounded-r-lg">
+                            <p className="text-sm text-green-900 dark:text-green-200 italic">"{lastNoteByThisDoctor.text}"</p>
+                            <p className="text-xs text-right text-gray-600 dark:text-gray-400 mt-1">
                                - {lastNoteByThisDoctor.doctorName} | {t('evaluation_detail_note_submitted_on')} {lastNoteByThisDoctor.createdAt.toDate().toLocaleDateString(t('date_locale' as any))}
                             </p>
                         </div>
                     </div>
                 ) : (
                     <div>
-                        <h3 className="text-lg font-semibold text-primary-dark mb-2">{t('evaluation_detail_add_note')}</h3>
+                        <h3 className="text-lg font-semibold text-primary-dark dark:text-dark-text-primary mb-2">{t('evaluation_detail_add_note')}</h3>
                         <textarea
                             value={noteText}
                             onChange={e => setNoteText(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-md h-28 focus:ring-2 focus:ring-accent focus:border-accent transition-shadow"
+                            className="w-full p-3 border border-gray-300 dark:border-dark-border rounded-md h-28 focus:ring-2 focus:ring-accent dark:focus:ring-dark-accent focus:border-accent dark:focus:border-dark-accent transition-shadow bg-white dark:bg-dark-background dark:text-dark-text-primary"
                             placeholder={t('evaluation_detail_note_placeholder')}
                             disabled={isLoading}
                             aria-label={t('evaluation_detail_add_note')}
@@ -101,7 +101,7 @@ export const EvaluationDetailPage: React.FC<EvaluationDetailPageProps> = ({ eval
                     </div>
                 )}
                 
-                <div className="pt-4 border-t border-gray-200">
+                <div className="pt-4 border-t border-gray-200 dark:border-dark-border">
                     <Button onClick={() => setCurrentPage(Page.DoctorPortal)} variant="outline">
                         {t('doctor_portal_back_button')}
                     </Button>

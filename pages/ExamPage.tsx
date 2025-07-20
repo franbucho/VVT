@@ -323,13 +323,13 @@ export const ExamPage: React.FC<ExamPageProps> = ({
 
   return (
     <PageContainer title={!isQuestionnaireCompleted ? t('questionnaire_title') : t('exam_title')} className="max-w-2xl mx-auto">
-      <div className="bg-white p-8 rounded-xl shadow-2xl">
+      <div className="bg-white dark:bg-dark-card p-8 rounded-xl shadow-2xl">
         {!isQuestionnaireCompleted ? (
           <HealthQuestionnaire onSubmit={handleQuestionnaireSubmit} />
         ) : (
           <>
             <div className={`space-y-4 ${isCameraOn ? '' : 'hidden'}`}>
-              <h3 className="text-lg font-medium text-primary-dark mb-2 text-center">{t('exam_livePreviewTitle')}</h3>
+              <h3 className="text-lg font-medium text-primary-dark dark:text-dark-text-primary mb-2 text-center">{t('exam_livePreviewTitle')}</h3>
               <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden shadow-lg">
                 <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" muted />
                 <canvas ref={canvasRef} className="hidden" />
@@ -347,10 +347,29 @@ export const ExamPage: React.FC<ExamPageProps> = ({
             <div className={`${isCameraOn ? 'hidden' : ''}`}>
               {!previewUrl && !isProcessingImage && (
                 <>
-                  <p className="text-primary-dark/80 mb-6 text-sm">
-                    <InfoIcon className="inline mr-2" />
-                    {t('exam_instructions')}
-                  </p>
+                  <div className="space-y-6 mb-6">
+                    <div className="bg-gray-100 dark:bg-dark-card/50 border border-gray-300 dark:border-dark-border rounded-lg p-6 shadow-sm">
+                      <h3 className="text-lg font-semibold text-gray-800 dark:text-dark-text-primary mb-4">{t('exam_instructions_title')}</h3>
+                      <ul className="list-disc list-inside text-gray-700 dark:text-dark-text-secondary space-y-2 text-sm leading-relaxed">
+                        <li>{t('exam_instructions_step1')}</li>
+                        <li>{t('exam_instructions_step2')}</li>
+                        <li>{t('exam_instructions_step3')}</li>
+                        <li>{t('exam_instructions_step4')}</li>
+                        <li>{t('exam_instructions_step5')}</li>
+                      </ul>
+                    </div>
+                    <div className="rounded-lg overflow-hidden shadow-lg">
+                      <video 
+                        src="https://storage.googleapis.com/felipec-_bucket/ojo-1.mp4" 
+                        className="w-full h-auto"
+                        autoPlay 
+                        loop 
+                        muted 
+                        playsInline
+                        aria-label={t('exam_instructional_video_aria')}
+                      />
+                    </div>
+                  </div>
                   <div className="space-y-4">
                     <label htmlFor="eye-photo-upload" className="w-full">
                       <Button as="span" variant="outline" className="w-full cursor-pointer">
@@ -369,8 +388,8 @@ export const ExamPage: React.FC<ExamPageProps> = ({
 
               {previewUrl && !isProcessingImage && (
                 <div className="space-y-4 text-center">
-                  <h3 className="text-lg font-medium text-primary-dark">{t('exam_imagePreviewTitle')}</h3>
-                  <img src={previewUrl} alt="Eye preview" className="max-w-xs mx-auto rounded-lg shadow-md border border-gray-300" />
+                  <h3 className="text-lg font-medium text-primary-dark dark:text-dark-text-primary">{t('exam_imagePreviewTitle')}</h3>
+                  <img src={previewUrl} alt="Eye preview" className="max-w-xs mx-auto rounded-lg shadow-md border border-gray-300 dark:border-dark-border" />
                   {!isLoading && (
                     <div className="flex flex-col sm:flex-row justify-center gap-4 mt-4">
                       <Button onClick={handleAnalyze} variant="primary" size="lg" isLoading={isLoading}>

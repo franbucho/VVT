@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { PageContainer } from '../components/common/PageContainer';
 import { Button } from '../components/common/Button';
@@ -15,22 +14,22 @@ export const SupportPage: React.FC<SupportPageProps> = ({ setCurrentPage }) => {
 
   return (
     <PageContainer title={t('support_title')}>
-      <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-2xl text-center">
-        <h2 className="text-2xl font-bold text-primary-dark mb-4">{t('support_heading')}</h2>
-        <p className="text-primary-dark/80 mb-6">
+      <div className="max-w-2xl mx-auto bg-white dark:bg-dark-card p-8 rounded-xl shadow-2xl text-center">
+        <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary mb-4">{t('support_heading')}</h2>
+        <p className="text-primary-dark/80 dark:text-dark-text-secondary mb-6">
           {t('support_intro')}
         </p>
-        <div className="bg-primary-dark/5 p-6 rounded-lg text-left">
-          <p className="text-primary-dark mb-4">
+        <div className="bg-primary-dark/5 dark:bg-dark-background p-6 rounded-lg text-left">
+          <p className="text-primary-dark dark:text-dark-text-primary mb-4">
             {t('support_instruction_email')}
           </p>
-          <a href={`mailto:${supportEmail}`} className="text-lg font-bold text-accent hover:text-accent-hover break-all">
+          <a href={`mailto:${supportEmail}`} className="text-lg font-bold text-accent hover:text-accent-hover dark:text-dark-accent dark:hover:text-dark-accent-hover break-all">
             {supportEmail}
           </a>
-          <p className="text-sm text-primary-dark/70 mt-4">
+          <p className="text-sm text-primary-dark/70 dark:text-dark-text-secondary mt-4">
             {t('support_instruction_include')}
           </p>
-          <ul className="list-disc list-inside text-sm text-primary-dark/80 mt-2 space-y-1">
+          <ul className="list-disc list-inside text-sm text-primary-dark/80 dark:text-dark-text-secondary mt-2 space-y-1">
             <li>{t('support_info_1')}</li>
             <li>{t('support_info_2')}</li>
             <li>{t('support_info_3')}</li>

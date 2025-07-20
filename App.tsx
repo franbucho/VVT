@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth } from './firebase';
@@ -19,6 +18,7 @@ import { useLanguage } from './contexts/LanguageContext';
 import { LanguageSwitcher } from './components/common/LanguageSwitcher';
 import { Button } from './components/common/Button';
 import { getEvaluationsCount } from './services/firestoreService';
+import { ThemeSwitcher } from './components/common/ThemeSwitcher';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
@@ -216,26 +216,27 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-light">
-      <header className="bg-white shadow-md sticky top-0 z-50">
+    <div className="min-h-screen flex flex-col bg-neutral-light dark:bg-dark-background">
+      <header className="bg-white dark:bg-dark-card shadow-md sticky top-0 z-50">
         <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-y-2">
           <div 
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() => setCurrentPage(Page.Home)}
             aria-label={t('appName')}
           >
-            <EyeIcon className="w-8 h-8 text-accent" />
-            <span className="text-xl font-bold text-primary-dark">{t('appName')}</span>
+            <EyeIcon className="w-8 h-8 text-accent dark:text-dark-accent" />
+            <span className="text-xl font-bold text-primary-dark dark:text-dark-text-primary">{t('appName')}</span>
           </div>
-          <div className="flex items-center flex-wrap justify-end gap-x-4 gap-y-2">
+          <div className="flex items-center flex-wrap justify-end gap-x-2 sm:gap-x-4 gap-y-2">
             <LanguageSwitcher />
+            <ThemeSwitcher />
             {isAuthLoading ? (
-              <div className="w-32 h-9 bg-gray-200 rounded-lg animate-pulse"></div>
+              <div className="w-32 h-9 bg-gray-200 dark:bg-dark-border/50 rounded-lg animate-pulse"></div>
             ) : currentUser ? (
-              <div className="flex items-center flex-wrap justify-end gap-x-4 gap-y-2">
+              <div className="flex items-center flex-wrap justify-end gap-x-2 sm:gap-x-4 gap-y-2">
                  <button 
                   onClick={() => setCurrentPage(Page.History)}
-                  className="text-sm font-medium text-primary-dark hover:text-accent transition-colors"
+                  className="text-sm font-medium text-primary-dark hover:text-accent dark:text-dark-text-primary dark:hover:text-dark-accent transition-colors"
                 >
                   {t('header_myResultsLink')}
                 </button>
@@ -244,7 +245,6 @@ const App: React.FC = () => {
                     onClick={() => setCurrentPage(Page.Admin)} 
                     variant="ghost" 
                     size="sm"
-                    className="px-3 py-1.5"
                   >
                     {t('header_adminPanel')}
                   </Button>
@@ -254,19 +254,17 @@ const App: React.FC = () => {
                     onClick={() => setCurrentPage(Page.DoctorPortal)} 
                     variant="ghost" 
                     size="sm"
-                    className="px-3 py-1.5"
                   >
                     {t('header_doctorPortal')}
                   </Button>
                 )}
-                <span className="text-sm text-primary-dark/80 hidden md:inline" title={currentUser.email || ''}>
+                <span className="text-sm text-primary-dark/80 dark:text-dark-text-secondary hidden md:inline" title={currentUser.email || ''}>
                   {t('header_welcomeMessage', { email: currentUser.displayName?.split(' ')[0] || 'User' })}
                 </span>
                 <Button
                   onClick={handleSignOut}
                   variant="outline"
                   size="sm"
-                  className="px-3 py-1.5"
                 >
                   {t('header_logoutButton')}
                 </Button>
@@ -275,7 +273,7 @@ const App: React.FC = () => {
               <Button
                 onClick={() => setCurrentPage(Page.Auth)}
                 variant="primary"
-                className="text-sm px-3 py-1.5"
+                size="sm"
               >
                 {t('header_loginRegisterButton')}
               </Button>
@@ -288,12 +286,12 @@ const App: React.FC = () => {
         {renderPage()}
       </main>
 
-      <footer className="bg-primary-dark text-white py-4 text-center mt-auto">
+      <footer className="bg-primary-dark dark:bg-dark-card text-white dark:text-dark-text-primary py-4 text-center mt-auto">
         <div className="container mx-auto px-4">
           <p className="text-sm opacity-80">&copy; {new Date().getFullYear()} {t('footerText')} {t('footerDisclaimer')}</p>
            <button 
               onClick={() => setCurrentPage(Page.Support)}
-              className="text-sm text-accent hover:underline mt-2 inline-block"
+              className="text-sm text-accent hover:underline mt-2 inline-block dark:text-dark-accent"
             >
               {t('footer_supportLink')}
             </button>

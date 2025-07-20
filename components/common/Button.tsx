@@ -36,16 +36,16 @@ export const Button = <E extends React.ElementType = typeof defaultElement>({
   const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
 
   const sizeStyles = {
-    sm: 'px-3 py-1.5 text-xs',
+    sm: 'px-3 py-1.5 text-sm',
     md: 'px-4 py-2 text-sm',
     lg: 'px-6 py-3 text-base',
   };
 
   const variantStyles = {
-    primary: 'bg-btn-primary-bg text-btn-primary-text hover:bg-btn-primary-hover focus:ring-accent',
-    secondary: 'bg-accent text-white hover:bg-accent-hover focus:ring-accent',
-    outline: 'border border-primary-dark text-primary-dark hover:bg-primary-dark/10 focus:ring-primary-dark',
-    ghost: 'text-primary-dark hover:bg-primary-dark/10 focus:ring-primary-dark',
+    primary: 'bg-btn-primary-bg text-btn-primary-text hover:bg-btn-primary-hover focus:ring-accent dark:bg-dark-accent dark:text-primary-dark dark:hover:bg-dark-accent-hover dark:focus:ring-dark-accent',
+    secondary: 'bg-accent text-white hover:bg-accent-hover focus:ring-accent dark:bg-dark-border dark:text-dark-text-primary dark:hover:bg-dark-border/80 dark:focus:ring-dark-accent',
+    outline: 'border border-primary-dark text-primary-dark hover:bg-primary-dark/10 focus:ring-primary-dark dark:border-dark-border dark:text-dark-text-primary dark:hover:bg-dark-border/30 dark:focus:ring-dark-accent',
+    ghost: 'text-primary-dark hover:bg-primary-dark/10 focus:ring-primary-dark dark:text-dark-text-primary dark:hover:bg-dark-border/30 dark:focus:ring-dark-accent',
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
   };
 

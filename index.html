@@ -6,31 +6,52 @@
   <title>Virtual Vision Test</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+    // Immediately invokes the function to apply the theme before the page content loads.
+    // This prevents the "flash of incorrect theme" (FOIT).
+    (function() {
+      try {
+        const theme = localStorage.getItem('virtualvisiontest-theme');
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (e) {
+        console.error('Failed to apply pre-load theme:', e);
+      }
+    })();
+
     tailwind.config = {
+      darkMode: 'class', // Enable class-based dark mode
       theme: {
         extend: {
           colors: {
-            'primary-dark': '#17365D', // Main text color
-            'accent': '#3BBBD9',       // Main accent color
-            'accent-hover': '#2aa9c4', // Darker accent for hover state
-            'neutral-light': '#FFFFFF', // General background and card background
-            'neutral-dark': '#17365D',  // Alias for main text color
-
-            // High-contrast button colors
+            // Light Mode Colors (default)
+            'primary-dark': '#17365D',
+            'accent': '#3BBBD9',
+            'accent-hover': '#2aa9c4',
+            'neutral-light': '#FFFFFF',
+            'neutral-dark': '#17365D',
             'btn-primary-bg': '#17365D',
             'btn-primary-text': '#FFFFFF',
             'btn-primary-hover': '#255a9d',
-            
-            // System colors
             success: '#28A745',
             warning: '#FFC107',
             danger: '#DC3545',
+
+            // Dark Mode Colors (prefixed with `dark-`)
+            'dark-background': '#0D1B2A',    // Deep navy blue, primary background
+            'dark-card': '#1B263B',          // Slightly lighter navy for cards/modals
+            'dark-border': '#415A77',        // Muted blue for borders
+            'dark-text-primary': '#E0E1DD',  // Off-white for primary text
+            'dark-text-secondary': '#A9B4C2',// Lighter grey for secondary text
+            'dark-accent': '#56CFE1',        // Brighter cyan for dark mode accent
+            'dark-accent-hover': '#72DBF0',  // Lighter cyan for hover
           },
           fontFamily: {
             sans: ['Inter', 'sans-serif'],
           },
           accentColor: {
-            primary: '#3BBBD9', // For form elements to match the accent color
+            primary: '#3BBBD9',
+            'dark-primary': '#56CFE1',
           },
         }
       }
@@ -59,7 +80,7 @@
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-<body class="bg-neutral-light text-neutral-dark">
+<body class="bg-neutral-light text-neutral-dark dark:bg-dark-background dark:text-dark-text-primary">
   <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>

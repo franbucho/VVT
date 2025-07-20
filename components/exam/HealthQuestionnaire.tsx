@@ -144,14 +144,14 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
   const renderRadioGroup = (name: keyof HealthData, options: {value: string, label: keyof TranslationKeys}[]) => (
       <div className="space-y-2">
           {options.map(opt => (
-              <label key={opt.value} className="flex items-center space-x-2 text-sm text-primary-dark">
+              <label key={opt.value} className="flex items-center space-x-2 text-sm text-primary-dark dark:text-dark-text-secondary">
                   <input
                       type="radio"
                       name={name}
                       value={opt.value}
                       checked={(formData[name] as string) === opt.value}
                       onChange={handleInputChange}
-                      className="accent-primary focus:ring-accent"
+                      className="accent-primary dark:accent-dark-accent focus:ring-accent dark:focus:ring-dark-accent"
                   />
                   <span>{t(opt.label)}</span>
               </label>
@@ -162,12 +162,12 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
   const renderCheckboxGroup = (groupName: keyof HealthData, options: {key: string, label: keyof TranslationKeys}[]) => (
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {options.map(opt => (
-              <label key={opt.key} className="flex items-center space-x-2 text-sm text-primary-dark">
+              <label key={opt.key} className="flex items-center space-x-2 text-sm text-primary-dark dark:text-dark-text-secondary">
                   <input
                       type="checkbox"
                       checked={formData[groupName as 'illnesses' | 'familyHistory' | 'symptoms' | 'primaryReason'][opt.key as keyof typeof formData[typeof groupName]]}
                       onChange={() => handleCheckboxChange(groupName as 'illnesses' | 'familyHistory' | 'symptoms' | 'primaryReason', opt.key)}
-                      className="rounded border-gray-300 accent-primary focus:ring-accent"
+                      className="rounded border-gray-300 dark:border-dark-border dark:bg-dark-card accent-primary dark:accent-dark-accent focus:ring-accent dark:focus:ring-dark-accent"
                   />
                   <span>{t(opt.label)}</span>
               </label>
@@ -177,7 +177,7 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
 
   return (
     <div className="space-y-8">
-      <p className="text-primary-dark/80 text-sm">{t('questionnaire_intro')}</p>
+      <p className="text-primary-dark/80 dark:text-dark-text-secondary text-sm">{t('questionnaire_intro')}</p>
       
       <div className="flex flex-col sm:flex-row sm:space-x-4">
         <InputField label={t('q_firstNameLabel')} id="firstName" name="firstName" type="text" value={formData.firstName} onChange={handleInputChange} required placeholder={t('q_firstNamePlaceholder')} className="w-full" error={errors.firstName ? ' ' : ''} />
@@ -187,15 +187,15 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="state" className="block text-sm font-medium text-primary-dark mb-1">{t('q_stateLabel')}</label>
-          <select id="state" name="state" value={formData.state} onChange={handleStateChange} required className={`mt-1 block w-full px-3 py-2 border ${errors.state ? 'border-danger' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white`}>
+          <label htmlFor="state" className="block text-sm font-medium text-primary-dark dark:text-dark-text-secondary mb-1">{t('q_stateLabel')}</label>
+          <select id="state" name="state" value={formData.state} onChange={handleStateChange} required className={`mt-1 block w-full px-3 py-2 border ${errors.state ? 'border-danger' : 'border-gray-300 dark:border-dark-border'} rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white dark:bg-dark-card dark:text-dark-text-primary`}>
             <option value="" disabled>{t('q_statePlaceholder')}</option>
             {usStates.map(s => <option key={s.code} value={s.code}>{s.name}</option>)}
           </select>
         </div>
         <div>
-            <label htmlFor="city" className="block text-sm font-medium text-primary-dark mb-1">{t('q_cityLabel')}</label>
-            <select id="city" name="city" value={formData.city} onChange={handleInputChange} required disabled={!formData.state} className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white disabled:bg-gray-50`}>
+            <label htmlFor="city" className="block text-sm font-medium text-primary-dark dark:text-dark-text-secondary mb-1">{t('q_cityLabel')}</label>
+            <select id="city" name="city" value={formData.city} onChange={handleInputChange} required disabled={!formData.state} className={`mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white dark:bg-dark-card dark:text-dark-text-primary disabled:bg-gray-50 disabled:dark:bg-dark-background`}>
                 <option value="" disabled>{t('q_cityPlaceholder')}</option>
                 {cities.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
@@ -205,17 +205,17 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
 
 
       <div>
-        <label className="block text-sm font-medium text-primary-dark mb-2">{t('q_dob_label')}</label>
+        <label className="block text-sm font-medium text-primary-dark dark:text-dark-text-secondary mb-2">{t('q_dob_label')}</label>
         <div className="grid grid-cols-3 gap-2">
-            <select name="day" value={formData.birthDate.day} onChange={handleInputChange} required className={`mt-1 block w-full px-3 py-2 border ${errors.birthDate ? 'border-danger' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white`}>
+            <select name="day" value={formData.birthDate.day} onChange={handleInputChange} required className={`mt-1 block w-full px-3 py-2 border ${errors.birthDate ? 'border-danger' : 'border-gray-300 dark:border-dark-border'} rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white dark:bg-dark-card dark:text-dark-text-primary`}>
               <option value="" disabled>{t('q_dob_day_placeholder')}</option>
               {days.map(day => <option key={day} value={day}>{day}</option>)}
             </select>
-            <select name="month" value={formData.birthDate.month} onChange={handleInputChange} required className={`mt-1 block w-full px-3 py-2 border ${errors.birthDate ? 'border-danger' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white`}>
+            <select name="month" value={formData.birthDate.month} onChange={handleInputChange} required className={`mt-1 block w-full px-3 py-2 border ${errors.birthDate ? 'border-danger' : 'border-gray-300 dark:border-dark-border'} rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white dark:bg-dark-card dark:text-dark-text-primary`}>
               <option value="" disabled>{t('q_dob_month_placeholder')}</option>
               {months.map((monthKey, index) => <option key={monthKey} value={String(index + 1)}>{t(monthKey)}</option>)}
             </select>
-            <select name="year" value={formData.birthDate.year} onChange={handleInputChange} required className={`mt-1 block w-full px-3 py-2 border ${errors.birthDate ? 'border-danger' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white`}>
+            <select name="year" value={formData.birthDate.year} onChange={handleInputChange} required className={`mt-1 block w-full px-3 py-2 border ${errors.birthDate ? 'border-danger' : 'border-gray-300 dark:border-dark-border'} rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white dark:bg-dark-card dark:text-dark-text-primary`}>
               <option value="" disabled>{t('q_dob_year_placeholder')}</option>
               {years.map(year => <option key={year} value={year}>{year}</option>)}
             </select>
@@ -225,7 +225,7 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
 
       <div className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-primary-dark mb-2">{t('q1_label_new')}</label>
+          <label className="block text-sm font-medium text-primary-dark dark:text-dark-text-secondary mb-2">{t('q1_label_new')}</label>
           {renderCheckboxGroup('primaryReason', [
               {key: 'blurry', label: 'q1_option_blurry'},
               {key: 'tired', label: 'q1_option_tired'},
@@ -235,25 +235,25 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
           ])}
         </div>
         <div>
-          <label className="block text-sm font-medium text-primary-dark mb-2">{t('q2_label')}</label>
+          <label className="block text-sm font-medium text-primary-dark dark:text-dark-text-secondary mb-2">{t('q2_label')}</label>
           {renderRadioGroup('wearsLenses', [
               {value: 'yes', label: 'q2_yes'},
               {value: 'no', label: 'q2_no'},
               {value: 'other', label: 'q_option_other_not_sure'}
           ])}
-          {formData.wearsLenses === 'yes' && <div className="mt-4 space-y-4 pl-2 border-l-2 border-accent/50"><div><label htmlFor="lensesSatisfaction" className="block text-xs font-medium text-primary-dark/80 mb-1">{t('q2_satisfactionLabel')}</label><input id="lensesSatisfaction" type="text" name="lensesSatisfaction" value={formData.lensesSatisfaction} onChange={handleInputChange} className="mt-1 block w-full px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white" placeholder={t('q2_satisfactionPlaceholder')} /></div><div><label htmlFor="lensesLastUpdate" className="block text-xs font-medium text-primary-dark/80 mb-1">{t('q2_lastUpdateLabel')}</label><input id="lensesLastUpdate" type="text" name="lensesLastUpdate" value={formData.lensesLastUpdate} onChange={handleInputChange} className="mt-1 block w-full px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white" placeholder={t('q2_lastUpdatePlaceholder')} /></div></div>}
+          {formData.wearsLenses === 'yes' && <div className="mt-4 space-y-4 pl-2 border-l-2 border-accent/50 dark:border-dark-accent/50"><div><label htmlFor="lensesSatisfaction" className="block text-xs font-medium text-primary-dark/80 dark:text-dark-text-secondary/80 mb-1">{t('q2_satisfactionLabel')}</label><input id="lensesSatisfaction" type="text" name="lensesSatisfaction" value={formData.lensesSatisfaction} onChange={handleInputChange} className="mt-1 block w-full px-3 py-1.5 border border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white dark:bg-dark-background dark:text-dark-text-primary" placeholder={t('q2_satisfactionPlaceholder')} /></div><div><label htmlFor="lensesLastUpdate" className="block text-xs font-medium text-primary-dark/80 dark:text-dark-text-secondary/80 mb-1">{t('q2_lastUpdateLabel')}</label><input id="lensesLastUpdate" type="text" name="lensesLastUpdate" value={formData.lensesLastUpdate} onChange={handleInputChange} className="mt-1 block w-full px-3 py-1.5 border border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white dark:bg-dark-background dark:text-dark-text-primary" placeholder={t('q2_lastUpdatePlaceholder')} /></div></div>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-primary-dark mb-2">{t('q3_label')}</label>
+          <label className="block text-sm font-medium text-primary-dark dark:text-dark-text-secondary mb-2">{t('q3_label')}</label>
           {renderRadioGroup('hadSurgeryOrInjury', [
               {value: 'yes', label: 'q2_yes'},
               {value: 'no', label: 'q2_no'},
               {value: 'other', label: 'q_option_other_not_sure'}
           ])}
-          {formData.hadSurgeryOrInjury === 'yes' && <div className="mt-4 pl-2 border-l-2 border-accent/50"><label htmlFor="surgeryOrInjuryDetails" className="block text-xs font-medium text-primary-dark/80 mb-1">{t('q3_detailsLabel')}</label><input id="surgeryOrInjuryDetails" type="text" name="surgeryOrInjuryDetails" value={formData.surgeryOrInjuryDetails} onChange={handleInputChange} className="mt-1 block w-full px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white" placeholder={t('q3_detailsPlaceholder')} /></div>}
+          {formData.hadSurgeryOrInjury === 'yes' && <div className="mt-4 pl-2 border-l-2 border-accent/50 dark:border-dark-accent/50"><label htmlFor="surgeryOrInjuryDetails" className="block text-xs font-medium text-primary-dark/80 dark:text-dark-text-secondary/80 mb-1">{t('q3_detailsLabel')}</label><input id="surgeryOrInjuryDetails" type="text" name="surgeryOrInjuryDetails" value={formData.surgeryOrInjuryDetails} onChange={handleInputChange} className="mt-1 block w-full px-3 py-1.5 border border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm bg-white dark:bg-dark-background dark:text-dark-text-primary" placeholder={t('q3_detailsPlaceholder')} /></div>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-primary-dark mb-2">{t('q4_label')}</label>
+          <label className="block text-sm font-medium text-primary-dark dark:text-dark-text-secondary mb-2">{t('q4_label')}</label>
           {renderCheckboxGroup('illnesses', [
               {key: 'diabetes', label: 'q4_illness_diabetes'},
               {key: 'highBloodPressure', label: 'q4_illness_highBloodPressure'},
@@ -264,7 +264,7 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
           ])}
         </div>
         <div>
-          <label className="block text-sm font-medium text-primary-dark mb-2">{t('q5_label')}</label>
+          <label className="block text-sm font-medium text-primary-dark dark:text-dark-text-secondary mb-2">{t('q5_label')}</label>
           {renderCheckboxGroup('familyHistory', [
               {key: 'glaucoma', label: 'q5_condition_glaucoma'},
               {key: 'macularDegeneration', label: 'q5_condition_macularDegeneration'},
@@ -274,7 +274,7 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
           ])}
         </div>
         <div>
-          <label className="block text-sm font-medium text-primary-dark mb-2">{t('q6_label')}</label>
+          <label className="block text-sm font-medium text-primary-dark dark:text-dark-text-secondary mb-2">{t('q6_label')}</label>
           {renderCheckboxGroup('symptoms', [
               {key: 'pain', label: 'q6_symptom_pain'},
               {key: 'itching', label: 'q6_symptom_itching'},
@@ -288,7 +288,7 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
           ])}
         </div>
         <div>
-            <label className="block text-sm font-medium text-primary-dark mb-2">{t('q_screenTime_label')}</label>
+            <label className="block text-sm font-medium text-primary-dark dark:text-dark-text-secondary mb-2">{t('q_screenTime_label')}</label>
             {renderRadioGroup('screenTimeHours', [
                 {value: '0_2', label: 'q_screenTime_option_0_2'},
                 {value: '2_4', label: 'q_screenTime_option_2_4'},
@@ -298,7 +298,7 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
         </div>
       </div>
 
-      <div className="pt-4 border-t border-gray-200">
+      <div className="pt-4 border-t border-gray-200 dark:border-dark-border">
         <Button onClick={handleNext} size="lg" className="w-full">
           {t('questionnaire_submitButton')}
         </Button>

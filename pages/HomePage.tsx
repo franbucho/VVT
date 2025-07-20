@@ -15,7 +15,7 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage }) => {
   const features = getFeaturesList(t);
 
   return (
-    <PageContainer className="bg-neutral-light">
+    <PageContainer className="bg-neutral-light dark:bg-dark-background">
       {/* Hero Section */}
       <section className="text-center py-16 md:py-24 bg-gradient-to-br from-accent/80 via-accent to-accent-dark rounded-xl shadow-2xl text-white">
         <div className="container mx-auto px-6">
@@ -42,7 +42,7 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage }) => {
 
       {/* Features Section */}
       <section id="features" className="py-16 md:py-24">
-        <h2 className="text-3xl sm:text-4xl font-bold text-primary text-center mb-12 md:mb-16">
+        <h2 className="text-3xl sm:text-4xl font-bold text-primary dark:text-dark-text-primary text-center mb-12 md:mb-16">
           {t('home_whyChooseOculusIA')}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -53,10 +53,10 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage }) => {
       </section>
 
       {/* Mission Section */}
-      <section id="mission" className="py-16 md:py-24 bg-card-bg rounded-xl shadow-lg">
+      <section id="mission" className="py-16 md:py-24 bg-card-bg dark:bg-dark-card rounded-xl shadow-lg">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-primary mb-8">{t('home_ourMission')}</h2>
-          <p className="text-lg text-primary/90 max-w-3xl mx-auto leading-relaxed">
+          <h2 className="text-3xl sm:text-4xl font-bold text-primary dark:text-dark-text-primary mb-8">{t('home_ourMission')}</h2>
+          <p className="text-lg text-primary/90 dark:text-dark-text-secondary max-w-3xl mx-auto leading-relaxed">
             {t('missionStatement')}
           </p>
         </div>

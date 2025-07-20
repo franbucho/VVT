@@ -82,6 +82,13 @@ export const es: TranslationKeys = {
   exam_retakePhotoButton: "Volver a Tomar",
   exam_cancelButton: "Cancelar",
   exam_processing_image: "Procesando imagen...",
+  exam_instructions_title: "Instrucciones para capturar la imagen de ambos ojos",
+  exam_instructions_step1: "Limpie el lente de la cámara antes de comenzar.",
+  exam_instructions_step2: "Ubíquese en un lugar bien iluminado, preferiblemente cerca de una ventana.",
+  exam_instructions_step3: "Evite la luz solar directa y no utilice flash.",
+  exam_instructions_step4: "Abra ambos ojos lo máximo posible y mire directamente a la cámara.",
+  exam_instructions_step5: "Si es posible, solicite la asistencia de otra persona para asegurar que ambos ojos estén centrados y visibles en la imagen.",
+  exam_instructional_video_aria: "Video instructivo de captura ocular",
 
   questionnaire_title: "Cuestionario de Salud del Paciente",
   questionnaire_intro: "Por favor, responda las siguientes preguntas para proporcionar contexto para su análisis.",

@@ -113,12 +113,12 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
   };
   
   const renderResetPasswordForm = () => (
-    <div className="bg-card-bg p-8 rounded-xl shadow-2xl">
+    <div className="bg-card-bg dark:bg-dark-card p-8 rounded-xl shadow-2xl">
       <div className="flex justify-center mb-6">
-        <EyeIcon className="w-12 h-12 text-accent"/>
+        <EyeIcon className="w-12 h-12 text-accent dark:text-dark-accent"/>
       </div>
-      <h2 className="text-center text-2xl font-bold text-primary mb-4">{t('auth_reset_password_title')}</h2>
-      <p className="text-center text-sm text-primary/80 mb-6">{t('auth_reset_password_instructions')}</p>
+      <h2 className="text-center text-2xl font-bold text-primary dark:text-dark-text-primary mb-4">{t('auth_reset_password_title')}</h2>
+      <p className="text-center text-sm text-primary/80 dark:text-dark-text-secondary mb-6">{t('auth_reset_password_instructions')}</p>
       
       <form onSubmit={handlePasswordReset}>
         <InputField
@@ -144,7 +144,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
             setError('');
             setInfoMessage('');
           }}
-          className="text-sm font-medium text-accent hover:text-accent-dark"
+          className="text-sm font-medium text-accent hover:text-accent-dark dark:text-dark-accent dark:hover:text-dark-accent-hover"
         >
           {t('auth_back_to_signin_link')}
         </button>
@@ -153,9 +153,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
   );
 
   const renderAuthForm = () => (
-    <div className="bg-card-bg p-8 rounded-xl shadow-2xl">
+    <div className="bg-card-bg dark:bg-dark-card p-8 rounded-xl shadow-2xl">
       <div className="flex justify-center mb-6">
-        <EyeIcon className="w-12 h-12 text-accent"/>
+        <EyeIcon className="w-12 h-12 text-accent dark:text-dark-accent"/>
       </div>
       
       <form onSubmit={handleEmailSubmit}>
@@ -212,7 +212,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
                   setError('');
                   setInfoMessage('');
                 }}
-                className="text-sm font-medium text-accent hover:text-accent-dark focus:outline-none"
+                className="text-sm font-medium text-accent hover:text-accent-dark dark:text-dark-accent dark:hover:text-dark-accent-hover focus:outline-none"
               >
                 {t('auth_forgot_password_link')}
               </button>
@@ -227,12 +227,12 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
       </form>
 
       <div className="my-6 flex items-center">
-        <div className="flex-grow border-t border-gray-300"></div>
-        <span className="flex-shrink mx-4 text-sm text-primary/60">{t('auth_orDivider')}</span>
-        <div className="flex-grow border-t border-gray-300"></div>
+        <div className="flex-grow border-t border-gray-300 dark:border-dark-border"></div>
+        <span className="flex-shrink mx-4 text-sm text-primary/60 dark:text-dark-text-secondary">{t('auth_orDivider')}</span>
+        <div className="flex-grow border-t border-gray-300 dark:border-dark-border"></div>
       </div>
       
-      <Button onClick={handleGoogleSignIn} variant="outline" className="w-full border-gray-300 text-primary hover:bg-gray-50 hover:border-accent" isLoading={false} size="lg">
+      <Button onClick={handleGoogleSignIn} variant="outline" className="w-full border-gray-300 text-primary hover:bg-gray-50 hover:border-accent dark:text-dark-text-primary dark:border-dark-border dark:hover:bg-dark-border/30" isLoading={false} size="lg">
           <svg className="w-5 h-5 mr-3" viewBox="0 0 48 48">
             <path fill="#4285F4" d="M24 9.5c3.21 0 5.51.93 7.33 2.69l5.7-5.7C33.3 2.93 29.07 1 24 1 14.7 1 7.1 6.84 4.38 14.9l6.38 4.94C12.48 13.56 17.7 9.5 24 9.5z"></path>
             <path fill="#34A853" d="M46.22 25.12c0-1.66-.15-3.27-.42-4.83H24v9.09h12.48c-.54 2.9-2.08 5.37-4.38 7.02l6.38 4.94c3.7-3.41 5.74-8.42 5.74-14.22z"></path>
@@ -243,11 +243,11 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
           {t('auth_googleSignInButton')}
       </Button>
 
-      <p className="mt-6 text-center text-sm text-primary/80">
+      <p className="mt-6 text-center text-sm text-primary/80 dark:text-dark-text-secondary">
         {isSignUp ? t('auth_alreadyHaveAccount') : t('auth_dontHaveAccount')}
         <button
           onClick={toggleForm}
-          className="font-medium text-accent hover:text-accent-dark ml-1"
+          className="font-medium text-accent hover:text-accent-dark dark:text-dark-accent dark:hover:text-dark-accent-hover ml-1"
         >
           {isSignUp ? t('auth_signInHereLink') : t('auth_signUpHereLink')}
         </button>

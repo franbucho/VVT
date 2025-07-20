@@ -80,6 +80,13 @@ export const en = {
   exam_retakePhotoButton: "Retake Photo",
   exam_cancelButton: "Cancel",
   exam_processing_image: "Processing image...",
+  exam_instructions_title: "Instructions for Capturing Your Eye Image",
+  exam_instructions_step1: "Clean your camera lens before you begin.",
+  exam_instructions_step2: "Position yourself in a well-lit area, preferably near a window.",
+  exam_instructions_step3: "Avoid direct sunlight and do not use a flash.",
+  exam_instructions_step4: "Open both eyes as wide as possible and look directly at the camera.",
+  exam_instructions_step5: "If possible, ask for assistance from another person to ensure both eyes are centered and visible in the image.",
+  exam_instructional_video_aria: "Instructional video for eye capture",
 
   questionnaire_title: "Patient Health Questionnaire",
   questionnaire_intro: "Please answer the following questions to provide context for your analysis.",

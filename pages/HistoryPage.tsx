@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { getEvaluationHistory } from '../services/firestoreService';
 import { User } from 'firebase/auth';
@@ -55,7 +54,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
         try {
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfPageWidth = pdf.internal.pageSize.getWidth();
-            const canvasOptions = { scale: 2, useCORS: true };
+            const canvasOptions = { scale: 2, useCORS: true, backgroundColor: '#ffffff' }; // Force white bg for PDF
 
             const addCanvasToPdf = async (canvas: HTMLCanvasElement) => {
                 const imgData = canvas.toDataURL('image/png');
@@ -134,9 +133,9 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
         {!isLoading && !error && (
             <div className="space-y-6">
             {evaluations.length > 0 ? evaluations.map((evaluation) => (
-                <div key={evaluation.id} className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
+                <div key={evaluation.id} className="bg-white dark:bg-dark-card p-4 sm:p-6 rounded-lg shadow-lg">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-                        <p className="font-semibold text-primary-dark">{t('history_evaluationDate')}: {evaluation.createdAt.toDate().toLocaleDateString(t('date_locale' as any))}</p>
+                        <p className="font-semibold text-primary-dark dark:text-dark-text-primary">{t('history_evaluationDate')}: {evaluation.createdAt.toDate().toLocaleDateString(t('date_locale' as any))}</p>
                         <div className="flex gap-2 mt-4 sm:mt-0 flex-shrink-0">
                             <Button onClick={() => handleDownload(evaluation)} variant="outline" size="sm" isLoading={isDownloading === evaluation.id}>
                               {isDownloading === evaluation.id ? t('report_downloading_pdf') : t('report_download_pdf_button')}
@@ -152,19 +151,19 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
                         </div>
                     </div>
                     {evaluation.doctorNotes && evaluation.doctorNotes.length > 0 && (
-                        <div className="mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg">
-                            <h4 className="font-bold text-green-800">{t('history_doctor_note_title')}</h4>
+                        <div className="mt-4 p-4 bg-green-50 dark:bg-green-500/10 border-l-4 border-green-500 rounded-r-lg">
+                            <h4 className="font-bold text-green-800 dark:text-green-300">{t('history_doctor_note_title')}</h4>
                             {evaluation.doctorNotes.map((note, index) => (
-                                <div key={index} className="mt-2 pt-2 border-t border-green-200 first:border-t-0 first:pt-0">
-                                    <p className="text-sm text-green-900 italic">"{note.text}"</p>
-                                    <p className="text-xs text-right text-gray-500 mt-1">- {note.doctorName} on {note.createdAt.toDate().toLocaleDateString()}</p>
+                                <div key={index} className="mt-2 pt-2 border-t border-green-200 dark:border-green-500/20 first:border-t-0 first:pt-0">
+                                    <p className="text-sm text-green-900 dark:text-green-200 italic">"{note.text}"</p>
+                                    <p className="text-xs text-right text-gray-500 dark:text-gray-400 mt-1">- {note.doctorName} on {note.createdAt.toDate().toLocaleDateString()}</p>
                                 </div>
                             ))}
                         </div>
                     )}
                 </div>
             )) : (
-              <p className="text-center text-primary-dark/70 py-10">{t('history_noHistory')}</p>
+              <p className="text-center text-primary-dark/70 dark:text-dark-text-secondary/70 py-10">{t('history_noHistory')}</p>
             )}
             </div>
         )}
