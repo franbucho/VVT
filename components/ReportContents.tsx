@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { EyeAnalysisResult, HealthData, Ophthalmologist, DoctorNote } from '../types';
@@ -15,6 +14,7 @@ interface ReportContentsProps {
   ophthalmologists: Ophthalmologist[] | null;
   doctorNotes?: DoctorNote[];
   isForPdf?: boolean;
+  pdfPage?: 'summary' | 'details' | 'ophthalmologists';
   hideOphthalmologistSection?: boolean;
 }
 
@@ -27,7 +27,8 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
   ophthalmologists,
   doctorNotes,
   isForPdf = false,
-  hideOphthalmologistSection = false
+  pdfPage,
+  hideOphthalmologistSection = false,
 }, ref) => {
   const { t } = useLanguage();
   const reportDate = new Date().toLocaleDateString(t('date_locale' as any) || 'en-US');
@@ -100,7 +101,7 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
                     </div>
                 </section>
             )}
-             {ophthalmologists && ophthalmologists.length > 0 && (
+             {ophthalmologists && ophthalmologists.length > 0 && !hideOphthalmologistSection && (
               <section>
                   <h2 className="text-lg font-semibold mb-2 text-primary-dark">
                       {t('report_nearby_ophthalmologists')}
@@ -128,112 +129,109 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
 
   // Full, detailed view for the PDF
   return (
-    <div ref={ref} className="p-8 font-sans text-base bg-white" style={{ width: '800px' }}>
-      <header className="flex items-center justify-between pb-4 border-b-2 border-accent">
-        <div className="flex items-center">
-          <EyeIcon className="h-8 w-8 text-accent mr-3" />
-          <h1 className="text-2xl font-bold text-primary-dark">Virtual Vision Test</h1>
-        </div>
-        <div className="text-right">
-          <p className="text-sm font-semibold text-primary-dark">{t('report_confidential_title')}</p>
-          <p className="text-xs text-gray-500">{t('report_date_generated')}: {reportDate}</p>
-        </div>
-      </header>
-
-      <main className="mt-8">
-        <section>
-          <h2 className="text-lg font-bold text-primary-dark border-b border-gray-200 pb-2 mb-4">
-            {t('report_patient_info')}
-          </h2>
-          <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
-            <div><strong className="text-gray-600">{t('report_patient_name')}:</strong> {healthData?.firstName} {healthData?.lastName}</div>
-            <div><strong className="text-gray-600">{t('report_patient_dob')}:</strong> {`${healthData?.birthDate.day}/${healthData?.birthDate.month}/${healthData?.birthDate.year}`}</div>
-            <div><strong className="text-gray-600">{t('report_patient_email')}:</strong> {currentUser?.email}</div>
+    <div ref={ref} className="p-8 font-sans text-base bg-white flex flex-col justify-between" style={{ width: '800px', minHeight: '1123px' }}>
+      <div>
+        <header className="flex items-center justify-between pb-4 border-b-2 border-accent">
+          <div className="flex items-center">
+            <EyeIcon className="h-8 w-8 text-accent mr-3" />
+            <h1 className="text-2xl font-bold text-primary-dark">Virtual Vision Test</h1>
           </div>
-        </section>
-
-        <section className="mt-8">
-          <div className="bg-blue-50 border-l-4 border-accent p-4 rounded-r-lg">
-            <h2 className="text-lg font-bold text-primary-dark mb-2">{t('report_ai_summary_title')}</h2>
-            <p className="text-sm text-primary-dark leading-relaxed whitespace-pre-wrap">{summary}</p>
+          <div className="text-right">
+            <p className="text-sm font-semibold text-primary-dark">{t('report_confidential_title')}</p>
+            <p className="text-xs text-gray-500">{t('report_date_generated')}: {reportDate}</p>
           </div>
-        </section>
+        </header>
 
-        {doctorNotes && doctorNotes.length > 0 && (
-            <section className="mt-8">
-                <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+        <main className="mt-8">
+          {(!pdfPage || pdfPage === 'summary') && (
+            <>
+              <section>
+                <h2 className="text-lg font-bold text-primary-dark border-b border-gray-200 pb-2 mb-4">{t('report_patient_info')}</h2>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
+                  <div><strong className="text-gray-600">{t('report_patient_name')}:</strong> {healthData?.firstName} {healthData?.lastName}</div>
+                  <div><strong className="text-gray-600">{t('report_patient_dob')}:</strong> {`${healthData?.birthDate.day}/${healthData?.birthDate.month}/${healthData?.birthDate.year}`}</div>
+                  <div><strong className="text-gray-600">{t('report_patient_email')}:</strong> {currentUser?.email}</div>
+                </div>
+              </section>
+              <section className="mt-8">
+                <div className="bg-blue-50 border-l-4 border-accent p-4 rounded-r-lg">
+                  <h2 className="text-lg font-bold text-primary-dark mb-2">{t('report_ai_summary_title')}</h2>
+                  <p className="text-sm text-primary-dark leading-relaxed whitespace-pre-wrap">{summary}</p>
+                </div>
+              </section>
+              {doctorNotes && doctorNotes.length > 0 && (
+                <section className="mt-8">
+                  <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
                     <h2 className="text-lg font-bold text-green-800 mb-2">{t('report_doctor_notes_title')}</h2>
-                     {doctorNotes.map((note, index) => (
-                        <div key={index} className={`text-sm text-green-900 ${index > 0 ? 'mt-2 pt-2 border-t border-green-200' : ''}`}>
-                            <p className="italic">"{note.text}"</p>
-                            <p className="text-xs text-right mt-1 font-semibold">- {note.doctorName}</p>
-                        </div>
+                    {doctorNotes.map((note, index) => (
+                      <div key={index} className={`text-sm text-green-900 ${index > 0 ? 'mt-2 pt-2 border-t border-green-200' : ''}`}>
+                        <p className="italic">"{note.text}"</p>
+                        <p className="text-xs text-right mt-1 font-semibold">- {note.doctorName}</p>
+                      </div>
                     ))}
-                </div>
-            </section>
-        )}
+                  </div>
+                </section>
+              )}
+            </>
+          )}
 
-        <div className="mt-8 grid grid-cols-5 gap-8">
-          <section className="col-span-3">
-            <h2 className="text-lg font-bold text-primary-dark border-b border-gray-200 pb-2 mb-4">
-              {t('report_questionnaire_summary')}
-            </h2>
-            <dl>
-              {renderQuestionnaireItem('questionnaire_reason', getCheckboxDisplayValues('primaryReason'))}
-              {renderQuestionnaireItem('questionnaire_lenses', healthData?.wearsLenses)}
-              {renderQuestionnaireItem('questionnaire_surgery', healthData?.hadSurgeryOrInjury)}
-              {renderQuestionnaireItem('questionnaire_illnesses', getCheckboxDisplayValues('illnesses'))}
-              {renderQuestionnaireItem('questionnaire_familyHistory', getCheckboxDisplayValues('familyHistory'))}
-              {renderQuestionnaireItem('questionnaire_symptoms', getCheckboxDisplayValues('symptoms'))}
-              {renderQuestionnaireItem('q_screenTime_label', getScreenTimeDisplay())}
-            </dl>
-          </section>
+          {(!pdfPage || pdfPage === 'details') && (
+            <div className={`grid grid-cols-5 gap-8 ${!pdfPage || pdfPage === 'summary' ? 'mt-8' : ''}`}>
+              <section className="col-span-3">
+                <h2 className="text-lg font-bold text-primary-dark border-b border-gray-200 pb-2 mb-4">{t('report_questionnaire_summary')}</h2>
+                <dl>
+                  {renderQuestionnaireItem('questionnaire_reason', getCheckboxDisplayValues('primaryReason'))}
+                  {renderQuestionnaireItem('questionnaire_lenses', healthData?.wearsLenses)}
+                  {renderQuestionnaireItem('questionnaire_surgery', healthData?.hadSurgeryOrInjury)}
+                  {renderQuestionnaireItem('questionnaire_illnesses', getCheckboxDisplayValues('illnesses'))}
+                  {renderQuestionnaireItem('questionnaire_familyHistory', getCheckboxDisplayValues('familyHistory'))}
+                  {renderQuestionnaireItem('questionnaire_symptoms', getCheckboxDisplayValues('symptoms'))}
+                  {renderQuestionnaireItem('q_screenTime_label', getScreenTimeDisplay())}
+                </dl>
+              </section>
+              <section className="col-span-2">
+                <h2 className="text-lg font-bold text-primary-dark border-b border-gray-200 pb-2 mb-4">{t('report_image_analysis_details')}</h2>
+                {capturedImage && (
+                  <div className="mb-4">
+                    <img src={capturedImage} alt="Submitted eye" className="rounded-lg shadow-md w-full" />
+                    <p className="text-xs text-center text-gray-500 mt-1">{t('report_submitted_image')}</p>
+                  </div>
+                )}
+                {analysisResults && analysisResults.length > 0 ? (
+                  <ul className="space-y-2">
+                    {analysisResults.map((result, index) => (
+                      <li key={index} className="p-2 bg-gray-50 rounded-md text-sm">
+                        <strong className="text-primary-dark">{t(result.conditionKey as any)}:</strong>
+                        <span className="font-semibold ml-2">{t(`results_risk_${result.riskLevel.toLowerCase()}` as any)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-gray-600 bg-gray-50 p-4 rounded-md">{t('report_no_findings')}</p>
+                )}
+              </section>
+            </div>
+          )}
 
-          <section className="col-span-2">
-            <h2 className="text-lg font-bold text-primary-dark border-b border-gray-200 pb-2 mb-4">
-              {t('report_image_analysis_details')}
-            </h2>
-            {capturedImage && (
-              <div className="mb-4">
-                <img src={capturedImage} alt="Submitted eye" className="rounded-lg shadow-md w-full" />
-                <p className="text-xs text-center text-gray-500 mt-1">{t('report_submitted_image')}</p>
-              </div>
-            )}
-            {analysisResults && analysisResults.length > 0 ? (
-              <ul className="space-y-2">
-                {analysisResults.map((result, index) => (
-                  <li key={index} className="p-2 bg-gray-50 rounded-md text-sm">
-                    <strong className="text-primary-dark">{t(result.conditionKey as any)}:</strong>
-                    <span className="font-semibold ml-2">{t(`results_risk_${result.riskLevel.toLowerCase()}` as any)}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-gray-600 bg-gray-50 p-4 rounded-md">{t('report_no_findings')}</p>
-            )}
-          </section>
-        </div>
-
-        {!hideOphthalmologistSection && ophthalmologists && ophthalmologists.length > 0 && (
+          {(!pdfPage || pdfPage === 'ophthalmologists') && ophthalmologists && ophthalmologists.length > 0 && !hideOphthalmologistSection && (
             <section className="mt-8" style={{ breakInside: 'avoid' }}>
-                <h2 className="text-lg font-bold text-primary-dark border-b border-gray-200 pb-2 mb-4">
-                    {t('report_nearby_ophthalmologists')}
-                </h2>
-                <div className="space-y-3">
-                    {ophthalmologists.map((doctor, index) => (
-                        <div key={index} className="p-3 bg-gray-50 rounded-md text-sm" style={{breakInside: 'avoid'}}>
-                            <p className="font-bold text-primary-dark">{doctor.name}</p>
-                            <p className="text-gray-600">{doctor.specialty}</p>
-                            <p className="text-gray-600 mt-1">{doctor.address}</p>
-                            <p className="text-gray-600">{t('report_phone')}: {doctor.phone}</p>
-                        </div>
-                    ))}
-                </div>
+              <h2 className="text-lg font-bold text-primary-dark border-b border-gray-200 pb-2 mb-4">{t('report_nearby_ophthalmologists')}</h2>
+              <div className="space-y-3">
+                {ophthalmologists.map((doctor, index) => (
+                  <div key={index} className="p-3 bg-gray-50 rounded-md text-sm" style={{ breakInside: 'avoid' }}>
+                    <p className="font-bold text-primary-dark">{doctor.name}</p>
+                    <p className="text-gray-600">{doctor.specialty}</p>
+                    <p className="text-gray-600 mt-1">{doctor.address}</p>
+                    <p className="text-gray-600">{t('report_phone')}: {doctor.phone}</p>
+                  </div>
+                ))}
+              </div>
             </section>
-        )}
-      </main>
+          )}
+        </main>
+      </div>
 
-      <footer className="text-center text-xs text-gray-500 pt-8 mt-8 border-t">
+      <footer className="text-center text-xs text-gray-500 pt-8 mt-4 border-t">
         <p><strong>{t('results_importantDisclaimerTitle')}:</strong> {t('resultsDisclaimer')}</p>
         <p className="mt-2">&copy; {new Date().getFullYear()} Virtual Vision Test. All Rights Reserved.</p>
       </footer>

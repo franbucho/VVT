@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Page, EvaluationHistoryItem, DoctorNote } from '../types';
 import { PageContainer } from '../components/common/PageContainer';
@@ -66,7 +65,7 @@ export const EvaluationDetailPage: React.FC<EvaluationDetailPageProps> = ({ eval
                     capturedImage={evaluation.capturedImage}
                     ophthalmologists={evaluation.ophthalmologists || []}
                     doctorNotes={currentNotes}
-                    isForPdf={true}
+                    isForPdf={false}
                     hideOphthalmologistSection={true}
                  />
             </div>

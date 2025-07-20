@@ -22,32 +22,6 @@ interface ResultsPageProps {
   newEvaluationId: string | null;
 }
 
-// A dedicated component for the ophthalmologist list PDF page to keep the code clean.
-const OphthalmologistPdfPage = React.forwardRef<HTMLDivElement, { ophthalmologists: Ophthalmologist[]; t: (key: any) => string; }>(({ ophthalmologists, t }, ref) => {
-    return (
-        <div ref={ref} className="p-8 font-sans text-base bg-white" style={{ width: '800px' }}>
-            <main>
-                <section>
-                    <h2 className="text-lg font-bold text-primary-dark border-b border-gray-200 pb-2 mb-4">
-                        {t('report_nearby_ophthalmologists')}
-                    </h2>
-                    <div className="space-y-3">
-                        {ophthalmologists.map((doctor, index) => (
-                            <div key={index} className="p-3 bg-gray-50 rounded-md text-sm" style={{ breakInside: 'avoid' }}>
-                                <p className="font-bold text-primary-dark">{doctor.name}</p>
-                                <p className="text-sm text-gray-600">{doctor.specialty}</p>
-                                <p className="text-sm text-gray-600 mt-1">{doctor.address}</p>
-                                <p className="text-sm text-gray-600">{t('report_phone')}: {doctor.phone}</p>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            </main>
-        </div>
-    );
-});
-
-
 export const ResultsPage: React.FC<ResultsPageProps> = ({
   setCurrentPage,
   analysisResults,
@@ -63,58 +37,41 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [hasSubmittedFeedback, setHasSubmittedFeedback] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
-  const reportRef = useRef<HTMLDivElement>(null);
-  const ophthalmologistsRef = useRef<HTMLDivElement>(null);
+
+  const summaryRef = useRef<HTMLDivElement>(null);
+  const detailsRef = useRef<HTMLDivElement>(null);
+  const ophthRef = useRef<HTMLDivElement>(null);
 
   const handleDownloadPDF = async () => {
-    if (!reportRef.current) return;
+    if (!summaryRef.current || !detailsRef.current) return;
     setIsDownloading(true);
 
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfPageWidth = pdf.internal.pageSize.getWidth();
-    const pdfPageHeight = pdf.internal.pageSize.getHeight();
-    const canvasOptions = { scale: 2, useCORS: true, windowWidth: reportRef.current.scrollWidth, windowHeight: reportRef.current.scrollHeight };
-
     try {
-        // --- Process Page 1 (Main Report) ---
-        const mainCanvas = await html2canvas(reportRef.current, canvasOptions);
-        const mainImgData = mainCanvas.toDataURL('image/png');
-        const mainImgProps = pdf.getImageProperties(mainImgData);
-        const mainPdfImgHeight = (mainImgProps.height * pdfPageWidth) / mainImgProps.width;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfPageWidth = pdf.internal.pageSize.getWidth();
+        const canvasOptions = { scale: 2, useCORS: true };
 
-        let mainHeightLeft = mainPdfImgHeight;
-        let mainPosition = 0;
+        const addCanvasToPdf = async (canvas: HTMLCanvasElement) => {
+            const imgData = canvas.toDataURL('image/png');
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfHeight = (imgProps.height * pdfPageWidth) / imgProps.width;
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfPageWidth, pdfHeight);
+        };
 
-        pdf.addImage(mainImgData, 'PNG', 0, mainPosition, pdfPageWidth, mainPdfImgHeight);
-        mainHeightLeft -= pdfPageHeight;
+        // --- Page 1: Summary ---
+        const summaryCanvas = await html2canvas(summaryRef.current, { ...canvasOptions, windowWidth: summaryRef.current.scrollWidth, windowHeight: summaryRef.current.scrollHeight });
+        await addCanvasToPdf(summaryCanvas);
 
-        while (mainHeightLeft > 0) {
-            mainPosition -= pdfPageHeight;
+        // --- Page 2: Details ---
+        pdf.addPage();
+        const detailsCanvas = await html2canvas(detailsRef.current, { ...canvasOptions, windowWidth: detailsRef.current.scrollWidth, windowHeight: detailsRef.current.scrollHeight });
+        await addCanvasToPdf(detailsCanvas);
+
+        // --- Page 3: Ophthalmologists (optional) ---
+        if (ophthalmologists && ophthalmologists.length > 0 && ophthRef.current) {
             pdf.addPage();
-            pdf.addImage(mainImgData, 'PNG', 0, mainPosition, pdfPageWidth, mainPdfImgHeight);
-            mainHeightLeft -= pdfPageHeight;
-        }
-
-        // --- Process Subsequent Pages (Ophthalmologists) ---
-        if (ophthalmologists && ophthalmologists.length > 0 && ophthalmologistsRef.current) {
-            pdf.addPage();
-            const ophthCanvas = await html2canvas(ophthalmologistsRef.current, canvasOptions);
-            const ophthImgData = ophthCanvas.toDataURL('image/png');
-            const ophthImgProps = pdf.getImageProperties(ophthImgData);
-            const ophthPdfImgHeight = (ophthImgProps.height * pdfPageWidth) / ophthImgProps.width;
-
-            let ophthHeightLeft = ophthPdfImgHeight;
-            let ophthPosition = 0;
-
-            pdf.addImage(ophthImgData, 'PNG', 0, ophthPosition, pdfPageWidth, ophthPdfImgHeight);
-            ophthHeightLeft -= pdfPageHeight;
-
-            while (ophthHeightLeft > 0) {
-                ophthPosition -= pdfPageHeight;
-                pdf.addPage();
-                pdf.addImage(ophthImgData, 'PNG', 0, ophthPosition, pdfPageWidth, ophthPdfImgHeight);
-                ophthHeightLeft -= pdfPageHeight;
-            }
+            const ophthCanvas = await html2canvas(ophthRef.current, { ...canvasOptions, windowWidth: ophthRef.current.scrollWidth, windowHeight: ophthRef.current.scrollHeight });
+            await addCanvasToPdf(ophthCanvas);
         }
         
         pdf.save("VirtualVisionTest-Report.pdf");
@@ -158,7 +115,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
     <>
       <PageContainer title={t('results_title')}>
         <div className="bg-white p-6 sm:p-8 rounded-xl shadow-2xl space-y-8">
-          {/* Contenido del Reporte (visible en la página, simplified view) */}
+          {/* Contenido del Reporte (visible en la página) */}
           <ReportContents
             currentUser={currentUser}
             healthData={healthData}
@@ -169,22 +126,42 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
             isForPdf={false} 
           />
           
-          {/* Contenido del Reporte (oculto, solo para generar el PDF, detailed view) */}
+          {/* Contenido del Reporte (oculto, para generar el PDF) */}
           <div style={{ position: 'fixed', left: '-9999px', top: '0', zIndex: -10, opacity: 0, pointerEvents: 'none' }}>
-              <div ref={reportRef}>
-                  <ReportContents 
-                      currentUser={currentUser} 
-                      healthData={healthData} 
-                      analysisResults={analysisResults} 
-                      summary={summary} 
-                      capturedImage={capturedImage}
-                      ophthalmologists={ophthalmologists}
-                      isForPdf={true}
-                      hideOphthalmologistSection={true}
-                  />
-              </div>
+              <ReportContents 
+                  ref={summaryRef}
+                  currentUser={currentUser} 
+                  healthData={healthData} 
+                  analysisResults={analysisResults} 
+                  summary={summary} 
+                  capturedImage={capturedImage}
+                  ophthalmologists={ophthalmologists}
+                  isForPdf={true}
+                  pdfPage="summary"
+              />
+              <ReportContents 
+                  ref={detailsRef}
+                  currentUser={currentUser} 
+                  healthData={healthData} 
+                  analysisResults={analysisResults} 
+                  summary={summary} 
+                  capturedImage={capturedImage}
+                  ophthalmologists={ophthalmologists}
+                  isForPdf={true}
+                  pdfPage="details"
+              />
               {ophthalmologists && ophthalmologists.length > 0 && (
-                  <OphthalmologistPdfPage ref={ophthalmologistsRef} ophthalmologists={ophthalmologists} t={t} />
+                  <ReportContents 
+                    ref={ophthRef}
+                    currentUser={currentUser} 
+                    healthData={healthData} 
+                    analysisResults={analysisResults} 
+                    summary={summary} 
+                    capturedImage={capturedImage}
+                    ophthalmologists={ophthalmologists}
+                    isForPdf={true}
+                    pdfPage="ophthalmologists"
+                  />
               )}
           </div>
 

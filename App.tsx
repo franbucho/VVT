@@ -218,7 +218,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-neutral-light">
       <header className="bg-white shadow-md sticky top-0 z-50">
-        <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+        <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-y-2">
           <div 
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() => setCurrentPage(Page.Home)}
@@ -227,12 +227,12 @@ const App: React.FC = () => {
             <EyeIcon className="w-8 h-8 text-accent" />
             <span className="text-xl font-bold text-primary-dark">{t('appName')}</span>
           </div>
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center flex-wrap justify-end gap-x-4 gap-y-2">
             <LanguageSwitcher />
             {isAuthLoading ? (
               <div className="w-32 h-9 bg-gray-200 rounded-lg animate-pulse"></div>
             ) : currentUser ? (
-              <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="flex items-center flex-wrap justify-end gap-x-4 gap-y-2">
                  <button 
                   onClick={() => setCurrentPage(Page.History)}
                   className="text-sm font-medium text-primary-dark hover:text-accent transition-colors"
