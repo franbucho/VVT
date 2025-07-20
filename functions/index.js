@@ -1,4 +1,3 @@
-
 'use strict';
 
 const functions = require("firebase-functions");
@@ -7,19 +6,7 @@ const cors = require("cors")({ origin: true });
 const fetch = require("node-fetch");
 admin.initializeApp();
 
-const stripe = require("stripe")(functions.config().stripe.secret_key);
 const SUPER_ADMIN_EMAIL = "franciscovillahermosa@gmail.com";
-
-// Utilidad CORS
-const handleCorsPreflight = (req, res, methods = 'POST') => {
-  if (req.method === 'OPTIONS') {
-    res.set('Access-Control-Allow-Origin', '*');
-    res.set('Access-Control-Allow-Methods', methods);
-    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    return res.status(204).send('');
-  }
-  return false;
-};
 
 // Auto asignar rol de super admin
 exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
@@ -36,7 +23,6 @@ exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
 // Modificar roles (admin, premium, doctor)
 exports.toggleUserRole = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
-    if (handleCorsPreflight(req, res)) return;
     if (req.method !== 'POST') return res.status(405).send('Método no permitido');
 
     try {
@@ -73,7 +59,6 @@ exports.toggleUserRole = functions.https.onRequest((req, res) => {
 // Listar usuarios
 exports.listAllUsers = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
-    if (handleCorsPreflight(req, res, 'POST')) return; // Typically POST for actions
     if (req.method !== 'POST') return res.status(405).send('Método no permitido');
 
     try {
@@ -101,10 +86,69 @@ exports.listAllUsers = functions.https.onRequest((req, res) => {
   });
 });
 
+// Obtener estadísticas del panel de administración
+exports.getAdminDashboardStats = functions.https.onRequest((req, res) => {
+    cors(req, res, async () => {
+        if (req.method !== 'GET') return res.status(405).send('Método no permitido');
+
+        try {
+            const idToken = (req.headers.authorization || '').split('Bearer ')[1];
+            if (!idToken) return res.status(401).json({ error: 'Token no enviado' });
+
+            const decoded = await admin.auth().verifyIdToken(idToken);
+            if (!decoded.admin) return res.status(403).json({ error: 'No autorizado' });
+
+            // Obtener todos los usuarios y contar roles
+            const listUsersResult = await admin.auth().listUsers(1000);
+            let adminCount = 0;
+            let premiumCount = 0;
+            let doctorCount = 0;
+            let normalUserCount = 0;
+
+            listUsersResult.users.forEach(user => {
+                const claims = user.customClaims || {};
+                const isAdmin = !!claims.admin;
+                const isPremium = !!claims.premium;
+                const isDoctor = !!claims.doctor;
+
+                if (isAdmin) adminCount++;
+                if (isPremium) premiumCount++;
+                if (isDoctor) doctorCount++;
+                
+                // Un usuario es "normal" si no tiene ninguno de estos roles especiales.
+                if (!isAdmin && !isPremium && !isDoctor) {
+                    normalUserCount++;
+                }
+            });
+
+            // Obtener el conteo de evaluaciones
+            const evaluationsSnapshot = await admin.firestore().collection('evaluations').count().get();
+
+            const stats = {
+                totalUsers: listUsersResult.users.length,
+                adminCount,
+                premiumCount,
+                doctorCount,
+                normalUserCount,
+                totalEvaluations: evaluationsSnapshot.data().count,
+            };
+
+            return res.status(200).json(stats);
+        } catch (error) {
+            console.error("Error al obtener estadísticas del dashboard:", error);
+            return res.status(500).json({ error: 'Error al obtener las estadísticas.' });
+        }
+    });
+});
+
+
 // Crear sesión de pago
 exports.createCheckoutSession = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
     if (req.method !== 'POST') return res.status(405).send("Método no permitido");
+    
+    // Lazy initialize stripe
+    const stripe = require("stripe")(functions.config().stripe.secret_key);
 
     try {
       const session = await stripe.checkout.sessions.create({
@@ -133,7 +177,6 @@ exports.createCheckoutSession = functions.https.onRequest((req, res) => {
 // Enviar feedback
 exports.submitFeedback = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
-    if (handleCorsPreflight(req, res)) return;
     if (req.method !== 'POST') return res.status(405).send('Método no permitido');
 
     try {
@@ -163,10 +206,15 @@ exports.submitFeedback = functions.https.onRequest((req, res) => {
 // Obtener feedback
 exports.getFeedback = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
-    if (handleCorsPreflight(req, res, 'GET')) return;
     if (req.method !== "GET") return res.status(405).send("Método no permitido");
 
     try {
+      const idToken = (req.headers.authorization || '').split('Bearer ')[1];
+      if (!idToken) return res.status(401).json({ error: 'Token no enviado' });
+
+      const decoded = await admin.auth().verifyIdToken(idToken);
+      if (!decoded.admin) return res.status(403).json({ error: 'No autorizado' });
+
       const snapshot = await admin.firestore().collection('feedback').orderBy('createdAt', 'desc').get();
       const feedbackList = snapshot.docs.map(doc => {
             const data = doc.data();
@@ -178,7 +226,7 @@ exports.getFeedback = functions.https.onRequest((req, res) => {
         });
       return res.status(200).json({ feedbackList });
     } catch (error) {
-      console.error("Error obteniendo feedback:", error);
+      console.error("Obteniendo feedback:", error);
       return res.status(500).json({ error: "Error interno del servidor" });
     }
   });
@@ -187,7 +235,6 @@ exports.getFeedback = functions.https.onRequest((req, res) => {
 // Buscar oftalmólogos con proxy
 exports.getNearbyOphthalmologistsProxy = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
-    if (handleCorsPreflight(req, res, 'GET')) return;
     if (req.method !== 'GET') return res.status(405).json({ error: 'Método no permitido. Usa GET.' });
 
     const { stateCode, cityName } = req.query;
@@ -255,7 +302,6 @@ exports.getNearbyOphthalmologistsProxy = functions.https.onRequest((req, res) =>
 // Listar exámenes (para doctores o administradores)
 exports.listAllEvaluations = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
-    if (handleCorsPreflight(req, res, 'GET')) return;
     if (req.method !== 'GET') return res.status(405).json({ error: 'Método no permitido. Usa GET.' });
 
     try {
@@ -279,7 +325,6 @@ exports.listAllEvaluations = functions.https.onRequest((req, res) => {
 // Añadir nota del doctor (versión robusta)
 exports.addDoctorNote = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
-    if (handleCorsPreflight(req, res)) return;
     if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido. Usa POST.' });
 
     try {
