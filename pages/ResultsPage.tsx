@@ -73,7 +73,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
             await addCanvasToPdf(ophthCanvas);
         }
         
-        pdf.save("VirtualVisionTest-Report.pdf");
+        pdf.save("Niria-Report.pdf");
 
     } catch (error) {
         console.error("Error generating PDF:", error);

@@ -1,17 +1,17 @@
 
 export const en = {
-  appName: "Virtual Vision Test",
+  appName: "Niria",
   appMotto: "The future of eye care starts with a photo.",
   appSubMotto: "Get rapid, AI-powered insights into your eye health from the comfort of your home.",
   footerText: "© TREASURES OF ZIMA LLC.",
-  footerDisclaimer: "Virtual Vision Test is an informational tool and does not provide medical advice.",
+  footerDisclaimer: "Niria is an informational tool and does not provide medical advice.",
   missionStatement: "Our mission is to democratize eye health by providing accessible, affordable, and reliable AI-driven analysis to everyone, everywhere. We believe early detection is key to preserving vision.",
   resultsDisclaimerShort: "Not medical advice. Consult a doctor.",
-  resultsDisclaimer: "Important: The analysis provided by Virtual Vision Test is for informational purposes only and is not a substitute for a professional medical diagnosis. Always consult with a qualified ophthalmologist or healthcare provider for any eye health concerns or before making any decisions related to your health or treatment.",
+  resultsDisclaimer: "Important: The analysis provided by Niria is for informational purposes only and is not a substitute for a professional medical diagnosis. Always consult with a qualified ophthalmologist or healthcare provider for any eye health concerns or before making any decisions related to your health or treatment.",
   paymentPlaceholderText: "Our secure payment portal is coming soon. In a real application, this page would integrate with a payment processor like Stripe or PayPal to handle transactions securely.",
 
   home_ctaButton: "Start Analysis",
-  home_whyChooseOculusIA: "Why Choose Virtual Vision Test?",
+  home_whyChooseNiria: "Why Choose Niria?",
   home_ourMission: "Our Mission",
 
   feature_resultsInMinutes_title: "Results in Minutes",

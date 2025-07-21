@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { Page, EvaluationHistoryItem, DoctorNote } from '../types';
 import { PageContainer } from '../components/common/PageContainer';
 import { Button } from '../components/common/Button';
 import { useLanguage } from '../contexts/LanguageContext';
 import { addDoctorNote } from '../services/firestoreService';
-import { Timestamp } from 'firebase/firestore';
+import firebase from 'firebase/compat/app';
 import { ReportContents } from '../components/ReportContents';
 import { auth } from '../firebase';
 
@@ -32,7 +33,7 @@ export const EvaluationDetailPage: React.FC<EvaluationDetailPageProps> = ({ eval
         text: noteText,
         doctorId: currentUser.uid, 
         doctorName: currentUser.displayName || 'Doctor',
-        createdAt: Timestamp.now(),
+        createdAt: firebase.firestore.Timestamp.now(),
       };
       setCurrentNotes(prev => [newNote, ...prev]);
       setNoteText('');

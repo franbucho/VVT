@@ -15,7 +15,7 @@ interface ThemeProviderProps {
 
 const getInitialTheme = (): Theme => {
   if (typeof window !== 'undefined') {
-    const storedTheme = localStorage.getItem('virtualvisiontest-theme');
+    const storedTheme = localStorage.getItem('niria-theme');
     if (storedTheme === 'light' || storedTheme === 'dark') {
       return storedTheme;
     }
@@ -34,7 +34,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     const root = window.document.documentElement;
     root.classList.remove(theme === 'light' ? 'dark' : 'light');
     root.classList.add(theme);
-    localStorage.setItem('virtualvisiontest-theme', theme);
+    localStorage.setItem('niria-theme', theme);
   }, [theme]);
 
   const toggleTheme = useCallback(() => {

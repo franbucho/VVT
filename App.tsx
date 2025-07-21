@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from './firebase';
 
 import { Page, EyeAnalysisResult, HealthData, Ophthalmologist, EvaluationHistoryItem } from './types';
@@ -89,7 +90,7 @@ const App: React.FC = () => {
 
   const handleSignOut = async () => {
     try {
-      await signOut(auth);
+      await auth.signOut();
       // Reset all states on logout
       setHealthData(null);
       setCapturedImage(null);

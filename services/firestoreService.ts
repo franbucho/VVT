@@ -1,15 +1,6 @@
 
-import { 
-    collection, 
-    addDoc, 
-    getDocs, 
-    query, 
-    orderBy, 
-    serverTimestamp,
-    where,
-    Timestamp,
-    getCountFromServer
-} from 'firebase/firestore';
+
+import firebase from 'firebase/compat/app';
 import { db, auth } from '../firebase';
 import { EvaluationHistoryItem, HealthData, EyeAnalysisResult, Ophthalmologist } from '../types';
 
@@ -40,13 +31,13 @@ export const getAllEvaluations = async (): Promise<EvaluationHistoryItem[]> => {
             ...item,
             id: item.id,
             patientName: item.patientName || `${item.healthData?.firstName} ${item.healthData?.lastName}`.trim() || 'Unknown Patient',
-            createdAt: new Timestamp(item.createdAt._seconds, item.createdAt._nanoseconds),
-            respondedAt: item.respondedAt ? new Timestamp(item.respondedAt._seconds, item.respondedAt._nanoseconds) : undefined,
+            createdAt: new firebase.firestore.Timestamp(item.createdAt._seconds, item.createdAt._nanoseconds),
+            respondedAt: item.respondedAt ? new firebase.firestore.Timestamp(item.respondedAt._seconds, item.respondedAt._nanoseconds) : undefined,
             doctorNotes: (item.doctorNotes || []).map((note: any) => ({
                 ...note,
                 createdAt: note.createdAt._seconds
-                    ? new Timestamp(note.createdAt._seconds, note.createdAt._nanoseconds)
-                    : Timestamp.fromDate(new Date(note.createdAt)), // Handles ISO strings
+                    ? new firebase.firestore.Timestamp(note.createdAt._seconds, note.createdAt._nanoseconds)
+                    : firebase.firestore.Timestamp.fromDate(new Date(note.createdAt)), // Handles ISO strings
             }))
         })) as EvaluationHistoryItem[];
     } catch (error) {
@@ -80,16 +71,16 @@ export const addDoctorNote = async (evaluationId: string, noteText: string): Pro
 
 export const getEvaluationHistory = async (userId: string): Promise<EvaluationHistoryItem[]> => {
   try {
-    const historyCollectionRef = collection(db, 'evaluations');
-    const q = query(historyCollectionRef, where("userId", "==", userId), orderBy('createdAt', 'desc'));
-    const querySnapshot = await getDocs(q);
+    const historyCollectionRef = db.collection('evaluations');
+    const q = historyCollectionRef.where("userId", "==", userId).orderBy('createdAt', 'desc');
+    const querySnapshot = await q.get();
     
     const history: EvaluationHistoryItem[] = [];
     querySnapshot.forEach(doc => {
       const data = doc.data();
       history.push({
         id: doc.id,
-        createdAt: data.createdAt as Timestamp,
+        createdAt: data.createdAt as firebase.firestore.Timestamp,
         analysisResults: data.analysisResults,
         healthData: data.healthData,
         capturedImage: data.capturedImage,
@@ -97,15 +88,15 @@ export const getEvaluationHistory = async (userId: string): Promise<EvaluationHi
         ophthalmologists: data.ophthalmologists || [],
         doctorNotes: (data.doctorNotes || []).map((note: any) => ({
             ...note,
-            createdAt: note.createdAt instanceof Timestamp 
+            createdAt: note.createdAt instanceof firebase.firestore.Timestamp 
                 ? note.createdAt 
-                : Timestamp.fromDate(new Date(note.createdAt)) // Handle legacy strings
+                : firebase.firestore.Timestamp.fromDate(new Date(note.createdAt)) // Handle legacy strings
         })),
         userId: data.userId,
         patientName: data.patientName,
         status: data.status,
         respondedBy: data.respondedBy,
-        respondedAt: data.respondedAt as Timestamp,
+        respondedAt: data.respondedAt as firebase.firestore.Timestamp,
       } as EvaluationHistoryItem);
     });
     
@@ -118,10 +109,10 @@ export const getEvaluationHistory = async (userId: string): Promise<EvaluationHi
 
 export const getEvaluationsCount = async (userId: string): Promise<number> => {
     try {
-        const historyCollectionRef = collection(db, 'evaluations');
-        const q = query(historyCollectionRef, where("userId", "==", userId));
-        const snapshot = await getCountFromServer(q);
-        return snapshot.data().count;
+        const historyCollectionRef = db.collection('evaluations');
+        const q = historyCollectionRef.where("userId", "==", userId);
+        const snapshot = await q.get();
+        return snapshot.size;
     } catch (error) {
         console.error("Error getting evaluations count:", error);
         // Return 0 on error so the user isn't unfairly charged
@@ -140,12 +131,12 @@ export const saveEvaluationResult = async (
   }
 ): Promise<string> => {
   try {
-    const historyCollectionRef = collection(db, 'evaluations');
-    const docRef = await addDoc(historyCollectionRef, {
+    const historyCollectionRef = db.collection('evaluations');
+    const docRef = await historyCollectionRef.add({
       ...data,
       userId: userId,
       patientName: `${data.healthData.firstName} ${data.healthData.lastName}`,
-      createdAt: serverTimestamp(),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       doctorNotes: [],
     });
     return docRef.id;

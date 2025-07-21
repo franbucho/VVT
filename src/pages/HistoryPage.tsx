@@ -55,7 +55,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save(`VirtualVisionTest-Report-${reportToDownload.id}.pdf`);
+        pdf.save(`Niria-Report-${reportToDownload.id}.pdf`);
         setReportToDownload(null); // Reset after download
       }
     };

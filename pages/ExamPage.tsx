@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { User } from 'firebase/auth';
 import { Page, EyeAnalysisResult, HealthData, Ophthalmologist } from '../types';
@@ -8,7 +9,7 @@ import { UploadIcon, CameraIcon, InfoIcon } from '../constants';
 import { useLanguage } from '../contexts/LanguageContext';
 import { HealthQuestionnaire } from '../components/exam/HealthQuestionnaire';
 import { saveEvaluationResult } from '../services/firestoreService';
-import { analyzeEyeImage, getOphthalmologistSummary } from '../services/geminiService';
+import { analyzeEyeImage } from '../services/geminiService';
 import { getNearbyOphthalmologists } from '../services/nppesService';
 import imageCompression from 'browser-image-compression';
 
@@ -249,12 +250,11 @@ export const ExamPage: React.FC<ExamPageProps> = ({
       const dataUrl = `data:${mimeType};base64,${base64Image}`;
       setCapturedImage(dataUrl);
 
-      const imageResults = await analyzeEyeImage(base64Image, mimeType);
+      const { analysisResults: imageResults, summary: summaryText } = await analyzeEyeImage(base64Image, mimeType, healthData, language);
       
-      const [summaryText, ophthalmologistsList] = await Promise.all([
-        getOphthalmologistSummary(healthData, imageResults, language),
-        healthData.state ? getNearbyOphthalmologists(healthData.state, healthData.city || undefined) : Promise.resolve([])
-      ]);
+      const ophthalmologistsList = healthData.state 
+        ? await getNearbyOphthalmologists(healthData.state, healthData.city || undefined) 
+        : [];
       
       const evaluationId = await saveEvaluationResult(currentUser.uid, {
         healthData: healthData,
@@ -281,30 +281,8 @@ export const ExamPage: React.FC<ExamPageProps> = ({
 
     } catch (err) {
       console.error("Analysis or save failed. Raw error:", err);
-      const userMessage = t('error_generic_unexpected_api');
-
-      // Create a detailed debug message to show in the UI for easier diagnosis.
-      let debugInfo = 'An unknown error occurred.';
-      if (err instanceof Error) {
-        // For standard Error objects, show name and message.
-        debugInfo = `Name: ${err.name}\nMessage: ${err.message}`;
-        const details = (err as any).details || (err as any).cause;
-        if (details) {
-          debugInfo += `\nDetails: ${typeof details === 'object' ? JSON.stringify(details, null, 2) : details}`;
-        }
-      } else if (typeof err === 'string') {
-        // For simple string errors.
-        debugInfo = err;
-      } else {
-        // For other types, like plain JSON objects from an API proxy.
-        try {
-          debugInfo = JSON.stringify(err, null, 2); // Pretty-print the object.
-        } catch {
-          debugInfo = 'A non-serializable error object was caught. Check the browser console.';
-        }
-      }
-      
-      setError(`${userMessage}\n\nDebug Info:\n${debugInfo}`);
+      const userMessage = (err instanceof Error) ? err.message : t('error_generic_unexpected_api');
+      setError(userMessage);
     } finally {
       setIsLoading(false);
     }

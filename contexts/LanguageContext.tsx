@@ -17,7 +17,7 @@ interface LanguageProviderProps {
 }
 
 const getInitialLanguage = (): Language => {
-  const storedLang = localStorage.getItem('virtualvisiontest-lang') as Language;
+  const storedLang = localStorage.getItem('niria-lang') as Language;
   return translations[storedLang] ? storedLang : DEFAULT_LANGUAGE;
 };
 
@@ -27,7 +27,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   const setLanguage = useCallback((lang: Language) => {
     if (translations[lang]) {
       setLanguageState(lang);
-      localStorage.setItem('virtualvisiontest-lang', lang);
+      localStorage.setItem('niria-lang', lang);
     }
   }, []);
 
@@ -36,7 +36,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   useEffect(() => {
     // Optional: listen to storage changes from other tabs, though less common for language.
     const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'virtualvisiontest-lang' && event.newValue && translations[event.newValue as Language]) {
+      if (event.key === 'niria-lang' && event.newValue && translations[event.newValue as Language]) {
         setLanguageState(event.newValue as Language);
       }
     };

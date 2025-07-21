@@ -11,7 +11,7 @@ interface SupportPageProps {
 
 export const SupportPage: React.FC<SupportPageProps> = ({ setCurrentPage }) => {
   const { t } = useLanguage();
-  const supportEmail = "soporte@virtualvisiontest.com";
+  const supportEmail = "soporte@niria.com";
 
   return (
     <PageContainer title={t('support_title')}>

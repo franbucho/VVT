@@ -1,71 +1,67 @@
 
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  signInWithPopup,
-  updateProfile,
-  GoogleAuthProvider,
-  UserCredential,
-} from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+
+import firebase from 'firebase/compat/app';
 import { auth, db } from '../firebase';
 
-export const signUpWithEmailPassword = async (email: string, password: string, firstName: string, lastName: string): Promise<UserCredential> => {
-  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+export const signUpWithEmailPassword = async (email: string, password: string, firstName: string, lastName: string): Promise<firebase.auth.UserCredential> => {
+  const userCredential = await auth.createUserWithEmailAndPassword(email, password);
   const user = userCredential.user;
 
-  const displayName = `${firstName} ${lastName}`;
-  await updateProfile(user, { displayName });
+  if (!user) {
+    throw new Error("User not found after creation.");
+  }
 
-  const userDocRef = doc(db, "users", user.uid);
-  await setDoc(userDocRef, {
+  const displayName = `${firstName} ${lastName}`;
+  await user.updateProfile({ displayName });
+
+  const userDocRef = db.collection("users").doc(user.uid);
+  await userDocRef.set({
     uid: user.uid,
     displayName,
     firstName,
     lastName,
     email: user.email,
-    createdAt: serverTimestamp(),
-    lastLogin: serverTimestamp(),
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
   }, { merge: true });
 
   return userCredential;
 };
 
-export const signInWithEmail = async (email: string, password: string): Promise<UserCredential> => {
-  return signInWithEmailAndPassword(auth, email, password);
+export const signInWithEmail = async (email: string, password: string): Promise<firebase.auth.UserCredential> => {
+  return auth.signInWithEmailAndPassword(email, password);
 };
 
 export const sendPasswordReset = async (email: string): Promise<void> => {
-    await sendPasswordResetEmail(auth, email);
+    await auth.sendPasswordResetEmail(email);
 };
 
-export const signInWithGoogle = async (): Promise<UserCredential> => {
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
+export const signInWithGoogle = async (): Promise<firebase.auth.UserCredential> => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const result = await auth.signInWithPopup(provider);
     const user = result.user;
     
     if (user) {
-      const userDocRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userDocRef);
+      const userDocRef = db.collection("users").doc(user.uid);
+      const userDoc = await userDocRef.get();
       
-      if (!userDoc.exists()) {
+      if (!userDoc.exists) {
         const nameParts = user.displayName?.split(' ') || [];
         const firstName = nameParts[0] || '';
         const lastName = nameParts.slice(1).join(' ') || '';
 
-        await setDoc(userDocRef, {
+        await userDocRef.set({
           uid: user.uid,
           displayName: user.displayName,
           firstName,
           lastName,
           email: user.email,
-          createdAt: serverTimestamp(),
-          lastLogin: serverTimestamp(),
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
         }, { merge: true });
       } else {
-        await setDoc(userDocRef, {
-          lastLogin: serverTimestamp()
+        await userDocRef.set({
+          lastLogin: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
       }
     }

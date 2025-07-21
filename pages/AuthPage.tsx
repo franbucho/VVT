@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Page } from '../types';
 import { Button } from '../components/common/Button';
@@ -6,7 +7,6 @@ import { PageContainer } from '../components/common/PageContainer';
 import { EyeIcon, ShowPasswordIcon, HidePasswordIcon } from '../constants';
 import { signInWithEmail, signUpWithEmailPassword, signInWithGoogle, sendPasswordReset } from '../services/authService';
 import { useLanguage } from '../contexts/LanguageContext';
-import { FirebaseError } from 'firebase/app';
 
 interface AuthPageProps {
   setCurrentPage: (page: Page) => void;
@@ -26,7 +26,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleAuthError = (err: any) => {
-    if (err instanceof FirebaseError) {
+    // Use property checking for robust Firebase error handling across SDK versions
+    if (err && typeof err.code === 'string') {
         switch (err.code) {
         case 'auth/email-already-in-use':
             setError(t('auth_error_email_in_use'));

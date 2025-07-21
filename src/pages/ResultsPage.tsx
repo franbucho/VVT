@@ -46,7 +46,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save("VirtualVisionTest-Report.pdf");
+    pdf.save("Niria-Report.pdf");
     setIsDownloading(false);
   };
 

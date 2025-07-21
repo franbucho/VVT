@@ -1,19 +1,20 @@
 
+
 import { TranslationKeys } from './en';
 
 export const es: TranslationKeys = {
-  appName: "Virtual Vision Test",
+  appName: "Niria",
   appMotto: "El futuro del cuidado ocular comienza con una foto.",
   appSubMotto: "Obtenga información rápida sobre la salud de sus ojos, impulsada por IA, desde la comodidad de su hogar.",
   footerText: "© TREASURES OF ZIMA LLC.",
-  footerDisclaimer: "Virtual Vision Test es una herramienta informativa y no proporciona asesoramiento médico.",
+  footerDisclaimer: "Niria es una herramienta informativa y no proporciona asesoramiento médico.",
   missionStatement: "Nuestra misión es democratizar la salud ocular proporcionando un análisis accesible, asequible y fiable impulsado por IA para todos, en todas partes. Creemos que la detección temprana es clave para preservar la visión.",
   resultsDisclaimerShort: "No es consejo médico. Consulte a un doctor.",
-  resultsDisclaimer: "Importante: El análisis proporcionado por Virtual Vision Test es solo para fines informativos y no sustituye un diagnóstico médico profesional. Consulte siempre a un oftalmólogo calificado o proveedor de atención médica para cualquier inquietud sobre la salud ocular o antes de tomar decisiones relacionadas con su salud o tratamiento.",
+  resultsDisclaimer: "Importante: El análisis proporcionado por Niria es solo para fines informativos y no sustituye un diagnóstico médico profesional. Consulte siempre a un oftalmólogo calificado o proveedor de atención médica para cualquier inquietud sobre la salud ocular o antes de tomar decisiones relacionadas con su salud o tratamiento.",
   paymentPlaceholderText: "Nuestro portal de pago seguro estará disponible próximamente. En una aplicación real, esta página se integraría con un procesador de pagos como Stripe o PayPal para manejar las transacciones de forma segura.",
 
   home_ctaButton: "Iniciar Análisis",
-  home_whyChooseOculusIA: "¿Por Qué Elegir Virtual Vision Test?",
+  home_whyChooseNiria: "¿Por Qué Elegir Niria?",
   home_ourMission: "Nuestra Misión",
 
   feature_resultsInMinutes_title: "Resultados en Minutos",
@@ -130,6 +131,7 @@ export const es: TranslationKeys = {
   q2_label: "2. ¿Usa lentes (gafas o lentes de contacto)?",
   q2_yes: "Sí",
   q2_no: "No",
+  q2_other: "Otro / No estoy seguro",
   q2_satisfactionLabel: "Si es así, ¿qué tan satisfecho está con ellos?",
   q2_satisfactionPlaceholder: "Ej: Funcionan bien, me dan dolores de cabeza...",
   q2_lastUpdateLabel: "¿Cuándo fue la última vez que actualizó su prescripción?",
@@ -186,12 +188,26 @@ export const es: TranslationKeys = {
   results_error_loading: "No pudimos cargar sus resultados. Si ya ha pagado, por favor",
   results_download_for_details: "Para un desglose detallado de su cuestionario, análisis de imagen y una lista de especialistas locales, por favor descargue el informe completo en PDF.",
 
-  results_condition_cornealAbrasion: "Abrasión Corneal",
-  results_details_cornealAbrasion: "Se detectaron irregularidades menores en la superficie, probablemente superficiales.",
   results_condition_cataract: "Desarrollo de Cataratas",
   results_details_cataract: "Se observó una ligera opacidad del cristalino, se recomienda seguimiento.",
-  results_condition_glaucoma: "Indicadores de Glaucoma",
-  results_details_glaucoma: "Las características del nervio óptico requieren una evaluación profesional adicional.",
+  results_condition_glaucomaIndicators: "Indicadores de Glaucoma",
+  results_details_glaucomaIndicators: "Signos visuales que pueden estar asociados con glaucoma, como cambios en el nervio óptico o el iris.",
+  results_condition_ptosis: "Ptosis (Párpado Caído)",
+  results_details_ptosis: "El párpado superior está más bajo de lo normal, lo que puede afectar la visión.",
+  results_condition_subconjunctivalHemorrhage: "Hemorragia Subconjuntival",
+  results_details_subconjunctivalHemorrhage: "Un vaso sanguíneo roto en la superficie del ojo, a menudo inofensivo pero debe ser revisado.",
+  results_condition_conjunctivitis: "Infección / Conjuntivitis",
+  results_details_conjunctivitis: "Signos de inflamación o infección de la conjuntiva (conjuntivitis), como enrojecimiento y secreción.",
+  results_condition_abnormalPupils: "Pupilas Anormales",
+  results_details_abnormalPupils: "Las pupilas parecen de tamaño desigual, deformes o tienen un color inusual, lo que requiere evaluación médica.",
+  results_condition_ocularJaundice: "Ictericia Ocular",
+  results_details_ocularJaundice: "Coloración amarillenta de la parte blanca del ojo, que puede indicar problemas hepáticos.",
+  results_condition_cornealArcus: "Arco Corneal",
+  results_details_cornealArcus: "Un anillo blanco, gris o azul alrededor de la córnea, a veces asociado con colesterol alto.",
+  results_condition_inflammation: "Inflamación / Enrojecimiento",
+  results_details_inflammation: "Se detectaron signos generales de inflamación, enrojecimiento significativo o secreción.",
+  results_condition_drynessOrTearing: "Sequedad / Lagrimeo Anormal",
+  results_details_drynessOrTearing: "Signos visuales que pueden indicar problemas con la producción de lágrimas, como sequedad o lagrimeo excesivo.",
 
   results_risk_low: "Bajo",
   results_risk_medium: "Medio",

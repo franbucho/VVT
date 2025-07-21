@@ -1,6 +1,10 @@
 
+
 import React from 'react';
-import { Timestamp } from 'firebase/firestore';
+import firebase from 'firebase/compat/app';
+
+// Use the compat Timestamp type
+type Timestamp = firebase.firestore.Timestamp;
 
 export enum Page {
   Home = 'HOME',

@@ -79,7 +79,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
                 await addCanvasToPdf(ophthCanvas);
             }
 
-            pdf.save(`VirtualVisionTest-Report-${reportToDownload.id}.pdf`);
+            pdf.save(`Niria-Report-${reportToDownload.id}.pdf`);
         } catch (error) {
             console.error("Error generating PDF:", error);
         } finally {

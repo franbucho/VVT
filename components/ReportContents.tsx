@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { EyeAnalysisResult, HealthData, Ophthalmologist, DoctorNote } from '../types';
@@ -38,7 +39,8 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
       return (
         <div className="py-2 grid grid-cols-3 gap-4 border-b border-gray-100 dark:border-dark-border">
           <dt className="text-sm font-medium text-gray-500 dark:text-dark-text-secondary col-span-1">{t(labelKey)}</dt>
-          <dd className="text-sm text-primary-dark dark:text-dark-text-primary col-span-2">{displayValue}</dd>
+          {/* For PDF, use a very dark color for high contrast. For web, use theme colors. */}
+          <dd className={`text-sm col-span-2 ${isForPdf ? 'font-medium text-gray-900' : 'text-primary-dark dark:text-dark-text-primary'}`}>{displayValue}</dd>
         </div>
       );
   };
@@ -134,7 +136,7 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
         <header className="flex items-center justify-between pb-4 border-b-2 border-accent">
           <div className="flex items-center">
             <EyeIcon className="h-8 w-8 text-accent mr-3" />
-            <h1 className="text-2xl font-bold text-primary-dark">Virtual Vision Test</h1>
+            <h1 className="text-2xl font-bold text-primary-dark">Niria</h1>
           </div>
           <div className="text-right">
             <p className="text-sm font-semibold text-primary-dark">{t('report_confidential_title')}</p>
@@ -148,9 +150,9 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
               <section>
                 <h2 className="text-lg font-bold text-primary-dark border-b border-gray-200 pb-2 mb-4">{t('report_patient_info')}</h2>
                 <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
-                  <div><strong className="text-gray-600">{t('report_patient_name')}:</strong> {healthData?.firstName} {healthData?.lastName}</div>
-                  <div><strong className="text-gray-600">{t('report_patient_dob')}:</strong> {`${healthData?.birthDate.day}/${healthData?.birthDate.month}/${healthData?.birthDate.year}`}</div>
-                  <div><strong className="text-gray-600">{t('report_patient_email')}:</strong> {currentUser?.email}</div>
+                  <div><strong className="text-gray-600 font-medium">{t('report_patient_name')}:</strong> <span className="font-medium text-gray-900">{healthData?.firstName} {healthData?.lastName}</span></div>
+                  <div><strong className="text-gray-600 font-medium">{t('report_patient_dob')}:</strong> <span className="font-medium text-gray-900">{`${healthData?.birthDate.day}/${healthData?.birthDate.month}/${healthData?.birthDate.year}`}</span></div>
+                  <div><strong className="text-gray-600 font-medium">{t('report_patient_email')}:</strong> <span className="font-medium text-gray-900">{currentUser?.email}</span></div>
                 </div>
               </section>
               <section className="mt-8">
@@ -233,7 +235,7 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
 
       <footer className="text-center text-xs text-gray-500 pt-8 mt-4 border-t">
         <p><strong>{t('results_importantDisclaimerTitle')}:</strong> {t('resultsDisclaimer')}</p>
-        <p className="mt-2">&copy; {new Date().getFullYear()} Virtual Vision Test. All Rights Reserved.</p>
+        <p className="mt-2">&copy; {new Date().getFullYear()} Niria. All Rights Reserved.</p>
       </footer>
     </div>
   );

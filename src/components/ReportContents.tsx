@@ -66,7 +66,7 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
       <header className="flex items-center justify-between pb-4 border-b-2 border-accent">
         <div className="flex items-center">
           <EyeIcon className="h-8 w-8 text-accent mr-3" />
-          <h1 className="text-2xl font-bold text-primary-dark">Virtual Vision Test</h1>
+          <h1 className="text-2xl font-bold text-primary-dark">Niria</h1>
         </div>
         <div className="text-right">
           <p className="text-sm font-semibold text-primary-dark">{t('report_confidential_title')}</p>
@@ -137,7 +137,7 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
 
       <footer className="text-center text-xs text-gray-500 pt-8 mt-8 border-t">
         <p><strong>{t('results_importantDisclaimerTitle')}:</strong> {t('resultsDisclaimer')}</p>
-        <p className="mt-2">&copy; {new Date().getFullYear()} Virtual Vision Test. All Rights Reserved.</p>
+        <p className="mt-2">&copy; {new Date().getFullYear()} Niria. All Rights Reserved.</p>
       </footer>
     </div>
   );

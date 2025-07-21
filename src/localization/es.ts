@@ -2,18 +2,18 @@
 import { TranslationKeys } from './en';
 
 export const es: TranslationKeys = {
-  appName: "Virtual Vision Test",
+  appName: "Niria",
   appMotto: "El futuro del cuidado ocular comienza con una foto.",
   appSubMotto: "Obtenga información rápida sobre la salud de sus ojos, impulsada por IA, desde la comodidad de su hogar.",
   footerText: "© TREASURES OF ZIMA LLC.",
-  footerDisclaimer: "Virtual Vision Test es una herramienta informativa y no proporciona asesoramiento médico.",
+  footerDisclaimer: "Niria es una herramienta informativa y no proporciona asesoramiento médico.",
   missionStatement: "Nuestra misión es democratizar la salud ocular proporcionando un análisis accesible, asequible y fiable impulsado por IA para todos, en todas partes. Creemos que la detección temprana es clave para preservar la visión.",
   resultsDisclaimerShort: "No es consejo médico. Consulte a un doctor.",
-  resultsDisclaimer: "Importante: El análisis proporcionado por Virtual Vision Test es solo para fines informativos y no sustituye un diagnóstico médico profesional. Consulte siempre a un oftalmólogo calificado o proveedor de atención médica para cualquier inquietud sobre la salud ocular o antes de tomar decisiones relacionadas con su salud o tratamiento.",
+  resultsDisclaimer: "Importante: El análisis proporcionado por Niria es solo para fines informativos y no sustituye un diagnóstico médico profesional. Consulte siempre a un oftalmólogo calificado o proveedor de atención médica para cualquier inquietud sobre la salud ocular o antes de tomar decisiones relacionadas con su salud o tratamiento.",
   paymentPlaceholderText: "Nuestro portal de pago seguro estará disponible próximamente. En una aplicación real, esta página se integraría con un procesador de pagos como Stripe o PayPal para manejar las transacciones de forma segura.",
 
   home_ctaButton: "Iniciar Análisis",
-  home_whyChooseOculusIA: "¿Por Qué Elegir Virtual Vision Test?",
+  home_whyChooseNiria: "¿Por Qué Elegir Niria?",
   home_ourMission: "Nuestra Misión",
 
   feature_resultsInMinutes_title: "Resultados en Minutos",
