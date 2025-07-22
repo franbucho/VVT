@@ -1,7 +1,8 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from './firebase';
+import { auth, db } from './firebase';
 
 import { Page, EyeAnalysisResult, HealthData, Ophthalmologist, EvaluationHistoryItem } from './types';
 import { EyeIcon } from './constants';
@@ -15,6 +16,7 @@ import { AdminPage } from './pages/AdminPage';
 import { SupportPage } from './pages/SupportPage';
 import { DoctorPortal } from './pages/DoctorPortal';
 import { EvaluationDetailPage } from './pages/EvaluationDetailPage';
+import { HRAdminPage } from './pages/HRAdminPage';
 import { useLanguage } from './contexts/LanguageContext';
 import { LanguageSwitcher } from './components/common/LanguageSwitcher';
 import { Button } from './components/common/Button';
@@ -39,6 +41,8 @@ const App: React.FC = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
   const [isDoctor, setIsDoctor] = useState(false);
+  const [isHrAdmin, setIsHrAdmin] = useState(false);
+  const [teamId, setTeamId] = useState<string | null>(null);
   const [evaluationsCount, setEvaluationsCount] = useState(0);
 
   // Doctor portal state
@@ -53,22 +57,37 @@ const App: React.FC = () => {
         try {
           // Force refresh the token to get the latest custom claims
           const idTokenResult = await user.getIdTokenResult(true); 
-          setIsAdmin(!!idTokenResult.claims.admin);
-          setIsPremium(!!idTokenResult.claims.premium);
-          setIsDoctor(!!idTokenResult.claims.doctor);
+          const claims = idTokenResult.claims;
+          setIsAdmin(!!claims.admin);
+          setIsPremium(!!claims.premium);
+          setIsDoctor(!!claims.doctor);
+          setIsHrAdmin(!!claims.hr_admin);
+
+          // Fetch user profile data from Firestore
+          const userDoc = await db.collection('users').doc(user.uid).get();
+          if (userDoc.exists) {
+            setTeamId(userDoc.data()?.teamId || null);
+          } else {
+            setTeamId(null);
+          }
+          
           const count = await getEvaluationsCount(user.uid);
           setEvaluationsCount(count);
         } catch (error) {
-          console.error("Error fetching user claims or evaluation count:", error);
+          console.error("Error fetching user data:", error);
           setIsAdmin(false);
           setIsPremium(false);
           setIsDoctor(false);
+          setIsHrAdmin(false);
+          setTeamId(null);
         }
       } else {
         setCurrentUser(null);
         setIsAdmin(false);
         setIsPremium(false);
         setIsDoctor(false);
+        setIsHrAdmin(false);
+        setTeamId(null);
         setEvaluationsCount(0);
       }
       setIsAuthLoading(false);
@@ -102,6 +121,8 @@ const App: React.FC = () => {
       setIsAdmin(false);
       setIsPremium(false);
       setIsDoctor(false);
+      setIsHrAdmin(false);
+      setTeamId(null);
       setSelectedEvaluation(null);
       setEvaluationsCount(0);
       setCurrentPage(Page.Home);
@@ -211,6 +232,12 @@ const App: React.FC = () => {
               return null;
           }
           return <EvaluationDetailPage evaluation={selectedEvaluation} setCurrentPage={handleSetCurrentPage} />;
+      case Page.HR_ADMIN:
+          if (!currentUser || !isHrAdmin) {
+              setCurrentPage(Page.Home);
+              return null;
+          }
+          return <HRAdminPage isAdmin={isAdmin} teamId={teamId} />;
       default:
         return <HomePage setCurrentPage={setCurrentPage} />;
     }
@@ -257,6 +284,15 @@ const App: React.FC = () => {
                     size="sm"
                   >
                     {t('header_doctorPortal')}
+                  </Button>
+                )}
+                 {isHrAdmin && (
+                  <Button 
+                    onClick={() => setCurrentPage(Page.HR_ADMIN)} 
+                    variant="ghost" 
+                    size="sm"
+                  >
+                    {t('header_hrAdminPanel')}
                   </Button>
                 )}
                 <span className="text-sm text-primary-dark/80 dark:text-dark-text-secondary hidden md:inline" title={currentUser.email || ''}>

@@ -17,6 +17,7 @@ export enum Page {
   Support = 'SUPPORT',
   DoctorPortal = 'DOCTOR_PORTAL',
   EvaluationDetail = 'EVALUATION_DETAIL',
+  HR_ADMIN = 'HR_ADMIN',
 }
 
 export interface DoctorNote {
@@ -120,4 +121,21 @@ export interface Feedback {
   rating: number;
   comment?: string;
   createdAt: string; // Stored as an ISO string from Firestore timestamp
+}
+
+export interface Team {
+  id: string;
+  name: string;
+  createdAt: Timestamp;
+}
+
+export interface Employee {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  teamId: string | null;
+  userId: string | null; // This will be the linked firebase auth user id
+  createdAt: Timestamp;
+  lastEvaluationAt?: Timestamp;
 }

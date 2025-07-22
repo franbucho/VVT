@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Feature } from './types';
 import { TranslationKeys } from './localization/en';
@@ -172,4 +173,10 @@ export const MoonIcon: React.FC<{ className?: string }> = ({ className = "w-6 h-
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
   </svg>
+);
+
+export const BriefcaseIcon: React.FC<{ className?: string }> = ({ className = "w-8 h-8" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.075c0 1.313-.972 2.463-2.243 2.723-1.27.26-2.535.26-3.805 0-1.27-.26-2.243-1.41-2.243-2.723V14.15m6.29 0v-2.859c0-.909-.434-1.742-1.155-2.238l-2.243-1.495a1.875 1.875 0 0 0-2.243 0l-2.243 1.495c-.721.496-1.155 1.329-1.155 2.238V14.15m6.29 0h-6.29m6.29 0c.618 0 1.125-.506 1.125-1.125v-2.859c0-.618-.507-1.125-1.125-1.125h-6.29c-.618 0-1.125.507-1.125 1.125v2.859c0 .618.507 1.125 1.125 1.125h6.29Z" />
+    </svg>
 );
