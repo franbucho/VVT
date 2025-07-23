@@ -12,13 +12,36 @@ export enum Page {
   Exam = 'EXAM',
   Results = 'RESULTS',
   Payment = 'PAYMENT',
-  History = 'HISTORY',
+  Profile = 'PROFILE', // Renamed from History
   Admin = 'ADMIN',
   Support = 'SUPPORT',
   DoctorPortal = 'DOCTOR_PORTAL',
   EvaluationDetail = 'EVALUATION_DETAIL',
   HR_ADMIN = 'HR_ADMIN',
 }
+
+export interface UserProfile {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL?: string | null;
+  phoneNumber?: string | null;
+  firstName?: string;
+  lastName?: string;
+  createdAt?: Timestamp;
+  lastLogin?: Timestamp;
+  // New medical fields
+  medicalHistory?: {
+    allergies?: string;
+    conditions?: string;
+    surgeries?: string;
+  };
+  assignedDoctor?: string;
+  nextConsultation?: Timestamp | null;
+  enableReminders?: boolean;
+  teamId?: string | null;
+}
+
 
 export interface DoctorNote {
   text: string;
@@ -138,4 +161,18 @@ export interface Employee {
   userId: string | null; // This will be the linked firebase auth user id
   createdAt: Timestamp;
   lastEvaluationAt?: Timestamp;
+  nextEvaluationAt?: Timestamp;
+  status?: 'ok' | 'due_soon' | 'overdue' | 'pending';
+}
+
+export interface HRDashboardStats {
+    totalMembers: number;
+    pendingCount: number;
+    dueSoonCount: number;
+    overdueCount: number;
+}
+
+export interface HRDashboardData {
+    stats: HRDashboardStats;
+    teamMembers: Employee[];
 }

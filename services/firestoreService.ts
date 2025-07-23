@@ -1,13 +1,49 @@
 
-
 import firebase from 'firebase/compat/app';
-import { db, auth } from '../firebase';
-import { EvaluationHistoryItem, HealthData, EyeAnalysisResult, Ophthalmologist } from '../types';
+import { db, auth, storage } from '../firebase';
+import { EvaluationHistoryItem, HealthData, EyeAnalysisResult, Ophthalmologist, UserProfile } from '../types';
+import imageCompression from 'browser-image-compression';
 
 const getAuthToken = async (): Promise<string> => {
     const user = auth.currentUser;
     if (!user) throw new Error("User not authenticated.");
     return user.getIdToken();
+};
+
+export const getUserProfile = async (userId: string): Promise<UserProfile | null> => {
+    try {
+        const userDoc = await db.collection('users').doc(userId).get();
+        if (!userDoc.exists) {
+            console.warn("No user profile found in Firestore for UID:", userId);
+            return null;
+        }
+        return userDoc.data() as UserProfile;
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+        throw new Error("Failed to fetch user profile.");
+    }
+};
+
+export const uploadProfilePicture = async (userId: string, file: File): Promise<string> => {
+    if (!file) throw new Error("No file provided for upload.");
+    
+    const options = {
+      maxSizeMB: 0.5, // Compress to max 500KB
+      maxWidthOrHeight: 400,
+      useWebWorker: true,
+    };
+
+    try {
+      const compressedFile = await imageCompression(file, options);
+      const filePath = `profilePictures/${userId}/${Date.now()}_${compressedFile.name}`;
+      const fileRef = storage.ref(filePath);
+      const snapshot = await fileRef.put(compressedFile);
+      const downloadURL = await snapshot.ref.getDownloadURL();
+      return downloadURL;
+    } catch (error) {
+      console.error("Error uploading profile picture: ", error);
+      throw new Error("Failed to upload image.");
+    }
 };
 
 export const getAllEvaluations = async (): Promise<EvaluationHistoryItem[]> => {

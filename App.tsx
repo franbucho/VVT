@@ -1,17 +1,15 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth, db } from './firebase';
 
-import { Page, EyeAnalysisResult, HealthData, Ophthalmologist, EvaluationHistoryItem } from './types';
+import { Page, EyeAnalysisResult, HealthData, Ophthalmologist, EvaluationHistoryItem, UserProfile } from './types';
 import { EyeIcon } from './constants';
 import { HomePage } from './pages/HomePage';
 import { AuthPage } from './pages/AuthPage';
 import { ExamPage } from './pages/ExamPage';
 import { ResultsPage } from './pages/ResultsPage';
 import { PaymentPage } from './pages/PaymentPage';
-import { HistoryPage } from './pages/HistoryPage';
+import { ProfilePage } from './pages/ProfilePage';
 import { AdminPage } from './pages/AdminPage';
 import { SupportPage } from './pages/SupportPage';
 import { DoctorPortal } from './pages/DoctorPortal';
@@ -20,12 +18,13 @@ import { HRAdminPage } from './pages/HRAdminPage';
 import { useLanguage } from './contexts/LanguageContext';
 import { LanguageSwitcher } from './components/common/LanguageSwitcher';
 import { Button } from './components/common/Button';
-import { getEvaluationsCount } from './services/firestoreService';
+import { getEvaluationsCount, getUserProfile } from './services/firestoreService';
 import { ThemeSwitcher } from './components/common/ThemeSwitcher';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   // Exam flow state
@@ -63,12 +62,13 @@ const App: React.FC = () => {
           setIsDoctor(!!claims.doctor);
           setIsHrAdmin(!!claims.hr_admin);
 
-          // Fetch user profile data from Firestore
-          const userDoc = await db.collection('users').doc(user.uid).get();
-          if (userDoc.exists) {
-            setTeamId(userDoc.data()?.teamId || null);
+          const profileData = await getUserProfile(user.uid);
+          if (profileData) {
+             setUserProfile({ ...user, ...profileData });
+             setTeamId(profileData.teamId || null);
           } else {
-            setTeamId(null);
+             setUserProfile({ ...user, medicalHistory: {} });
+             setTeamId(null);
           }
           
           const count = await getEvaluationsCount(user.uid);
@@ -80,9 +80,11 @@ const App: React.FC = () => {
           setIsDoctor(false);
           setIsHrAdmin(false);
           setTeamId(null);
+          setUserProfile(user); // fallback
         }
       } else {
         setCurrentUser(null);
+        setUserProfile(null);
         setIsAdmin(false);
         setIsPremium(false);
         setIsDoctor(false);
@@ -200,12 +202,12 @@ const App: React.FC = () => {
             newEvaluationId={newEvaluationId}
           />
         );
-       case Page.History:
-        if (!currentUser) {
+       case Page.Profile:
+        if (!currentUser || !userProfile) {
           setCurrentPage(Page.Auth);
           return null;
         }
-        return <HistoryPage currentUser={currentUser} />;
+        return <ProfilePage userProfile={userProfile} setUserProfile={setUserProfile} />;
       case Page.Payment:
         if (!currentUser) {
           setCurrentPage(Page.Auth);
@@ -263,10 +265,10 @@ const App: React.FC = () => {
             ) : currentUser ? (
               <div className="flex items-center flex-wrap justify-end gap-x-2 sm:gap-x-4 gap-y-2">
                  <button 
-                  onClick={() => setCurrentPage(Page.History)}
+                  onClick={() => setCurrentPage(Page.Profile)}
                   className="text-sm font-medium text-primary-dark hover:text-accent dark:text-dark-text-primary dark:hover:text-dark-accent transition-colors"
                 >
-                  {t('header_myResultsLink')}
+                  {t('header_myProfileLink')}
                 </button>
                  {isAdmin && (
                   <Button 

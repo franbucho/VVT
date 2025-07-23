@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { PageContainer } from '../components/common/PageContainer';
 import { Button } from '../components/common/Button';
@@ -10,7 +11,7 @@ interface SupportPageProps {
 
 export const SupportPage: React.FC<SupportPageProps> = ({ setCurrentPage }) => {
   const { t } = useLanguage();
-  const supportEmail = "soporte@virtualvisiontest.com";
+  const supportEmail = "soporte@niria.com";
 
   return (
     <PageContainer title={t('support_title')}>

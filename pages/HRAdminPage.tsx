@@ -3,10 +3,13 @@ import { PageContainer } from '../components/common/PageContainer';
 import { Button } from '../components/common/Button';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { useLanguage } from '../contexts/LanguageContext';
-import { Team, Employee } from '../types';
+import { Team, Employee, HRDashboardData } from '../types';
 import { auth } from '../firebase';
 import { EmployeeModal } from '../components/hradmin/EmployeeModal';
 import { TeamModal } from '../components/hradmin/TeamModal';
+import { StatCard } from '../components/common/StatCard';
+import { UsersGroupIcon, XCircleIcon, CheckCircleIcon, ExclamationTriangleIcon } from '../constants';
+
 
 type HRAdminTab = 'dashboard' | 'employees' | 'teams';
 type ModalState = { type: 'employee' | 'team'; item?: Employee | Team } | null;
@@ -16,12 +19,32 @@ interface HRAdminPageProps {
     teamId: string | null;
 }
 
-export const HRAdminPage: React.FC<HRAdminPageProps> = ({ isAdmin, teamId }) => {
+const StatusBadge: React.FC<{ status: Employee['status'] }> = ({ status }) => {
     const { t } = useLanguage();
+    
+    const statusMap = {
+        ok: { textKey: 'hr_dashboard_status_ok', color: 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300' },
+        due_soon: { textKey: 'hr_dashboard_status_due_soon', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-300' },
+        overdue: { textKey: 'hr_dashboard_status_overdue', color: 'bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-300' },
+        pending: { textKey: 'hr_dashboard_status_pending', color: 'bg-gray-100 text-gray-800 dark:bg-dark-border/50 dark:text-dark-text-secondary' },
+    };
+
+    const currentStatus = status ? statusMap[status] : statusMap.pending;
+
+    return (
+        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${currentStatus.color}`}>
+            {t(currentStatus.textKey as any)}
+        </span>
+    );
+};
+
+export const HRAdminPage: React.FC<HRAdminPageProps> = ({ isAdmin, teamId }) => {
+    const { t, language } = useLanguage();
     const [activeTab, setActiveTab] = useState<HRAdminTab>('dashboard');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
+    const [dashboardData, setDashboardData] = useState<HRDashboardData | null>(null);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [teams, setTeams] = useState<Team[]>([]);
     
@@ -55,21 +78,25 @@ export const HRAdminPage: React.FC<HRAdminPageProps> = ({ isAdmin, teamId }) => 
         setIsLoading(true);
         setError('');
         try {
-            const promises = [callHrFunction('manageEmployees', 'GET')];
-            if (isAdmin) {
-                promises.push(callHrFunction('manageTeams', 'GET'));
+            if (activeTab === 'dashboard') {
+                const data = await callHrFunction('getHrDashboardData', 'GET');
+                setDashboardData(data);
+            } else {
+                const promises = [callHrFunction('manageEmployees', 'GET')];
+                if (isAdmin) {
+                    promises.push(callHrFunction('manageTeams', 'GET'));
+                }
+                const [employeesData, teamsData] = await Promise.all(promises);
+                
+                setEmployees(employeesData);
+                if (teamsData) setTeams(teamsData);
             }
-            const [employeesData, teamsData] = await Promise.all(promises);
-            
-            setEmployees(employeesData);
-            if (teamsData) setTeams(teamsData);
-
         } catch (err: any) {
             setError(err.message);
         } finally {
             setIsLoading(false);
         }
-    }, [callHrFunction, isAdmin]);
+    }, [callHrFunction, isAdmin, activeTab]);
 
     useEffect(() => {
         fetchData();
@@ -95,9 +122,44 @@ export const HRAdminPage: React.FC<HRAdminPageProps> = ({ isAdmin, teamId }) => 
     };
 
     const renderDashboard = () => (
-        <div className="text-center py-16">
-            <h2 className="text-2xl font-semibold text-primary-dark dark:text-dark-text-primary">{t('hr_admin_tab_dashboard')}</h2>
-            <p className="mt-4 text-primary-dark/80 dark:text-dark-text-secondary">{t('hr_admin_dashboard_placeholder')}</p>
+        <div>
+            {isLoading && <LoadingSpinner text={t('hr_dashboard_loading_data')} />}
+            {!isLoading && dashboardData && (
+                <div className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <StatCard icon={<UsersGroupIcon className="text-blue-500"/>} label={t('hr_dashboard_total_members')} value={dashboardData.stats.totalMembers} colorClass="border-blue-500" />
+                        <StatCard icon={<XCircleIcon className="text-gray-500"/>} label={t('hr_dashboard_evaluations_pending')} value={dashboardData.stats.pendingCount} colorClass="border-gray-500" />
+                        <StatCard icon={<ExclamationTriangleIcon className="text-yellow-500"/>} label={t('hr_dashboard_evaluations_due_soon')} value={dashboardData.stats.dueSoonCount} colorClass="border-yellow-500" />
+                        <StatCard icon={<CheckCircleIcon className="text-red-500"/>} label={t('hr_dashboard_evaluations_overdue')} value={dashboardData.stats.overdueCount} colorClass="border-red-500" />
+                    </div>
+                     <div className="overflow-x-auto border border-gray-200 dark:border-dark-border rounded-lg">
+                        <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+                             <thead className="bg-primary/5 dark:bg-dark-card/50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('hr_dashboard_table_header_member')}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('hr_dashboard_table_header_last_eval')}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('hr_dashboard_table_header_next_eval')}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('hr_dashboard_table_header_status')}</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white dark:bg-dark-card divide-y divide-gray-200 dark:divide-dark-border">
+                                {dashboardData.teamMembers.map(member => (
+                                    <tr key={member.id}>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-dark dark:text-dark-text-primary">{member.firstName} {member.lastName}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-primary-dark/80 dark:text-dark-text-secondary">
+                                            {member.lastEvaluationAt ? new Date(member.lastEvaluationAt.seconds * 1000).toLocaleDateString(language) : t('hr_dashboard_no_eval_history')}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-primary-dark/80 dark:text-dark-text-secondary">
+                                            {member.nextEvaluationAt ? new Date(member.nextEvaluationAt.seconds * 1000).toLocaleDateString(language) : 'N/A'}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap"><StatusBadge status={member.status} /></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
         </div>
     );
 
@@ -187,11 +249,11 @@ export const HRAdminPage: React.FC<HRAdminPageProps> = ({ isAdmin, teamId }) => 
                 </div>
 
                 <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-xl shadow-2xl space-y-6">
-                    {isLoading ? <LoadingSpinner /> : error ? <p className="text-danger text-center">{error}</p> : (
+                    {error ? <p className="text-danger text-center">{error}</p> : (
                         <>
                             {activeTab === 'dashboard' && renderDashboard()}
-                            {activeTab === 'employees' && renderEmployees()}
-                            {activeTab === 'teams' && isAdmin && renderTeams()}
+                            {activeTab === 'employees' && (isLoading ? <LoadingSpinner/> : renderEmployees())}
+                            {activeTab === 'teams' && isAdmin && (isLoading ? <LoadingSpinner/> : renderTeams())}
                         </>
                     )}
                 </div>

@@ -1,4 +1,3 @@
-
 import { Ophthalmologist } from '../types';
 
 // The URL of your deployed Cloud Function.

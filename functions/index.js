@@ -50,6 +50,10 @@ const verifyTokenAndRoles = async (req, requiredRoles = []) => {
 // Toggle user roles (admin, premium, doctor, hr_admin)
 exports.toggleUserRole = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
+    if (req.method === 'OPTIONS') {
+        res.status(204).send('');
+        return;
+    }
     if (req.method !== 'POST') {
       return res.status(405).send('Method Not Allowed');
     }
@@ -82,6 +86,7 @@ exports.toggleUserRole = functions.https.onRequest((req, res) => {
 // Admin: Assign a team to a user
 exports.assignTeamToUser = functions.https.onRequest((req, res) => {
     cors(req, res, async () => {
+        if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
         if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed.' });
         try {
             const { error } = await verifyTokenAndRoles(req, ['admin']);
@@ -106,6 +111,7 @@ exports.assignTeamToUser = functions.https.onRequest((req, res) => {
 // List all users for the admin panel
 exports.listAllUsers = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
+    if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
     if (req.method !== 'POST') {
       return res.status(405).send('Method Not Allowed');
     }
@@ -144,6 +150,7 @@ exports.listAllUsers = functions.https.onRequest((req, res) => {
 // Get statistics for the admin dashboard
 exports.getAdminDashboardStats = functions.https.onRequest((req, res) => {
     cors(req, res, async () => {
+        if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
         if (req.method !== 'GET') {
           return res.status(405).send('Method Not Allowed');
         }
@@ -212,6 +219,7 @@ exports.getAdminDashboardStats = functions.https.onRequest((req, res) => {
 // Create a Stripe checkout session
 exports.createCheckoutSession = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
+    if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
     if (req.method !== 'POST') {
       return res.status(405).send("Method Not Allowed");
     }
@@ -241,6 +249,7 @@ exports.createCheckoutSession = functions.https.onRequest((req, res) => {
 // Submit user feedback
 exports.submitFeedback = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
+    if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
     if (req.method !== 'POST') {
       return res.status(405).send('Method Not Allowed');
     }
@@ -267,6 +276,7 @@ exports.submitFeedback = functions.https.onRequest((req, res) => {
 // Get all feedback for the admin panel
 exports.getFeedback = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
+    if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
     if (req.method !== "GET") {
       return res.status(405).send("Method Not Allowed");
     }
@@ -294,6 +304,7 @@ exports.getFeedback = functions.https.onRequest((req, res) => {
 // Proxy for the public NPPES API
 exports.getNearbyOphthalmologistsProxy = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
+    if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
     if (req.method !== 'GET') return res.status(405).json({ error: 'Method Not Allowed. Use GET.' });
     const { stateCode, cityName } = req.query;
     const limit = req.query.limit || 10;
@@ -338,6 +349,7 @@ exports.getNearbyOphthalmologistsProxy = functions.https.onRequest((req, res) =>
 // List all evaluations for doctors or admins
 exports.listAllEvaluations = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
+    if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
     if (req.method !== 'GET') return res.status(405).json({ error: 'Method Not Allowed. Use GET.' });
     try {
       const { error } = await verifyTokenAndRoles(req, ['admin', 'doctor']);
@@ -357,6 +369,7 @@ exports.listAllEvaluations = functions.https.onRequest((req, res) => {
 // Add a doctor's note to an evaluation
 exports.addDoctorNote = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
+    if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed. Use POST.' });
     try {
       const { decodedToken, error } = await verifyTokenAndRoles(req, ['admin', 'doctor']);
@@ -391,6 +404,7 @@ exports.addDoctorNote = functions.https.onRequest((req, res) => {
 // HR Admin: Manage teams
 exports.manageTeams = functions.https.onRequest((req, res) => {
     cors(req, res, async () => {
+        if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
         try {
             const { decodedToken, error } = await verifyTokenAndRoles(req, ['admin', 'hr_admin']);
             if (error) return res.status(403).json({ error: 'Not authorized.' });
@@ -431,6 +445,7 @@ exports.manageTeams = functions.https.onRequest((req, res) => {
 // HR Admin: Manage employees
 exports.manageEmployees = functions.https.onRequest((req, res) => {
     cors(req, res, async () => {
+        if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
         try {
             const { decodedToken, error } = await verifyTokenAndRoles(req, ['admin', 'hr_admin']);
             if (error) return res.status(403).json({ error: 'Not authorized.' });
@@ -489,6 +504,148 @@ exports.manageEmployees = functions.https.onRequest((req, res) => {
         } catch (error) {
             console.error("Error managing employees:", error);
             return res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+});
+
+exports.getHrDashboardData = functions.https.onRequest((req, res) => {
+    cors(req, res, async () => {
+        if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
+        if (req.method !== 'GET') { return res.status(405).json({ error: 'Method Not Allowed.' }); }
+
+        try {
+            const { decodedToken, error } = await verifyTokenAndRoles(req, ['admin', 'hr_admin']);
+            if (error) { return res.status(403).json({ error: 'Not authorized.' }); }
+
+            let teamId = null;
+            if (decodedToken.hr_admin && !decodedToken.admin) {
+                const userDoc = await admin.firestore().collection('users').doc(decodedToken.uid).get();
+                teamId = userDoc.data()?.teamId;
+                if (!teamId) {
+                    return res.status(200).json({
+                        stats: { totalMembers: 0, pendingCount: 0, dueSoonCount: 0, overdueCount: 0 },
+                        teamMembers: []
+                    });
+                }
+            }
+
+            let employeesQuery = admin.firestore().collection('employees');
+            if (teamId) {
+                employeesQuery = employeesQuery.where('teamId', '==', teamId);
+            }
+            const employeesSnapshot = await employeesQuery.get();
+            const employees = employeesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            const employeeUserIds = employees.map(emp => emp.userId).filter(Boolean);
+            let evaluationsMap = new Map();
+
+            if (employeeUserIds.length > 0) {
+                const evaluationsSnapshot = await admin.firestore().collection('evaluations')
+                    .where('userId', 'in', employeeUserIds)
+                    .orderBy('createdAt', 'desc')
+                    .get();
+
+                evaluationsSnapshot.docs.forEach(doc => {
+                    const data = doc.data();
+                    if (!evaluationsMap.has(data.userId)) {
+                        evaluationsMap.set(data.userId, data.createdAt);
+                    }
+                });
+            }
+
+            let pendingCount = 0;
+            let dueSoonCount = 0;
+            let overdueCount = 0;
+            const now = new Date();
+            const sevenDaysFromNow = new Date();
+            sevenDaysFromNow.setDate(now.getDate() + 7);
+
+            const teamMembers = employees.map(emp => {
+                const lastEvaluationTimestamp = evaluationsMap.get(emp.userId);
+                if (lastEvaluationTimestamp) {
+                    const lastEvalDate = lastEvaluationTimestamp.toDate();
+                    const nextEvalDate = new Date(lastEvalDate);
+                    nextEvalDate.setFullYear(lastEvalDate.getFullYear() + 1);
+
+                    let status = 'ok';
+                    if (nextEvalDate < now) {
+                        status = 'overdue';
+                        overdueCount++;
+                    } else if (nextEvalDate <= sevenDaysFromNow) {
+                        status = 'due_soon';
+                        dueSoonCount++;
+                    }
+
+                    return { ...emp, lastEvaluationAt: lastEvaluationTimestamp, nextEvaluationAt: admin.firestore.Timestamp.fromDate(nextEvalDate), status };
+                } else {
+                    pendingCount++;
+                    return { ...emp, status: 'pending' };
+                }
+            });
+
+            const stats = {
+                totalMembers: employees.length,
+                pendingCount,
+                dueSoonCount,
+                overdueCount
+            };
+
+            return res.status(200).json({ stats, teamMembers });
+
+        } catch (err) {
+            console.error("Error fetching HR dashboard data:", err);
+            return res.status(500).json({ error: "Internal server error." });
+        }
+    });
+});
+
+exports.updateUserProfile = functions.https.onRequest((req, res) => {
+    cors(req, res, async () => {
+        if (req.method === 'OPTIONS') {
+            res.status(204).send('');
+            return;
+        }
+        if (req.method !== 'POST') {
+            return res.status(405).json({ error: 'Method Not Allowed' });
+        }
+        try {
+            const { decodedToken, error } = await verifyTokenAndRoles(req);
+            if (error || !decodedToken) {
+                return res.status(403).json({ error: 'Not authorized' });
+            }
+
+            const { profileData } = req.body;
+            if (!profileData) {
+                return res.status(400).json({ error: 'Profile data is required.' });
+            }
+            
+            const userId = decodedToken.uid;
+
+            // Sanitize data
+            const allowedFields = ['firstName', 'lastName', 'photoURL', 'phoneNumber', 'medicalHistory', 'assignedDoctor', 'nextConsultation', 'enableReminders'];
+            const dataToUpdate = {};
+            for (const key of allowedFields) {
+                if (profileData[key] !== undefined) {
+                     if (key === 'nextConsultation' && profileData[key]) {
+                        let date;
+                        if (profileData[key]._seconds) {
+                             date = new Date(profileData[key]._seconds * 1000);
+                        } else {
+                             date = new Date(profileData[key]);
+                        }
+                        dataToUpdate[key] = admin.firestore.Timestamp.fromDate(date);
+                    } else {
+                        dataToUpdate[key] = profileData[key];
+                    }
+                }
+            }
+            
+            await admin.firestore().collection('users').doc(userId).set(dataToUpdate, { merge: true });
+
+            return res.status(200).json({ success: true, message: "Profile updated successfully." });
+        } catch (error) {
+            console.error("Error updating user profile:", error);
+            return res.status(500).json({ error: 'Could not update user profile.' });
         }
     });
 });
