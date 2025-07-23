@@ -24,12 +24,14 @@ const getInitialLanguage = (): Language => {
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>(getInitialLanguage());
   
-  const setLanguage = useCallback((lang: Language) => {
+  // Removed useCallback to ensure the function reference is always fresh,
+  // preventing stale state issues in consumers.
+  const setLanguage = (lang: Language) => {
     if (translations[lang]) {
       setLanguageState(lang);
       localStorage.setItem('niria-lang', lang);
     }
-  }, []);
+  };
 
   const t = useCallback(getTranslator(language), [language]);
 

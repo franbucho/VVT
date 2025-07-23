@@ -1,5 +1,3 @@
-
-
 import { TranslationKeys } from './en';
 
 export const es: TranslationKeys = {
@@ -59,7 +57,7 @@ export const es: TranslationKeys = {
   auth_error_email_in_use: "Esta dirección de correo electrónico ya está en uso por otra cuenta.",
   auth_error_weak_password: "La contraseña es demasiado débil. Debe tener al menos 6 caracteres.",
   auth_error_user_not_found: "No se encontró ninguna cuenta con esta dirección de correo electrónico.",
-  auth_error_wrong_password: "Contraseña incorrecta. Por favor, inténtelo de nuevo.",
+  auth_error_invalid_credentials: "Correo electrónico o contraseña incorrectos. Por favor, verifique sus credenciales o intente restablecer su contraseña.",
   auth_error_invalid_email: "La dirección de correo electrónico no es válida.",
 
   exam_title: "Análisis de Salud Ocular",
@@ -91,9 +89,26 @@ export const es: TranslationKeys = {
   exam_instructions_step5: "Si es posible, solicite la asistencia de otra persona para asegurar que ambos ojos estén centrados y visibles en la imagen.",
   exam_instructional_video_aria: "Video instructivo de captura ocular",
 
+  consent_title: "Consentimiento Informado para la Recopilación de Datos",
+  consent_intro: "Antes de continuar, por favor lea y acepte los siguientes términos sobre la recopilación y uso de sus datos.",
+  consent_purpose_title: "Propósito de la Recopilación de Datos",
+  consent_purpose_text: "Recopilaremos información personal y médica a través del cuestionario de salud y la foto de su ojo que proporcione. Estos datos son esenciales para que nuestra IA realice un análisis preliminar de su salud ocular.",
+  consent_confidentiality_title: "Confidencialidad y Seguridad",
+  consent_confidentiality_text: "Su información se almacenará de forma segura y se manejará con la más estricta confidencialidad. Solo se utilizará para el propósito de este análisis y para mejorar nuestros servicios. No vendemos sus datos personales.",
+  consent_not_a_diagnosis_title: "No es un Diagnóstico Médico",
+  consent_not_a_diagnosis_text: "Este análisis es una herramienta informativa, no un sustituto de un diagnóstico médico profesional. Consulte siempre a un proveedor de atención médica calificado para cualquier problema de salud.",
+  consent_acceptance_text: "Al hacer clic en 'Aceptar y Continuar', usted confirma que ha leído, entendido y acepta la recopilación y uso de sus datos como se describe anteriormente.",
+  consent_accept_button: "Aceptar y Continuar",
+  consent_decline_button: "Rechazar",
+  consent_declined_title: "Se Requiere Consentimiento",
+  consent_declined_message: "Debe aceptar los términos para proceder con el análisis de salud ocular. Puede reiniciar el proceso desde la página de inicio si cambia de opinión.",
+
   questionnaire_title: "Cuestionario de Salud del Paciente",
   questionnaire_intro: "Por favor, responda las siguientes preguntas para proporcionar contexto para su análisis.",
   questionnaire_submitButton: "Continuar a la Captura de Foto",
+  questionnaire_next_button: "Siguiente",
+  questionnaire_previous_button: "Anterior",
+  questionnaire_progress_step: "Paso {current} de {total}",
 
   q_option_other_not_sure: "Otro / No estoy seguro",
   
@@ -103,7 +118,7 @@ export const es: TranslationKeys = {
   q_lastNamePlaceholder: "Pérez",
   q_cityLabel: "Ciudad",
   q_cityPlaceholder: "Ej: Nueva York",
-  q_stateLabel: "Estado (abreviatura de 2 letras)",
+  q_stateLabel: "Estado",
   q_statePlaceholder: "Ej: NY",
   q_dob_label: "Fecha de Nacimiento",
   q_dob_day_placeholder: "Día",
@@ -169,7 +184,7 @@ export const es: TranslationKeys = {
 
   error_validation_name: "Por favor, ingrese su nombre y apellido.",
   error_validation_dob_full: "Por favor, seleccione su fecha de nacimiento completa (día, mes y año).",
-  error_validation_state: "Por favor, ingrese una abreviatura de estado válida de 2 letras.",
+  error_validation_state: "Por favor, seleccione un estado.",
 
   results_title: "Su Análisis de Salud Ocular",
   results_summaryTitle: "Resumen Impulsado por IA",
@@ -196,8 +211,8 @@ export const es: TranslationKeys = {
   results_details_ptosis: "El párpado superior está más bajo de lo normal, lo que puede afectar la visión.",
   results_condition_subconjunctivalHemorrhage: "Hemorragia Subconjuntival",
   results_details_subconjunctivalHemorrhage: "Un vaso sanguíneo roto en la superficie del ojo, a menudo inofensivo pero debe ser revisado.",
-  results_condition_conjunctivitis: "Infección / Conjuntivitis",
-  results_details_conjunctivitis: "Signos de inflamación o infección de la conjuntiva (conjuntivitis), como enrojecimiento y secreción.",
+  results_condition_conjunctivitis: "Infección / Conjunctivitis",
+  results_details_conjunctivitis: "Signos de inflamación o infección de la conjuntiva (conjunctivitis), como enrojecimiento y secreción.",
   results_condition_abnormalPupils: "Pupilas Anormales",
   results_details_abnormalPupils: "Las pupilas parecen de tamaño desigual, deformes o tienen un color inusual, lo que requiere evaluación médica.",
   results_condition_ocularJaundice: "Ictericia Ocular",
@@ -295,6 +310,7 @@ export const es: TranslationKeys = {
   admin_error_premium_update: "Ocurrió un error al cambiar el estado premium.",
   admin_tab_users: "Gestión de Usuarios",
   admin_tab_feedback: "Feedback",
+  admin_tab_stats: "Dashboard",
   admin_feedback_title: "Feedback de Usuarios",
   admin_feedback_table_header_rating: "Calificación",
   admin_feedback_table_header_comment: "Comentario",

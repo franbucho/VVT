@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Feature } from './types';
 import { TranslationKeys } from './localization/en';

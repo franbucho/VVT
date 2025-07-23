@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { EyeAnalysisResult, HealthData, Ophthalmologist, DoctorNote } from '../types';

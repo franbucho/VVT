@@ -221,7 +221,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
           <div className="lg:col-span-3 space-y-8">
             <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-xl shadow-xl">
                <div className="mb-6 border-b border-gray-200 dark:border-dark-border">
-                  <nav className="flex space-x-2 -mb-px" aria-label="Tabs">
+                  <nav className="flex flex-wrap space-x-2 -mb-px" aria-label="Tabs">
                       <TabButton tabName="personal">{t('profile_tab_personal_info')}</TabButton>
                       <TabButton tabName="medical">{t('profile_medical_info_title')}</TabButton>
                       <TabButton tabName="consultation">{t('profile_tab_consultation')}</TabButton>
@@ -273,7 +273,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
                 <div className="space-y-4">
                   {evaluations.length > 0 ? evaluations.map((evaluation) => (
                       <div key={evaluation.id} className="bg-gray-50 dark:bg-dark-background/50 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center">
-                          <p className="font-semibold text-primary-dark dark:text-dark-text-primary">{t('history_evaluationDate')}: {evaluation.createdAt.toDate().toLocaleDateString(t('date_locale' as any))}</p>
+                          <div className="min-w-0 mr-4">
+                            <p className="font-semibold text-primary-dark dark:text-dark-text-primary">{t('history_evaluationDate')}: {evaluation.createdAt.toDate().toLocaleDateString(t('date_locale' as any))}</p>
+                          </div>
                           <div className="flex gap-2 mt-4 sm:mt-0 flex-shrink-0">
                               <Button onClick={() => handleDownload(evaluation)} variant="outline" size="sm" isLoading={isDownloading === evaluation.id}>
                                 {isDownloading === evaluation.id ? t('report_downloading_pdf') : t('report_download_pdf_button')}
@@ -291,8 +293,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
       </PageContainer>
       
        {isEditing && (
-          <div className="sticky bottom-0 bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm p-4 border-t dark:border-dark-border shadow-lg mt-8">
-            <div className="container mx-auto max-w-6xl flex justify-end items-center gap-4">
+          <div className="sticky bottom-0 left-0 right-0 bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm p-4 border-t dark:border-dark-border shadow-lg mt-8">
+            <div className="container mx-auto flex justify-end items-center gap-4">
                {error && <p className="text-danger text-sm">{error}</p>}
                {isUploading && <LoadingSpinner size="sm" text={t('profile_uploading_photo')}/>}
                <Button variant="outline" onClick={() => { setIsEditing(false); setFormData(userProfile); setError(''); }}>{t('profile_cancel_button')}</Button>

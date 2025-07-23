@@ -216,6 +216,63 @@ exports.getAdminDashboardStats = functions.https.onRequest((req, res) => {
     });
 });
 
+// Get daily activity data for the admin chart
+exports.getAdminDashboardChartData = functions.https.onRequest((req, res) => {
+    cors(req, res, async () => {
+        if (req.method !== 'GET') {
+            return res.status(405).send('Method Not Allowed');
+        }
+        try {
+            const { error } = await verifyTokenAndRoles(req, ['admin']);
+            if (error) {
+                return res.status(403).json({ error: 'Not authorized' });
+            }
+
+            const chartData = [];
+            const today = new Date();
+            today.setHours(23, 59, 59, 999); // End of today
+
+            for (let i = 6; i >= 0; i--) {
+                const targetDate = new Date(today);
+                targetDate.setDate(today.getDate() - i);
+
+                const startOfDay = new Date(targetDate);
+                startOfDay.setHours(0, 0, 0, 0);
+
+                const endOfDay = new Date(targetDate);
+                endOfDay.setHours(23, 59, 59, 999);
+
+                const dateLabel = startOfDay.toISOString().split('T')[0]; // YYYY-MM-DD
+
+                // Query for new users
+                const usersSnapshot = await admin.firestore().collection('users')
+                    .where('createdAt', '>=', startOfDay)
+                    .where('createdAt', '<=', endOfDay)
+                    .count().get();
+
+                // Query for new evaluations
+                const evaluationsSnapshot = await admin.firestore().collection('evaluations')
+                    .where('createdAt', '>=', startOfDay)
+                    .where('createdAt', '<=', endOfDay)
+                    .count().get();
+
+                chartData.push({
+                    date: dateLabel,
+                    newUsers: usersSnapshot.data().count,
+                    evaluations: evaluationsSnapshot.data().count,
+                });
+            }
+
+            return res.status(200).json({ chartData });
+
+        } catch (error) {
+            console.error("Error getting chart data:", error);
+            return res.status(500).json({ error: 'Error getting chart data.' });
+        }
+    });
+});
+
+
 // Create a Stripe checkout session
 exports.createCheckoutSession = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {

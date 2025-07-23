@@ -1,5 +1,3 @@
-
-
 export const en = {
   appName: "Niria",
   appMotto: "The future of eye care starts with a photo.",
@@ -57,7 +55,7 @@ export const en = {
   auth_error_email_in_use: "This email address is already in use by another account.",
   auth_error_weak_password: "Password is too weak. It should be at least 6 characters.",
   auth_error_user_not_found: "No account found with this email address.",
-  auth_error_wrong_password: "Incorrect password. Please try again.",
+  auth_error_invalid_credentials: "Incorrect email or password. Please verify your credentials or try resetting your password.",
   auth_error_invalid_email: "The email address is not valid.",
 
   exam_title: "Eye Health Analysis",
@@ -89,9 +87,26 @@ export const en = {
   exam_instructions_step5: "If possible, ask for assistance from another person to ensure both eyes are centered and visible in the image.",
   exam_instructional_video_aria: "Instructional video for eye capture",
 
+  consent_title: "Informed Consent for Data Collection",
+  consent_intro: "Before proceeding, please read and accept the following terms regarding the collection and use of your data.",
+  consent_purpose_title: "Purpose of Data Collection",
+  consent_purpose_text: "We will collect personal and medical information through the health questionnaire and the eye photo you provide. This data is essential for our AI to perform a preliminary analysis of your eye health.",
+  consent_confidentiality_title: "Confidentiality and Security",
+  consent_confidentiality_text: "Your information will be stored securely and handled with the strictest confidentiality. It will only be used for the purpose of this analysis and to improve our services. We do not sell your personal data.",
+  consent_not_a_diagnosis_title: "Not a Medical Diagnosis",
+  consent_not_a_diagnosis_text: "This analysis is an informational tool, not a substitute for a professional medical diagnosis. Always consult a qualified healthcare provider for any health concerns.",
+  consent_acceptance_text: "By clicking 'Accept and Continue', you confirm that you have read, understood, and agree to the collection and use of your data as described above.",
+  consent_accept_button: "Accept and Continue",
+  consent_decline_button: "I Decline",
+  consent_declined_title: "Consent Required",
+  consent_declined_message: "You must accept the terms to proceed with the eye health analysis. You can restart the process from the home page if you change your mind.",
+
   questionnaire_title: "Patient Health Questionnaire",
   questionnaire_intro: "Please answer the following questions to provide context for your analysis.",
   questionnaire_submitButton: "Continue to Photo Capture",
+  questionnaire_next_button: "Next",
+  questionnaire_previous_button: "Previous",
+  questionnaire_progress_step: "Step {current} of {total}",
   
   q_option_other_not_sure: "Other / Not sure",
   
@@ -101,7 +116,7 @@ export const en = {
   q_lastNamePlaceholder: "Doe",
   q_cityLabel: "City",
   q_cityPlaceholder: "e.g., New York",
-  q_stateLabel: "State (2-letter abbreviation)",
+  q_stateLabel: "State",
   q_statePlaceholder: "e.g., NY",
   q_dob_label: "Date of Birth",
   q_dob_day_placeholder: "Day",
@@ -167,7 +182,7 @@ export const en = {
   
   error_validation_name: "Please enter your first and last name.",
   error_validation_dob_full: "Please select your complete date of birth (day, month, and year).",
-  error_validation_state: "Please enter a valid 2-letter state abbreviation.",
+  error_validation_state: "Please select a state.",
 
   results_title: "Your Eye Health Analysis",
   results_summaryTitle: "AI-Powered Summary",
@@ -293,6 +308,7 @@ export const en = {
   admin_error_premium_update: "An error occurred while changing premium status.",
   admin_tab_users: "User Management",
   admin_tab_feedback: "Feedback",
+  admin_tab_stats: "Dashboard",
   admin_feedback_title: "User Feedback",
   admin_feedback_table_header_rating: "Rating",
   admin_feedback_table_header_comment: "Comment",

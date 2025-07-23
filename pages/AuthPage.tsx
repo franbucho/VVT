@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { Page } from '../types';
 import { Button } from '../components/common/Button';
@@ -37,10 +35,16 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
             setError(t('auth_error_weak_password'));
             break;
         case 'auth/user-not-found':
-            setError(t('auth_error_user_not_found'));
+            // On sign-in form, give a generic error. On password reset, be specific.
+            if (isForgotPassword) {
+                setError(t('auth_error_user_not_found'));
+            } else {
+                setError(t('auth_error_invalid_credentials'));
+            }
             break;
         case 'auth/wrong-password':
-            setError(t('auth_error_wrong_password'));
+        case 'auth/invalid-credential': // Handles modern Firebase SDKs too
+            setError(t('auth_error_invalid_credentials'));
             break;
         case 'auth/invalid-email':
             setError(t('auth_error_invalid_email'));

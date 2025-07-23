@@ -1,13 +1,13 @@
-
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { User } from 'firebase/auth';
-import { Page, EyeAnalysisResult, HealthData, Ophthalmologist } from '../types';
+import { Page, EyeAnalysisResult, HealthData, Ophthalmologist, UserProfile } from '../types';
 import { Button } from '../components/common/Button';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { PageContainer } from '../components/common/PageContainer';
-import { UploadIcon, CameraIcon, InfoIcon } from '../constants';
+import { UploadIcon, CameraIcon, XCircleIcon } from '../constants';
 import { useLanguage } from '../contexts/LanguageContext';
 import { HealthQuestionnaire } from '../components/exam/HealthQuestionnaire';
+import { InformedConsent } from '../components/exam/InformedConsent';
 import { saveEvaluationResult } from '../services/firestoreService';
 import { analyzeEyeImage } from '../services/geminiService';
 import { getNearbyOphthalmologists } from '../services/nppesService';
@@ -73,11 +73,25 @@ export const ExamPage: React.FC<ExamPageProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isQuestionnaireCompleted, setIsQuestionnaireCompleted] = useState(false);
+  
+  const [consentGiven, setConsentGiven] = useState(false);
+  const [consentDeclined, setConsentDeclined] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [isProcessingImage, setIsProcessingImage] = useState(false);
+
+  useEffect(() => {
+    try {
+        const savedConsent = localStorage.getItem('niria-user-consent');
+        if (savedConsent === 'true') {
+            setConsentGiven(true);
+        }
+    } catch (e) {
+        console.error("Could not access localStorage for consent check:", e);
+    }
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -292,18 +306,50 @@ export const ExamPage: React.FC<ExamPageProps> = ({
     setHealthData(data);
     setIsQuestionnaireCompleted(true);
   };
+  
+  const handleAcceptConsent = () => {
+      try {
+          localStorage.setItem('niria-user-consent', 'true');
+      } catch (e) {
+          console.error("Could not save consent to localStorage:", e);
+      }
+      setConsentGiven(true);
+  };
+
+  const handleDeclineConsent = () => {
+      setConsentDeclined(true);
+  };
 
   useEffect(() => {
     return () => {
       stopCamera();
     };
   }, [stopCamera]);
+  
+  if (!consentGiven) {
+    return (
+        <PageContainer title={consentDeclined ? t('consent_declined_title') : t('consent_title')} className="max-w-2xl mx-auto">
+            {consentDeclined ? (
+                <div className="bg-white dark:bg-dark-card p-8 rounded-xl shadow-2xl text-center">
+                    <XCircleIcon className="w-12 h-12 text-danger mx-auto mb-4" />
+                    <h2 className="text-xl font-bold text-primary-dark dark:text-dark-text-primary">{t('consent_declined_title')}</h2>
+                    <p className="mt-2 text-primary-dark/80 dark:text-dark-text-secondary">{t('consent_declined_message')}</p>
+                    <Button onClick={() => setCurrentPage(Page.Home)} className="mt-6">
+                        {t('results_backToHomeButton')}
+                    </Button>
+                </div>
+            ) : (
+                <InformedConsent onAccept={handleAcceptConsent} onDecline={handleDeclineConsent} />
+            )}
+        </PageContainer>
+    );
+  }
 
   return (
     <PageContainer title={!isQuestionnaireCompleted ? t('questionnaire_title') : t('exam_title')} className="max-w-2xl mx-auto">
       <div className="bg-white dark:bg-dark-card p-8 rounded-xl shadow-2xl">
         {!isQuestionnaireCompleted ? (
-          <HealthQuestionnaire onSubmit={handleQuestionnaireSubmit} />
+          <HealthQuestionnaire onSubmit={handleQuestionnaireSubmit} currentUser={currentUser} />
         ) : (
           <>
             <div className={`space-y-4 ${isCameraOn ? '' : 'hidden'}`}>

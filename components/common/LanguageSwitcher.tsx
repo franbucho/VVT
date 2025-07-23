@@ -3,7 +3,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { Language } from '../../localization';
 
 export const LanguageSwitcher: React.FC = () => {
-  const { language, setLanguage, t } = useLanguage();
+  const { language, setLanguage } = useLanguage();
 
   const languages: Language[] = ['en', 'es'];
 
@@ -22,7 +22,7 @@ export const LanguageSwitcher: React.FC = () => {
           disabled={language === lang}
           lang={lang} // For assistive technologies to identify button language
         >
-          {t(lang === 'en' ? 'language_switcher_en' : 'language_switcher_es')}
+          {lang.toUpperCase()}
         </button>
       ))}
     </div>

@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import firebase from 'firebase/compat/app';
 
@@ -86,6 +84,7 @@ export interface HealthData {
     redness: boolean;
     checkup: boolean;
     other: boolean;
+    none: boolean;
   };
   screenTimeHours: string;
   wearsLenses: 'yes' | 'no' | 'other' | '';
@@ -100,6 +99,7 @@ export interface HealthData {
     thyroid: boolean;
     arthritis: boolean;
     otherOrNotSure: boolean;
+    none: boolean;
   };
   familyHistory: {
     glaucoma: boolean;
@@ -107,6 +107,7 @@ export interface HealthData {
     strabismus: boolean;
     highMyopia: boolean;
     otherOrNotSure: boolean;
+    none: boolean;
   };
   symptoms: {
     pain: boolean;
@@ -175,4 +176,10 @@ export interface HRDashboardStats {
 export interface HRDashboardData {
     stats: HRDashboardStats;
     teamMembers: Employee[];
+}
+
+export interface AdminChartDataPoint {
+  date: string; // YYYY-MM-DD
+  newUsers: number;
+  evaluations: number;
 }

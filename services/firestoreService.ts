@@ -1,4 +1,3 @@
-
 import firebase from 'firebase/compat/app';
 import { db, auth, storage } from '../firebase';
 import { EvaluationHistoryItem, HealthData, EyeAnalysisResult, Ophthalmologist, UserProfile } from '../types';

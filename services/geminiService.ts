@@ -1,6 +1,3 @@
-
-
-
 import { Language } from "../localization";
 import { TranslationKeys, en } from "../localization/en";
 import { es } from "../localization/es";

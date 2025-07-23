@@ -1,5 +1,3 @@
-
-
 import firebase from 'firebase/compat/app';
 import { auth, db } from '../firebase';
 
