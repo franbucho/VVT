@@ -8,7 +8,7 @@ import { FeedbackModal } from '../components/common/FeedbackModal';
 import { ReportContents } from '../components/ReportContents';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Page, EyeAnalysisResult, HealthData } from '../types';
-import { User } from 'firebase/auth';
+import firebase from 'firebase/compat/app';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -16,7 +16,7 @@ interface ResultsPageProps {
   setCurrentPage: (page: Page) => void;
   analysisResults: EyeAnalysisResult[] | null;
   summary: string;
-  currentUser: User | null;
+  currentUser: firebase.User | null;
   healthData: HealthData | null;
   capturedImage: string | null;
   isPaymentComplete: boolean;

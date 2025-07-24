@@ -100,7 +100,7 @@ export const addDoctorNote = async (evaluationId: string, noteText: string): Pro
         }
     } catch (error) {
         console.error("Error adding doctor note:", error);
-        throw new Error("Failed to add doctor note.");
+        throw error;
     }
 };
 

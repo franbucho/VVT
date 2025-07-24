@@ -1,10 +1,10 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { User } from 'firebase/auth';
+import firebase from 'firebase/compat/app';
 import { Page, EyeAnalysisResult, HealthData, Ophthalmologist, UserProfile } from '../types';
 import { Button } from '../components/common/Button';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { PageContainer } from '../components/common/PageContainer';
-import { UploadIcon, CameraIcon, XCircleIcon } from '../constants';
+import { UploadIcon, CameraIcon, XCircleIcon, EyeMaskOverlay } from '../constants';
 import { useLanguage } from '../contexts/LanguageContext';
 import { HealthQuestionnaire } from '../components/exam/HealthQuestionnaire';
 import { InformedConsent } from '../components/exam/InformedConsent';
@@ -46,7 +46,7 @@ interface ExamPageProps {
   setOphthalmologists: (list: Ophthalmologist[] | null) => void;
   setNewEvaluationId: (id: string | null) => void;
   setIsPaymentComplete: (status: boolean) => void;
-  currentUser: User | null;
+  currentUser: firebase.User | null;
   isAdmin: boolean;
   isPremium: boolean;
   evaluationsCount: number;
@@ -283,7 +283,7 @@ export const ExamPage: React.FC<ExamPageProps> = ({
       setOphthalmologistSummary(summaryText);
       setOphthalmologists(ophthalmologistsList);
 
-      const freePass = isAdmin || (isPremium && evaluationsCount < 2);
+      const freePass = isAdmin || (isPremium && evaluationsCount < 2) || evaluationsCount === 0;
 
       if (freePass) {
         setIsPaymentComplete(true);
@@ -354,8 +354,10 @@ export const ExamPage: React.FC<ExamPageProps> = ({
           <>
             <div className={`space-y-4 ${isCameraOn ? '' : 'hidden'}`}>
               <h3 className="text-lg font-medium text-primary-dark dark:text-dark-text-primary mb-2 text-center">{t('exam_livePreviewTitle')}</h3>
+              <p className="text-sm text-center text-primary-dark/80 dark:text-dark-text-secondary -mt-2 mb-2">{t('exam_mask_instruction')}</p>
               <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden shadow-lg">
                 <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" muted />
+                <EyeMaskOverlay />
                 <canvas ref={canvasRef} className="hidden" />
               </div>
               <div className="flex justify-center gap-4">

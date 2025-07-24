@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import firebase from 'firebase/compat/app';
 import { auth, db } from './firebase';
 
 import { Page, EyeAnalysisResult, HealthData, Ophthalmologist, EvaluationHistoryItem, UserProfile } from './types';
@@ -23,7 +23,7 @@ import { ThemeSwitcher } from './components/common/ThemeSwitcher';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<firebase.User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
@@ -50,7 +50,7 @@ const App: React.FC = () => {
   const { t } = useLanguage();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         setCurrentUser(user);
         try {

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Page, EvaluationHistoryItem, DoctorNote, HealthData } from '../types';
 import { PageContainer } from '../components/common/PageContainer';
@@ -75,11 +74,12 @@ export const EvaluationDetailPage: React.FC<EvaluationDetailPageProps> = ({ eval
         doctorName: currentUser.displayName || 'Doctor',
         createdAt: firebase.firestore.Timestamp.now(),
       };
-      setCurrentNotes(prev => [newNote, ...prev.sort((a,b) => b.createdAt.toMillis() - a.createdAt.toMillis())]);
+      setCurrentNotes(prev => [newNote, ...prev]);
       setNoteText('');
     } catch (err) {
       console.error('Error adding note:', err);
-      setError(t('evaluation_detail_error'));
+      const errorMessage = err instanceof Error ? err.message : t('evaluation_detail_error');
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

@@ -179,3 +179,23 @@ export const BriefcaseIcon: React.FC<{ className?: string }> = ({ className = "w
         <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.075c0 1.313-.972 2.463-2.243 2.723-1.27.26-2.535.26-3.805 0-1.27-.26-2.243-1.41-2.243-2.723V14.15m6.29 0v-2.859c0-.909-.434-1.742-1.155-2.238l-2.243-1.495a1.875 1.875 0 0 0-2.243 0l-2.243 1.495c-.721.496-1.155 1.329-1.155 2.238V14.15m6.29 0h-6.29m6.29 0c.618 0 1.125-.506 1.125-1.125v-2.859c0-.618-.507-1.125-1.125-1.125h-6.29c-.618 0-1.125.507-1.125 1.125v2.859c0 .618.507 1.125 1.125 1.125h6.29Z" />
     </svg>
 );
+
+export const EyeMaskOverlay: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    className={`absolute top-0 left-0 w-full h-full pointer-events-none ${className}`}
+    viewBox="0 0 1600 900"
+    preserveAspectRatio="xMidYMid slice"
+    fill="rgba(0, 0, 0, 0.6)"
+  >
+    <defs>
+      <mask id="eye-mask">
+        <rect width="100%" height="100%" fill="white" />
+        {/* Left Eye Cutout - Larger */}
+        <ellipse cx="560" cy="450" rx="300" ry="200" fill="black" />
+        {/* Right Eye Cutout - Larger */}
+        <ellipse cx="1040" cy="450" rx="300" ry="200" fill="black" />
+      </mask>
+    </defs>
+    <rect width="100%" height="100%" mask="url(#eye-mask)" />
+  </svg>
+);

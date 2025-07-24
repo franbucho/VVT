@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { User } from 'firebase/auth';
+import firebase from 'firebase/compat/app';
 import { PageContainer } from '../components/common/PageContainer';
 import { Button } from '../components/common/Button';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
@@ -34,7 +34,7 @@ interface AdminStats {
 }
 
 interface AdminPageProps {
-  currentUser: User | null;
+  currentUser: firebase.User | null;
 }
 
 const RatingStars: React.FC<{ rating: number }> = ({ rating }) => (

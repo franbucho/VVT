@@ -5,11 +5,11 @@ import { Button } from '../common/Button';
 import { TranslationKeys } from '../../localization/en';
 import { InputField } from '../common/InputField';
 import { usStates, usCities } from '../../data/locations';
-import { User } from 'firebase/auth';
+import firebase from 'firebase/compat/app';
 
 interface HealthQuestionnaireProps {
   onSubmit: (data: HealthData) => void;
-  currentUser: User | null;
+  currentUser: firebase.User | null;
 }
 
 const initialFormData: HealthData = {

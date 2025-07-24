@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { getEvaluationHistory, getUserProfile, uploadProfilePicture } from '../services/firestoreService';
-import { User } from 'firebase/auth';
 import { PageContainer } from '../components/common/PageContainer';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { Button } from '../components/common/Button';

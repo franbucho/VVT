@@ -1,13 +1,13 @@
 // src/components/ReportContents.tsx
 
 import React from 'react';
+import firebase from 'firebase/compat/app';
 import { useLanguage } from '../contexts/LanguageContext';
 import { EyeAnalysisResult, HealthData } from '../types';
-import { User } from 'firebase/auth';
 import { EyeIcon } from '../constants';
 
 interface ReportContentsProps {
-  currentUser: User | null;
+  currentUser: firebase.User | null;
   healthData: HealthData | null;
   analysisResults: EyeAnalysisResult[] | null;
   summary: string;

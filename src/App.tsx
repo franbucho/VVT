@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import firebase from 'firebase/compat/app';
 import { auth } from './firebase';
 
 import { Page, EyeAnalysisResult, HealthData } from './types';
@@ -19,7 +19,7 @@ import { Button } from './components/common/Button';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<firebase.User | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   // Exam flow state
@@ -35,7 +35,7 @@ const App: React.FC = () => {
   const { t } = useLanguage();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         setCurrentUser(user);
         try {
@@ -69,7 +69,7 @@ const App: React.FC = () => {
 
   const handleSignOut = async () => {
     try {
-      await signOut(auth);
+      await auth.signOut();
       // Reset all states on logout
       setHealthData(null);
       setCapturedImage(null);

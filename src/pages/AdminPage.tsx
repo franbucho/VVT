@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { httpsCallable } from 'firebase/functions';
-import { User } from 'firebase/auth';
+import firebase from 'firebase/compat/app';
 import { functions } from '../firebase';
 import { PageContainer } from '../components/common/PageContainer';
 import { Button } from '../components/common/Button';
@@ -17,7 +17,7 @@ interface AppUser {
 }
 
 interface AdminPageProps {
-  currentUser: User | null;
+  currentUser: firebase.User | null;
 }
 
 const RatingStars: React.FC<{ rating: number }> = ({ rating }) => (

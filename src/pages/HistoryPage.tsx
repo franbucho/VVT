@@ -1,7 +1,8 @@
 
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { getEvaluationHistory } from '../services/firestoreService';
-import { User } from 'firebase/auth';
+import firebase from 'firebase/compat/app';
 import { PageContainer } from '../components/common/PageContainer';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { Button } from '../components/common/Button';
@@ -14,7 +15,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 interface HistoryPageProps {
-  currentUser: User | null;
+  currentUser: firebase.User | null;
 }
 
 export const HistoryPage: React.FC<HistoryPageProps> = ({ currentUser }) => {
