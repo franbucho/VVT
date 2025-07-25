@@ -41,7 +41,7 @@ const days = Array.from({ length: 31 }, (_, i) => String(i + 1));
 
 const QuestionWrapper: React.FC<{ label: string; children: React.ReactNode; error?: string }> = ({ label, children, error }) => (
     <div className="animate-fade-in space-y-4">
-        <label className="block text-xl font-semibold text-primary-dark dark:text-dark-text-primary mb-4">{label}</label>
+        <label className="block text-2xl sm:text-3xl font-semibold text-primary-dark dark:text-dark-text-primary mb-6 text-center">{label}</label>
         {children}
         {error && <p className="mt-2 text-sm text-danger">{error}</p>}
     </div>
@@ -101,7 +101,7 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
   const renderRadioGroup = (name: keyof HealthData, options: {value: string, label: keyof TranslationKeys}[]) => (
       <div className="space-y-3">
           {options.map(opt => (
-              <label key={opt.value} className="flex items-center space-x-3 text-base text-primary-dark dark:text-dark-text-secondary cursor-pointer p-3 rounded-lg border border-gray-200 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-background/50 has-[:checked]:bg-accent/10 has-[:checked]:border-accent dark:has-[:checked]:bg-dark-accent/10 dark:has-[:checked]:border-dark-accent">
+              <label key={opt.value} className="flex items-center space-x-4 text-lg text-primary-dark dark:text-dark-text-secondary cursor-pointer p-4 rounded-lg border-2 border-gray-200 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-background/50 has-[:checked]:bg-accent/10 has-[:checked]:border-accent dark:has-[:checked]:bg-dark-accent/10 dark:has-[:checked]:border-dark-accent">
                   <input type="radio" name={name} value={opt.value} checked={(formData[name] as string) === opt.value} onChange={handleInputChange} className="accent-primary dark:accent-dark-accent focus:ring-accent dark:focus:ring-dark-accent w-5 h-5" />
                   <span>{t(opt.label)}</span>
               </label>
@@ -112,7 +112,7 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
   const renderCheckboxGroup = (groupName: keyof HealthData, options: {key: string, label: keyof TranslationKeys}[]) => (
       <div className="space-y-3">
           {options.map(opt => (
-              <label key={opt.key} className="flex items-center space-x-3 text-base text-primary-dark dark:text-dark-text-secondary cursor-pointer p-3 rounded-lg border border-gray-200 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-background/50 has-[:checked]:bg-accent/10 has-[:checked]:border-accent dark:has-[:checked]:bg-dark-accent/10 dark:has-[:checked]:border-dark-accent">
+              <label key={opt.key} className="flex items-center space-x-4 text-lg text-primary-dark dark:text-dark-text-secondary cursor-pointer p-4 rounded-lg border-2 border-gray-200 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-background/50 has-[:checked]:bg-accent/10 has-[:checked]:border-accent dark:has-[:checked]:bg-dark-accent/10 dark:has-[:checked]:border-dark-accent">
                   <input type="checkbox" checked={formData[groupName as 'illnesses'][opt.key as keyof typeof formData['illnesses']]} onChange={() => handleCheckboxChange(groupName as any, opt.key)} className="rounded border-gray-300 dark:border-dark-border dark:bg-dark-card accent-primary dark:accent-dark-accent focus:ring-accent dark:focus:ring-dark-accent w-5 h-5" />
                   <span>{t(opt.label)}</span>
               </label>
@@ -123,17 +123,17 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
   const questions = [
     { key: 'name', validate: () => !formData.firstName.trim() || !formData.lastName.trim() ? t('error_validation_name') : null, render: () => (
         <QuestionWrapper label={`${t('q_firstNameLabel')} & ${t('q_lastNameLabel')}`} error={errors.name}>
-            <InputField label={t('q_firstNameLabel')} id="firstName" name="firstName" type="text" value={formData.firstName} onChange={handleInputChange} required placeholder={t('q_firstNamePlaceholder')} />
-            <InputField label={t('q_lastNameLabel')} id="lastName" name="lastName" type="text" value={formData.lastName} onChange={handleInputChange} required placeholder={t('q_lastNamePlaceholder')} />
+            <InputField label={t('q_firstNameLabel')} id="firstName" name="firstName" type="text" value={formData.firstName} onChange={handleInputChange} required placeholder={t('q_firstNamePlaceholder')} className="sm:text-lg p-3" />
+            <InputField label={t('q_lastNameLabel')} id="lastName" name="lastName" type="text" value={formData.lastName} onChange={handleInputChange} required placeholder={t('q_lastNamePlaceholder')} className="sm:text-lg p-3" />
         </QuestionWrapper>
     )},
     { key: 'location', validate: () => !formData.state ? t('error_validation_state') : null, render: () => (
         <QuestionWrapper label={`${t('q_stateLabel')} & ${t('q_cityLabel')}`} error={errors.location}>
-            <select id="state" name="state" value={formData.state} onChange={handleStateChange} required className="block w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-lg bg-white dark:bg-dark-card dark:text-dark-text-primary">
+            <select id="state" name="state" value={formData.state} onChange={handleStateChange} required className="block w-full px-3 py-3 border-2 border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-lg bg-white dark:bg-dark-card dark:text-dark-text-primary">
                 <option value="" disabled>{t('q_statePlaceholder')}</option>
                 {usStates.map(s => <option key={s.code} value={s.code}>{s.name}</option>)}
             </select>
-            <select id="city" name="city" value={formData.city} onChange={handleInputChange} required disabled={!formData.state} className="block w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-lg bg-white dark:bg-dark-card dark:text-dark-text-primary disabled:bg-gray-100 dark:disabled:bg-dark-background/50">
+            <select id="city" name="city" value={formData.city} onChange={handleInputChange} required disabled={!formData.state} className="block w-full px-3 py-3 border-2 border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-lg bg-white dark:bg-dark-card dark:text-dark-text-primary disabled:bg-gray-100 dark:disabled:bg-dark-background/50">
                 <option value="" disabled>{t('q_cityPlaceholder')}</option>
                 {cities.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
@@ -142,9 +142,9 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
     { key: 'dob', validate: () => !formData.birthDate.day || !formData.birthDate.month || !formData.birthDate.year ? t('error_validation_dob_full') : null, render: () => (
         <QuestionWrapper label={t('q_dob_label')} error={errors.dob}>
              <div className="grid grid-cols-3 gap-4">
-                <select name="day" value={formData.birthDate.day} onChange={handleInputChange} required className="block w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-lg bg-white dark:bg-dark-card dark:text-dark-text-primary"><option value="" disabled>{t('q_dob_day_placeholder')}</option>{days.map(day => <option key={day} value={day}>{day}</option>)}</select>
-                <select name="month" value={formData.birthDate.month} onChange={handleInputChange} required className="block w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-lg bg-white dark:bg-dark-card dark:text-dark-text-primary"><option value="" disabled>{t('q_dob_month_placeholder')}</option>{months.map((monthKey, index) => <option key={monthKey} value={String(index + 1)}>{t(monthKey)}</option>)}</select>
-                <select name="year" value={formData.birthDate.year} onChange={handleInputChange} required className="block w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-lg bg-white dark:bg-dark-card dark:text-dark-text-primary"><option value="" disabled>{t('q_dob_year_placeholder')}</option>{years.map(year => <option key={year} value={year}>{year}</option>)}</select>
+                <select name="day" value={formData.birthDate.day} onChange={handleInputChange} required className="block w-full px-3 py-3 border-2 border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-lg bg-white dark:bg-dark-card dark:text-dark-text-primary"><option value="" disabled>{t('q_dob_day_placeholder')}</option>{days.map(day => <option key={day} value={day}>{day}</option>)}</select>
+                <select name="month" value={formData.birthDate.month} onChange={handleInputChange} required className="block w-full px-3 py-3 border-2 border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-lg bg-white dark:bg-dark-card dark:text-dark-text-primary"><option value="" disabled>{t('q_dob_month_placeholder')}</option>{months.map((monthKey, index) => <option key={monthKey} value={String(index + 1)}>{t(monthKey)}</option>)}</select>
+                <select name="year" value={formData.birthDate.year} onChange={handleInputChange} required className="block w-full px-3 py-3 border-2 border-gray-300 dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-lg bg-white dark:bg-dark-card dark:text-dark-text-primary"><option value="" disabled>{t('q_dob_year_placeholder')}</option>{years.map(year => <option key={year} value={year}>{year}</option>)}</select>
             </div>
         </QuestionWrapper>
     )},
@@ -156,13 +156,13 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
     { key: 'lenses', validate: () => null, render: () => (
         <QuestionWrapper label={t('q2_label')}>
             {renderRadioGroup('wearsLenses', [{value: 'yes', label: 'q2_yes'}, {value: 'no', label: 'q2_no'}, {value: 'other', label: 'q_option_other_not_sure'}])}
-            {formData.wearsLenses === 'yes' && <div className="mt-4 space-y-4 pl-4 border-l-2 border-accent/50 dark:border-dark-accent/50 animate-fade-in"><InputField label={t('q2_satisfactionLabel')} id="lensesSatisfaction" name="lensesSatisfaction" value={formData.lensesSatisfaction} onChange={handleInputChange} placeholder={t('q2_satisfactionPlaceholder')} /><InputField label={t('q2_lastUpdateLabel')} id="lensesLastUpdate" name="lensesLastUpdate" value={formData.lensesLastUpdate} onChange={handleInputChange} placeholder={t('q2_lastUpdatePlaceholder')} /></div>}
+            {formData.wearsLenses === 'yes' && <div className="mt-4 space-y-4 pl-4 border-l-4 border-accent/50 dark:border-dark-accent/50 animate-fade-in"><InputField label={t('q2_satisfactionLabel')} id="lensesSatisfaction" name="lensesSatisfaction" value={formData.lensesSatisfaction} onChange={handleInputChange} placeholder={t('q2_satisfactionPlaceholder')} className="sm:text-lg p-3" /><InputField label={t('q2_lastUpdateLabel')} id="lensesLastUpdate" name="lensesLastUpdate" value={formData.lensesLastUpdate} onChange={handleInputChange} placeholder={t('q2_lastUpdatePlaceholder')} className="sm:text-lg p-3" /></div>}
         </QuestionWrapper>
     )},
     { key: 'surgery', validate: () => null, render: () => (
         <QuestionWrapper label={t('q3_label')}>
             {renderRadioGroup('hadSurgeryOrInjury', [{value: 'yes', label: 'q2_yes'}, {value: 'no', label: 'q2_no'}, {value: 'other', label: 'q_option_other_not_sure'}])}
-            {formData.hadSurgeryOrInjury === 'yes' && <div className="mt-4 pl-4 border-l-2 border-accent/50 dark:border-dark-accent/50 animate-fade-in"><InputField label={t('q3_detailsLabel')} id="surgeryOrInjuryDetails" name="surgeryOrInjuryDetails" value={formData.surgeryOrInjuryDetails} onChange={handleInputChange} placeholder={t('q3_detailsPlaceholder')} /></div>}
+            {formData.hadSurgeryOrInjury === 'yes' && <div className="mt-4 pl-4 border-l-4 border-accent/50 dark:border-dark-accent/50 animate-fade-in"><InputField label={t('q3_detailsLabel')} id="surgeryOrInjuryDetails" name="surgeryOrInjuryDetails" value={formData.surgeryOrInjuryDetails} onChange={handleInputChange} placeholder={t('q3_detailsPlaceholder')} className="sm:text-lg p-3" /></div>}
         </QuestionWrapper>
     )},
     { key: 'illnesses', validate: () => null, render: () => (
@@ -210,15 +210,15 @@ export const HealthQuestionnaire: React.FC<HealthQuestionnaireProps> = ({ onSubm
         <p className="text-sm font-medium text-primary-dark/70 dark:text-dark-text-secondary text-center">
           {t('questionnaire_progress_step', { current: currentStep + 1, total: totalSteps })}
         </p>
-        <div className="w-full bg-gray-200 dark:bg-dark-border/50 rounded-full h-2">
+        <div className="w-full bg-gray-200 dark:bg-dark-border/50 rounded-full h-2.5">
           <div 
-            className="bg-accent dark:bg-dark-accent h-2 rounded-full transition-all duration-300" 
+            className="bg-accent dark:bg-dark-accent h-2.5 rounded-full transition-all duration-300" 
             style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
           />
         </div>
       </div>
 
-      <div className="min-h-[350px] flex flex-col justify-center">
+      <div className="min-h-[400px] flex flex-col justify-center">
         {questions[currentStep].render()}
       </div>
 

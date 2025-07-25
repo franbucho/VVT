@@ -6,7 +6,7 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Feedback, AdminChartDataPoint, Team } from '../types';
 import { StarIcon, UsersGroupIcon, ShieldCheckIcon, SparklesIcon, StethoscopeIcon, UserIcon, DocumentTextIcon, BriefcaseIcon } from '../constants';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import { InputField } from '../components/common/InputField';
 import { StatCard } from '../components/common/StatCard';
 import { DailyActivityChart } from '../components/admin/DailyActivityChart';
@@ -20,6 +20,7 @@ interface AppUser {
   isPremium: boolean;
   isDoctor: boolean;
   isHrAdmin: boolean;
+  isRequestingDoctorRole: boolean;
   teamId: string | null;
 }
 
@@ -47,7 +48,7 @@ const RatingStars: React.FC<{ rating: number }> = ({ rating }) => (
 
 export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<'stats' | 'users' | 'feedback'>('stats');
+  const [activeTab, setActiveTab] = useState<'stats' | 'users' | 'feedback' | 'doctor_requests'>('stats');
 
   const [users, setUsers] = useState<AppUser[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -91,7 +92,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
     setError('');
     setMessage('');
     try {
-      if (activeTab === 'users') {
+      if (activeTab === 'users' || activeTab === 'doctor_requests') {
         const [usersResult, teamsResult] = await Promise.all([
           callApi('listAllUsers', 'POST'),
           callApi('manageTeams', 'GET')
@@ -132,7 +133,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
     try {
       await callApi('toggleUserRole', 'POST', { uid, role, status });
       
-      // If unchecking HR Admin, also unassign from team.
       if (role === 'hr_admin' && !status) {
          await callApi('assignTeamToUser', 'POST', { userId: uid, teamId: null });
       }
@@ -147,9 +147,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
                     case 'doctor': updatedUser.isDoctor = status; break;
                     case 'hr_admin': 
                         updatedUser.isHrAdmin = status;
-                        if (!status) {
-                            updatedUser.teamId = null; // Also clear teamId in local state
-                        }
+                        if (!status) updatedUser.teamId = null;
                         break;
                 }
                 return updatedUser;
@@ -161,6 +159,23 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
       setMessage(t('admin_success_role_update'));
     } catch (err: any) {
       setError(err.message || t('admin_error_role_update'));
+    } finally {
+      setUpdatingUid(null);
+    }
+  };
+
+  const handleApproveDoctor = async (uid: string) => {
+    setMessage('');
+    setError('');
+    setUpdatingUid(uid);
+    try {
+      await callApi('approveDoctorRequest', 'POST', { uid });
+      setMessage(t('admin_success_role_update'));
+      setUsers(currentUsers =>
+        currentUsers.map(u => u.uid === uid ? { ...u, isDoctor: true, isRequestingDoctorRole: false } : u)
+      );
+    } catch (err: any) {
+      setError(err.message || 'Failed to approve request.');
     } finally {
       setUpdatingUid(null);
     }
@@ -253,7 +268,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
                             <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={user.isPremium} onChange={(e) => handleToggleRole(user.uid, 'premium', e.target.checked)} disabled={updatingUid === `${user.uid}premium`} className="accent-primary dark:accent-dark-accent rounded"/><span>{t('admin_role_premium')}</span></label>
                             <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={user.isDoctor} onChange={(e) => handleToggleRole(user.uid, 'doctor', e.target.checked)} disabled={updatingUid === `${user.uid}doctor`} className="accent-primary dark:accent-dark-accent rounded"/><span>{t('admin_role_doctor')}</span></label>
                             <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={user.isHrAdmin} onChange={(e) => handleToggleRole(user.uid, 'hr_admin', e.target.checked)} disabled={updatingUid === `${user.uid}hr_admin`} className="accent-primary dark:accent-dark-accent rounded"/><span>{t('admin_role_hr_admin')}</span></label>
-                            {user.isHrAdmin && (
+                            {(user.isHrAdmin || user.isDoctor) && (
                                 <div className="pl-6 pt-1">
                                     <select 
                                         value={user.teamId || ''} 
@@ -294,6 +309,48 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
       </div>
     </>
   );
+  
+  const renderDoctorRequestsTab = () => {
+    const requests = users.filter(u => u.isRequestingDoctorRole && !u.isDoctor);
+    return (
+      <>
+        <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary">{t('admin_doctor_requests_title')}</h2>
+        {message && <p className="text-green-600 bg-green-50 dark:bg-green-500/10 dark:text-green-300 p-3 rounded-md text-sm">{message}</p>}
+        {error && <p className="text-danger bg-red-50 dark:bg-red-500/10 dark:text-red-300 p-3 rounded-md text-sm">{error}</p>}
+        <div className="overflow-x-auto border border-gray-200 dark:border-dark-border rounded-lg">
+          {isLoading ? <LoadingSpinner text={t('admin_error_load_users')} className="py-20" /> : (
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+              <thead className="bg-primary-dark/5 dark:bg-dark-background/50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('admin_table_header_user')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-primary/80 dark:text-dark-text-secondary uppercase tracking-wider">{t('admin_table_header_action')}</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-dark-card divide-y divide-gray-200 dark:divide-dark-border">
+                {requests.length > 0 ? requests.map(user => (
+                  <tr key={user.uid}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-primary-dark dark:text-dark-text-primary">{user.displayName || t('admin_no_name')}</div>
+                      <div className="text-sm text-primary-dark/70 dark:text-dark-text-secondary">{user.email}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Button onClick={() => handleApproveDoctor(user.uid)} size="sm" isLoading={updatingUid === user.uid}>{t('admin_action_approve')}</Button>
+                    </td>
+                  </tr>
+                )) : (
+                  <tr>
+                    <td colSpan={2} className="px-6 py-12 text-center text-sm text-primary-dark/70 dark:text-dark-text-secondary">
+                      {t('admin_no_doctor_requests')}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </>
+    );
+  };
 
   const renderFeedbackTab = () => (
     <>
@@ -354,10 +411,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
         <div className="mb-6 border-b border-gray-200 dark:border-dark-border">
             <nav className="flex flex-wrap space-x-2 -mb-px" aria-label="Tabs">
                 <button onClick={() => setActiveTab('stats')} className={`py-3 px-4 text-sm font-medium text-center border-b-2 ${activeTab === 'stats' ? 'border-accent text-accent dark:border-dark-accent dark:text-dark-accent' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-dark-text-secondary dark:hover:text-dark-text-primary dark:hover:border-dark-border'}`}>
-                    {t('admin_tab_stats' as any)}
+                    {t('admin_tab_stats')}
                 </button>
                 <button onClick={() => setActiveTab('users')} className={`py-3 px-4 text-sm font-medium text-center border-b-2 ${activeTab === 'users' ? 'border-accent text-accent dark:border-dark-accent dark:text-dark-accent' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-dark-text-secondary dark:hover:text-dark-text-primary dark:hover:border-dark-border'}`}>
                     {t('admin_tab_users')}
+                </button>
+                 <button onClick={() => setActiveTab('doctor_requests')} className={`py-3 px-4 text-sm font-medium text-center border-b-2 ${activeTab === 'doctor_requests' ? 'border-accent text-accent dark:border-dark-accent dark:text-dark-accent' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-dark-text-secondary dark:hover:text-dark-text-primary dark:hover:border-dark-border'}`}>
+                    {t('admin_tab_doctor_requests')}
                 </button>
                 <button onClick={() => setActiveTab('feedback')} className={`py-3 px-4 text-sm font-medium text-center border-b-2 ${activeTab === 'feedback' ? 'border-accent text-accent dark:border-dark-accent dark:text-dark-accent' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-dark-text-secondary dark:hover:text-dark-text-primary dark:hover:border-dark-border'}`}>
                     {t('admin_tab_feedback')}
@@ -367,6 +427,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
         <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-xl shadow-2xl space-y-6">
             {activeTab === 'stats' && renderStatsTab()}
             {activeTab === 'users' && renderUsersTab()}
+            {activeTab === 'doctor_requests' && renderDoctorRequestsTab()}
             {activeTab === 'feedback' && renderFeedbackTab()}
         </div>
     </PageContainer>

@@ -328,7 +328,7 @@ export const ExamPage: React.FC<ExamPageProps> = ({
   
   if (!consentGiven) {
     return (
-        <PageContainer title={consentDeclined ? t('consent_declined_title') : t('consent_title')} className="max-w-2xl mx-auto">
+        <PageContainer title={consentDeclined ? t('consent_declined_title') : t('consent_title')} className="max-w-4xl mx-auto">
             {consentDeclined ? (
                 <div className="bg-white dark:bg-dark-card p-8 rounded-xl shadow-2xl text-center">
                     <XCircleIcon className="w-12 h-12 text-danger mx-auto mb-4" />
@@ -346,17 +346,17 @@ export const ExamPage: React.FC<ExamPageProps> = ({
   }
 
   return (
-    <PageContainer title={!isQuestionnaireCompleted ? t('questionnaire_title') : t('exam_title')} className="max-w-2xl mx-auto">
-      <div className="bg-white dark:bg-dark-card p-8 rounded-xl shadow-2xl">
+    <PageContainer title={!isQuestionnaireCompleted ? t('questionnaire_title') : t('exam_title')} className="max-w-4xl mx-auto">
+      <div className="bg-white dark:bg-dark-card p-4 sm:p-8 rounded-xl shadow-2xl">
         {!isQuestionnaireCompleted ? (
           <HealthQuestionnaire onSubmit={handleQuestionnaireSubmit} currentUser={currentUser} />
         ) : (
           <>
             <div className={`space-y-4 ${isCameraOn ? '' : 'hidden'}`}>
-              <h3 className="text-lg font-medium text-primary-dark dark:text-dark-text-primary mb-2 text-center">{t('exam_livePreviewTitle')}</h3>
-              <p className="text-sm text-center text-primary-dark/80 dark:text-dark-text-secondary -mt-2 mb-2">{t('exam_mask_instruction')}</p>
+              <h3 className="text-xl font-medium text-primary-dark dark:text-dark-text-primary mb-2 text-center">{t('exam_livePreviewTitle')}</h3>
+              <p className="text-base text-center text-primary-dark/80 dark:text-dark-text-secondary -mt-2 mb-2">{t('exam_mask_instruction')}</p>
               <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden shadow-lg">
-                <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" muted />
+                <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover transform scale-x-[-1]" muted />
                 <EyeMaskOverlay />
                 <canvas ref={canvasRef} className="hidden" />
               </div>

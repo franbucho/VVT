@@ -76,6 +76,35 @@ exports.toggleUserRole = functions.https.onRequest((req, res) => {
   });
 });
 
+exports.approveDoctorRequest = functions.https.onRequest((req, res) => {
+    cors(req, res, async () => {
+        if (req.method !== 'POST') { return res.status(405).send('Method Not Allowed'); }
+        try {
+            const { decodedToken, error } = await verifyTokenAndRoles(req, ['admin']);
+            if (error) { return res.status(403).json({ error: 'Not authorized' }); }
+
+            const { uid } = req.body;
+            if (!uid) {
+                return res.status(400).json({ error: 'User ID is required.' });
+            }
+
+            const user = await admin.auth().getUser(uid);
+            const updatedClaims = { ...user.customClaims, doctor: true };
+            await admin.auth().setCustomUserClaims(uid, updatedClaims);
+
+            await admin.firestore().collection('users').doc(uid).update({
+                isRequestingDoctorRole: false
+            });
+
+            return res.status(200).json({ message: `Doctor request for user ${uid} approved.` });
+        } catch (error) {
+            console.error("Error approving doctor request:", error);
+            return res.status(500).json({ error: 'Could not approve doctor request.' });
+        }
+    });
+});
+
+
 // Admin: Assign a team to a user
 exports.assignTeamToUser = functions.https.onRequest((req, res) => {
     cors(req, res, async () => {
@@ -121,6 +150,7 @@ exports.listAllUsers = functions.https.onRequest((req, res) => {
         isPremium: !!user.customClaims?.premium,
         isDoctor: !!user.customClaims?.doctor,
         isHrAdmin: !!user.customClaims?.hr_admin,
+        isRequestingDoctorRole: usersData[user.uid]?.isRequestingDoctorRole || false,
         teamId: usersData[user.uid]?.teamId || null,
       }));
       return res.status(200).json({ users });

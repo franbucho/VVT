@@ -16,6 +16,16 @@ export enum Page {
   DoctorPortal = 'DOCTOR_PORTAL',
   EvaluationDetail = 'EVALUATION_DETAIL',
   HR_ADMIN = 'HR_ADMIN',
+  Pricing = 'PRICING',
+}
+
+export interface DoctorProfile {
+  specialty: string;
+  licenseNumber: string;
+  graduationYear: string;
+  country: string;
+  state: string;
+  city: string;
 }
 
 export interface UserProfile {
@@ -38,6 +48,8 @@ export interface UserProfile {
   nextConsultation?: Timestamp | null;
   enableReminders?: boolean;
   teamId?: string | null;
+  isRequestingDoctorRole?: boolean;
+  doctorProfile?: DoctorProfile;
 }
 
 

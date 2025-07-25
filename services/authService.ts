@@ -1,5 +1,6 @@
 import firebase from 'firebase/compat/app';
 import { auth, db } from '../firebase';
+import { DoctorProfile } from '../types';
 
 export const signUpWithEmailPassword = async (email: string, password: string, firstName: string, lastName: string): Promise<firebase.auth.UserCredential> => {
   const userCredential = await auth.createUserWithEmailAndPassword(email, password);
@@ -21,6 +22,33 @@ export const signUpWithEmailPassword = async (email: string, password: string, f
     email: user.email,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+  }, { merge: true });
+
+  return userCredential;
+};
+
+export const signUpDoctor = async (email: string, password: string, firstName: string, lastName: string, doctorProfile: DoctorProfile): Promise<firebase.auth.UserCredential> => {
+  const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+  const user = userCredential.user;
+
+  if (!user) {
+    throw new Error("User not found after creation.");
+  }
+
+  const displayName = `Dr. ${firstName} ${lastName}`;
+  await user.updateProfile({ displayName });
+
+  const userDocRef = db.collection("users").doc(user.uid);
+  await userDocRef.set({
+    uid: user.uid,
+    displayName,
+    firstName,
+    lastName,
+    email: user.email,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+    isRequestingDoctorRole: true,
+    doctorProfile: doctorProfile,
   }, { merge: true });
 
   return userCredential;

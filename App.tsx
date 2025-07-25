@@ -15,6 +15,7 @@ import { SupportPage } from './pages/SupportPage';
 import { DoctorPortal } from './pages/DoctorPortal';
 import { EvaluationDetailPage } from './pages/EvaluationDetailPage';
 import { HRAdminPage } from './pages/HRAdminPage';
+import { PricingPage } from './pages/PricingPage';
 import { useLanguage } from './contexts/LanguageContext';
 import { LanguageSwitcher } from './components/common/LanguageSwitcher';
 import { Button } from './components/common/Button';
@@ -214,6 +215,8 @@ const App: React.FC = () => {
           return null;
         }
         return <PaymentPage setCurrentPage={setCurrentPage} />;
+      case Page.Pricing:
+        return <PricingPage setCurrentPage={setCurrentPage} currentUser={currentUser} />;
       case Page.Admin:
         if (!currentUser || !isAdmin) {
           setCurrentPage(Page.Home);
@@ -245,97 +248,112 @@ const App: React.FC = () => {
     }
   };
 
+  const isExamFlow = currentPage === Page.Exam;
+
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-light dark:bg-dark-background">
-      <header className="bg-white dark:bg-dark-card shadow-md sticky top-0 z-50">
-        <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-y-2">
-          <div 
-            className="flex items-center space-x-2 cursor-pointer"
-            onClick={() => setCurrentPage(Page.Home)}
-            aria-label={t('appName')}
-          >
-            <EyeIcon className="w-8 h-8 text-accent dark:text-dark-accent" />
-            <span className="text-xl font-bold text-primary-dark dark:text-dark-text-primary">{t('appName')}</span>
-          </div>
-          <div className="flex items-center flex-wrap justify-end gap-x-2 sm:gap-x-4 gap-y-2">
-            <LanguageSwitcher />
-            <ThemeSwitcher />
-            {isAuthLoading ? (
-              <div className="w-32 h-9 bg-gray-200 dark:bg-dark-border/50 rounded-lg animate-pulse"></div>
-            ) : currentUser ? (
-              <div className="flex items-center flex-wrap justify-end gap-x-2 sm:gap-x-4 gap-y-2">
-                 <button 
-                  onClick={() => setCurrentPage(Page.Profile)}
-                  className="text-sm font-medium text-primary-dark hover:text-accent dark:text-dark-text-primary dark:hover:text-dark-accent transition-colors"
-                >
-                  {t('header_myProfileLink')}
-                </button>
-                 {isAdmin && (
-                  <Button 
-                    onClick={() => setCurrentPage(Page.Admin)} 
-                    variant="ghost" 
+    <div className={`min-h-screen flex flex-col ${isExamFlow ? 'bg-white dark:bg-dark-card' : 'bg-neutral-light dark:bg-dark-background'}`}>
+      {!isExamFlow && (
+        <header className="bg-white dark:bg-dark-card shadow-md sticky top-0 z-50">
+          <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-y-2">
+            <div 
+              className="flex items-center space-x-2 cursor-pointer"
+              onClick={() => setCurrentPage(Page.Home)}
+              aria-label={t('appName')}
+            >
+              <EyeIcon className="w-8 h-8 text-accent dark:text-dark-accent" />
+              <span className="text-xl font-bold text-primary-dark dark:text-dark-text-primary">{t('appName')}</span>
+            </div>
+            <div className="flex items-center flex-wrap justify-end gap-x-2 sm:gap-x-4 gap-y-2">
+              <LanguageSwitcher />
+              <ThemeSwitcher />
+              {isAuthLoading ? (
+                <div className="w-32 h-9 bg-gray-200 dark:bg-dark-border/50 rounded-lg animate-pulse"></div>
+              ) : currentUser ? (
+                <div className="flex items-center flex-wrap justify-end gap-x-2 sm:gap-x-4 gap-y-2">
+                  <button 
+                    onClick={() => setCurrentPage(Page.Profile)}
+                    className="text-sm font-medium text-primary-dark hover:text-accent dark:text-dark-text-primary dark:hover:text-dark-accent transition-colors"
+                  >
+                    {t('header_myProfileLink')}
+                  </button>
+                  {isAdmin && (
+                    <Button 
+                      onClick={() => setCurrentPage(Page.Admin)} 
+                      variant="ghost" 
+                      size="sm"
+                    >
+                      {t('header_adminPanel')}
+                    </Button>
+                  )}
+                  {isDoctor && (
+                    <Button 
+                      onClick={() => setCurrentPage(Page.DoctorPortal)} 
+                      variant="ghost" 
+                      size="sm"
+                    >
+                      {t('header_doctorPortal')}
+                    </Button>
+                  )}
+                  {isHrAdmin && (
+                    <Button 
+                      onClick={() => setCurrentPage(Page.HR_ADMIN)} 
+                      variant="ghost" 
+                      size="sm"
+                    >
+                      {t('header_hrAdminPanel')}
+                    </Button>
+                  )}
+                  <span className="text-sm text-primary-dark/80 dark:text-dark-text-secondary hidden md:inline" title={currentUser.email || ''}>
+                    {t('header_welcomeMessage', { email: currentUser.displayName?.split(' ')[0] || 'User' })}
+                  </span>
+                  <Button
+                    onClick={handleSignOut}
+                    variant="outline"
                     size="sm"
                   >
-                    {t('header_adminPanel')}
+                    {t('header_logoutButton')}
                   </Button>
-                )}
-                 {isDoctor && (
-                  <Button 
-                    onClick={() => setCurrentPage(Page.DoctorPortal)} 
-                    variant="ghost" 
+                </div>
+              ) : (
+                <div className="flex items-center gap-x-2 sm:gap-x-4">
+                  <Button
+                      onClick={() => setCurrentPage(Page.Pricing)}
+                      variant="ghost"
+                      size="sm"
+                  >
+                      {t('header_pricingLink')}
+                  </Button>
+                  <Button
+                    onClick={() => setCurrentPage(Page.Auth)}
+                    variant="primary"
                     size="sm"
                   >
-                    {t('header_doctorPortal')}
+                    {t('header_loginRegisterButton')}
                   </Button>
-                )}
-                 {isHrAdmin && (
-                  <Button 
-                    onClick={() => setCurrentPage(Page.HR_ADMIN)} 
-                    variant="ghost" 
-                    size="sm"
-                  >
-                    {t('header_hrAdminPanel')}
-                  </Button>
-                )}
-                <span className="text-sm text-primary-dark/80 dark:text-dark-text-secondary hidden md:inline" title={currentUser.email || ''}>
-                  {t('header_welcomeMessage', { email: currentUser.displayName?.split(' ')[0] || 'User' })}
-                </span>
-                <Button
-                  onClick={handleSignOut}
-                  variant="outline"
-                  size="sm"
-                >
-                  {t('header_logoutButton')}
-                </Button>
-              </div>
-            ) : (
-              <Button
-                onClick={() => setCurrentPage(Page.Auth)}
-                variant="primary"
-                size="sm"
-              >
-                {t('header_loginRegisterButton')}
-              </Button>
-            )}
-          </div>
-        </nav>
-      </header>
+                </div>
+              )}
+            </div>
+          </nav>
+        </header>
+      )}
 
       <main className="flex-grow">
         {renderPage()}
       </main>
 
-      <footer className="bg-primary-dark dark:bg-dark-card text-white dark:text-dark-text-primary py-4 text-center mt-auto">
-        <div className="container mx-auto px-4">
-          <p className="text-sm opacity-80">&copy; {new Date().getFullYear()} {t('footerText')} {t('footerDisclaimer')}</p>
-           <button 
-              onClick={() => setCurrentPage(Page.Support)}
-              className="text-sm text-accent hover:underline mt-2 inline-block dark:text-dark-accent"
-            >
-              {t('footer_supportLink')}
-            </button>
-        </div>
-      </footer>
+      {!isExamFlow && (
+        <footer className="bg-primary-dark dark:bg-dark-card text-white dark:text-dark-text-primary py-4 text-center mt-auto">
+          <div className="container mx-auto px-4">
+            <p className="text-sm opacity-80">&copy; {new Date().getFullYear()} {t('footerText')} {t('footerDisclaimer')}</p>
+            <button 
+                onClick={() => setCurrentPage(Page.Support)}
+                className="text-sm text-accent hover:underline mt-2 inline-block dark:text-dark-accent"
+              >
+                {t('footer_supportLink')}
+              </button>
+          </div>
+        </footer>
+      )}
     </div>
   );
 };
