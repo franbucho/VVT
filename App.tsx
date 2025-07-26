@@ -21,6 +21,7 @@ import { LanguageSwitcher } from './components/common/LanguageSwitcher';
 import { Button } from './components/common/Button';
 import { getEvaluationsCount, getUserProfile } from './services/firestoreService';
 import { ThemeSwitcher } from './components/common/ThemeSwitcher';
+import { useReminderNotifications } from './hooks/useReminderNotifications';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
@@ -49,6 +50,10 @@ const App: React.FC = () => {
   const [selectedEvaluation, setSelectedEvaluation] = useState<EvaluationHistoryItem | null>(null);
   
   const { t } = useLanguage();
+  
+  // Activate reminder notifications for the logged-in user
+  useReminderNotifications(currentUser);
+
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {

@@ -28,6 +28,19 @@ export interface DoctorProfile {
   city: string;
 }
 
+export interface Reminder {
+  id: string;
+  userId: string;
+  type: 'medication' | 'consultation';
+  name: string; // e.g., "Latanoprost" or "Annual Check-up"
+  details: string; // e.g., "1 drop in each eye" or "Follow-up with Dr. Smith"
+  interval: number; // e.g., 8
+  frequency: 'hours' | 'days' | 'weeks' | 'months'; // e.g., 'hours'
+  startsAt: Timestamp; // The timestamp for the first reminder
+  lastTriggeredAt: Timestamp | null; // The timestamp of the last notification sent
+  isActive: boolean;
+}
+
 export interface UserProfile {
   uid: string;
   email: string | null;
@@ -44,9 +57,6 @@ export interface UserProfile {
     conditions?: string;
     surgeries?: string;
   };
-  assignedDoctor?: string;
-  nextConsultation?: Timestamp | null;
-  enableReminders?: boolean;
   teamId?: string | null;
   isRequestingDoctorRole?: boolean;
   doctorProfile?: DoctorProfile;

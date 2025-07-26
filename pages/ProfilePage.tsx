@@ -1,42 +1,48 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { getEvaluationHistory, getUserProfile, uploadProfilePicture } from '../services/firestoreService';
+import { getEvaluationHistory, getUserProfile, uploadProfilePicture, getReminders, addReminder, deleteReminder } from '../services/firestoreService';
 import { PageContainer } from '../components/common/PageContainer';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { Button } from '../components/common/Button';
 import { ReportContents } from '../components/ReportContents';
 import { useLanguage } from '../contexts/LanguageContext';
-import { EvaluationHistoryItem, UserProfile } from '../types';
+import { EvaluationHistoryItem, UserProfile, Reminder } from '../types';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { InputField } from '../components/common/InputField';
 import { auth } from '../firebase';
 import firebase from 'firebase/compat/app';
+import { ReminderModal } from '../components/profile/ReminderModal';
 
 interface ProfilePageProps {
   userProfile: UserProfile;
   setUserProfile: (profile: UserProfile | null) => void;
 }
 
-const Countdown: React.FC<{ date: Date | null, t: (key: any, replacements?: any) => string }> = ({ date, t }) => {
-    if (!date) {
-        return <span className="text-sm font-medium text-gray-500 dark:text-dark-text-secondary">{t('profile_countdown_no_date')}</span>;
-    }
-    const now = new Date();
-    const diffTime = date.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+const calculateNextDueDate = (reminder: Reminder): Date => {
+    const baseDate = reminder.lastTriggeredAt ? reminder.lastTriggeredAt.toDate() : reminder.startsAt.toDate();
+    const nextDate = new Date(baseDate.getTime());
 
-    if (diffDays < 0) {
-        return <span className="text-sm font-bold text-danger">{t('profile_countdown_overdue')}</span>;
+    switch (reminder.frequency) {
+        case 'hours':
+            nextDate.setHours(nextDate.getHours() + reminder.interval);
+            break;
+        case 'days':
+            nextDate.setDate(nextDate.getDate() + reminder.interval);
+            break;
+        case 'weeks':
+            nextDate.setDate(nextDate.getDate() + reminder.interval * 7);
+            break;
+        case 'months':
+            nextDate.setMonth(nextDate.getMonth() + reminder.interval);
+            break;
     }
-    if (diffDays === 0) {
-        return <span className="text-sm font-bold text-yellow-500">{t('profile_countdown_due_today')}</span>;
-    }
-    return <span className="text-sm font-medium text-primary-dark dark:text-dark-text-primary">{t('profile_countdown_due_in_days', { days: diffDays })}</span>;
+    return nextDate;
 };
 
 export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserProfile }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [evaluations, setEvaluations] = useState<EvaluationHistoryItem[]>([]);
+  const [reminders, setReminders] = useState<Reminder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -51,18 +57,32 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
+  const [notificationPermission, setNotificationPermission] = useState(Notification.permission);
+
+
+  const fetchPageData = useCallback(async () => {
+    if (userProfile?.uid) {
+      try {
+        const [historyData, remindersData] = await Promise.all([
+          getEvaluationHistory(userProfile.uid),
+          getReminders(userProfile.uid)
+        ]);
+        setEvaluations(historyData);
+        setReminders(remindersData);
+      } catch {
+        setError(t('profile_fetchError'));
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  }, [userProfile?.uid, t]);
 
   useEffect(() => {
-    if (userProfile?.uid) {
-      getEvaluationHistory(userProfile.uid)
-        .then(historyData => {
-          setEvaluations(historyData);
-        })
-        .catch(() => setError(t('profile_fetchError')))
-        .finally(() => setIsLoading(false));
-    }
+    fetchPageData();
     setFormData(userProfile);
-  }, [userProfile, t]);
+  }, [userProfile, fetchPageData]);
   
   const handleDownload = (evaluation: EvaluationHistoryItem) => {
     setIsDownloading(evaluation.id);
@@ -112,14 +132,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
   }, [reportToDownload]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
+    const { name, value } = e.target;
     if (name.startsWith("medicalHistory.")) {
         const key = name.split('.')[1];
         setFormData(prev => ({ ...prev, medicalHistory: { ...prev.medicalHistory, [key]: value }}));
-    } else if (type === 'checkbox') {
-        setFormData(prev => ({ ...prev, [(e.target as HTMLInputElement).name]: (e.target as HTMLInputElement).checked }));
-    } else if (name === "nextConsultation") {
-        setFormData(prev => ({ ...prev, nextConsultation: value ? firebase.firestore.Timestamp.fromDate(new Date(value)) : null }));
     } else {
         setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -150,10 +166,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
       const functionUrl = `https://us-central1-virtual-vision-test-app.cloudfunctions.net/updateUserProfile`;
       
       const payload = { ...formData };
-      if (payload.nextConsultation && !(payload.nextConsultation instanceof firebase.firestore.Timestamp)) {
-        payload.nextConsultation = firebase.firestore.Timestamp.fromDate(new Date(payload.nextConsultation as any));
-      }
-
+      
       const response = await fetch(functionUrl, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -171,6 +184,29 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
         setIsSaving(false);
     }
   };
+
+    const handleAddReminder = async (data: Omit<Reminder, 'id' | 'userId' | 'lastTriggeredAt'>) => {
+        if (!userProfile) return;
+        if (notificationPermission === 'default') {
+            const permission = await Notification.requestPermission();
+            setNotificationPermission(permission);
+            if (permission !== 'granted') return; // Stop if permission denied
+        }
+        if (notificationPermission === 'denied') {
+            alert(t('reminder_notification_denied'));
+            return;
+        }
+        await addReminder(userProfile.uid, data);
+        await fetchPageData(); // Refresh list
+    };
+    
+    const handleDeleteReminder = async (reminderId: string) => {
+        if (!userProfile) return;
+        if (window.confirm("Are you sure you want to delete this reminder?")) {
+            await deleteReminder(userProfile.uid, reminderId);
+            await fetchPageData(); // Refresh list
+        }
+    };
 
   if (isLoading || !userProfile) {
     return <PageContainer title={t('profile_title')}><LoadingSpinner text={t('profile_loading')} /></PageContainer>
@@ -214,26 +250,39 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
                 <InputField label={t('profile_label_surgeries')} name="medicalHistory.surgeries" value={formData.medicalHistory?.surgeries || ''} onChange={handleInputChange} disabled={!isEditing} placeholder={t('profile_placeholder_surgeries')} />
             </div>
             
-            <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-xl shadow-2xl space-y-4">
-                <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary">{t('profile_upcoming_evaluation_title')}</h2>
-                 <div className="p-4 bg-gray-50 dark:bg-dark-background rounded-lg flex justify-between items-center">
-                    <Countdown date={formData.nextConsultation ? formData.nextConsultation.toDate() : null} t={t} />
-                    <label className="flex items-center space-x-2 text-sm text-primary-dark dark:text-dark-text-secondary">
-                        <input type="checkbox" name="enableReminders" checked={formData.enableReminders || false} onChange={handleInputChange} disabled={!isEditing} className="accent-primary dark:accent-dark-accent" />
-                        <span>{t('profile_label_enable_reminders')}</span>
-                    </label>
-                </div>
-                <InputField label={t('profile_label_assigned_doctor')} name="assignedDoctor" value={formData.assignedDoctor || ''} onChange={handleInputChange} disabled={!isEditing} placeholder={t('profile_placeholder_doctor')} />
-                <InputField label={t('profile_label_next_consultation')} name="nextConsultation" type="date" value={formData.nextConsultation ? formData.nextConsultation.toDate().toISOString().split('T')[0] : ''} onChange={handleInputChange} disabled={!isEditing} />
-            </div>
-
-             {isEditing && (
+            {isEditing && (
                 <div className="flex justify-end gap-4 mt-6">
                     {error && <p className="text-danger text-sm self-center">{error}</p>}
                     <Button variant="outline" onClick={() => { setIsEditing(false); setFormData(userProfile); setError(''); }}>{t('profile_cancel_button')}</Button>
                     <Button onClick={handleSave} isLoading={isSaving}>{t(isSaving ? 'profile_saving_button' : 'profile_save_button')}</Button>
                 </div>
             )}
+            
+            <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-xl shadow-2xl space-y-6">
+                 <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary">{t('profile_reminders_title')}</h2>
+                    <Button onClick={() => setIsReminderModalOpen(true)}>{t('profile_reminders_add_new')}</Button>
+                </div>
+                <div className="space-y-4">
+                    {reminders.length > 0 ? reminders.map(reminder => (
+                        <div key={reminder.id} className="bg-gray-50 dark:bg-dark-background/50 p-4 rounded-lg">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <p className="font-semibold text-primary-dark dark:text-dark-text-primary">{reminder.name}</p>
+                                    <p className="text-sm text-primary-dark/80 dark:text-dark-text-secondary">{reminder.details}</p>
+                                    <p className="text-xs text-accent dark:text-dark-accent mt-1 font-mono">{t('reminder_next_due')} {calculateNextDueDate(reminder).toLocaleString(language)}</p>
+                                </div>
+                                <Button onClick={() => handleDeleteReminder(reminder.id)} variant="ghost" size="sm" className="text-danger hover:bg-danger/10">
+                                    {t('reminder_delete_button')}
+                                </Button>
+                            </div>
+                        </div>
+                    )) : (
+                        <p className="text-center text-primary-dark/70 dark:text-dark-text-secondary py-10">{t('profile_reminders_none')}</p>
+                    )}
+                </div>
+            </div>
+
 
             <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-xl shadow-2xl space-y-6">
                 <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary">{t('profile_history_title')}</h2>
@@ -295,6 +344,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
             )}
         </div>
       )}
+      
+      <ReminderModal 
+        isOpen={isReminderModalOpen}
+        onClose={() => setIsReminderModalOpen(false)}
+        onSubmit={handleAddReminder}
+      />
     </>
   );
 };

@@ -1,6 +1,6 @@
 import firebase from 'firebase/compat/app';
 import { db, auth, storage } from '../firebase';
-import { EvaluationHistoryItem, HealthData, EyeAnalysisResult, Ophthalmologist, UserProfile } from '../types';
+import { EvaluationHistoryItem, HealthData, EyeAnalysisResult, Ophthalmologist, UserProfile, Reminder } from '../types';
 import imageCompression from 'browser-image-compression';
 
 const getAuthToken = async (): Promise<string> => {
@@ -179,4 +179,49 @@ export const saveEvaluationResult = async (
     console.error("Error saving evaluation result:", error);
     throw new Error("Failed to save evaluation result.");
   }
+};
+
+// Reminder Functions
+export const getReminders = async (userId: string): Promise<Reminder[]> => {
+    try {
+        const snapshot = await db.collection('users').doc(userId).collection('reminders').where('isActive', '==', true).orderBy('startsAt', 'desc').get();
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Reminder));
+    } catch (error) {
+        console.error("Error fetching reminders:", error);
+        throw new Error("Failed to fetch reminders.");
+    }
+};
+
+export const addReminder = async (userId: string, reminderData: Omit<Reminder, 'id' | 'userId' | 'lastTriggeredAt'>): Promise<string> => {
+    try {
+        const docRef = await db.collection('users').doc(userId).collection('reminders').add({
+            ...reminderData,
+            userId,
+            lastTriggeredAt: null,
+        });
+        return docRef.id;
+    } catch (error) {
+        console.error("Error adding reminder:", error);
+        throw new Error("Failed to add reminder.");
+    }
+};
+
+export const deleteReminder = async (userId: string, reminderId: string): Promise<void> => {
+    try {
+        await db.collection('users').doc(userId).collection('reminders').doc(reminderId).delete();
+    } catch (error) {
+        console.error("Error deleting reminder:", error);
+        throw new Error("Failed to delete reminder.");
+    }
+};
+
+export const updateReminderLastTriggered = async (userId: string, reminderId: string, triggeredAt: firebase.firestore.Timestamp): Promise<void> => {
+    try {
+        await db.collection('users').doc(userId).collection('reminders').doc(reminderId).update({
+            lastTriggeredAt: triggeredAt,
+        });
+    } catch (error) {
+        console.error("Error updating reminder trigger time:", error);
+        // Don't throw, as the notification has already been sent. Log the error.
+    }
 };

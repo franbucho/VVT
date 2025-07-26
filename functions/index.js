@@ -389,7 +389,7 @@ exports.updateUserProfile = functions.https.onRequest((req, res) => {
             const { profileData } = req.body;
             if (!profileData) { return res.status(400).json({ error: 'Profile data is required.' }); }
             
-            const allowedFields = ['firstName', 'lastName', 'photoURL', 'phoneNumber', 'medicalHistory', 'assignedDoctor', 'nextConsultation', 'enableReminders'];
+            const allowedFields = ['firstName', 'lastName', 'photoURL', 'phoneNumber', 'medicalHistory'];
             const updateData = {};
             
             for (const key of Object.keys(profileData)) {
@@ -399,11 +399,6 @@ exports.updateUserProfile = functions.https.onRequest((req, res) => {
             }
             if (profileData.firstName || profileData.lastName) {
                 updateData.displayName = `${profileData.firstName || ''} ${profileData.lastName || ''}`.trim();
-            }
-            if (updateData.nextConsultation && typeof updateData.nextConsultation === 'string') {
-                 updateData.nextConsultation = admin.firestore.Timestamp.fromDate(new Date(updateData.nextConsultation));
-            } else if (updateData.nextConsultation && updateData.nextConsultation._seconds) {
-                 updateData.nextConsultation = new admin.firestore.Timestamp(updateData.nextConsultation._seconds, updateData.nextConsultation._nanoseconds);
             }
 
             await admin.firestore().collection('users').doc(decodedToken.uid).set(updateData, { merge: true });
