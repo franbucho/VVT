@@ -17,6 +17,7 @@ export enum Page {
   EvaluationDetail = 'EVALUATION_DETAIL',
   HR_ADMIN = 'HR_ADMIN',
   Pricing = 'PRICING',
+  OurTechnology = 'OUR_TECHNOLOGY',
 }
 
 export interface DoctorProfile {

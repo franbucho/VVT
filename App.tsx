@@ -3,7 +3,7 @@ import firebase from 'firebase/compat/app';
 import { auth, db } from './firebase';
 
 import { Page, EyeAnalysisResult, HealthData, Ophthalmologist, EvaluationHistoryItem, UserProfile } from './types';
-import { EyeIcon } from './constants';
+import { EyeIcon, MenuIcon, XIcon } from './constants';
 import { HomePage } from './pages/HomePage';
 import { AuthPage } from './pages/AuthPage';
 import { ExamPage } from './pages/ExamPage';
@@ -16,18 +16,21 @@ import { DoctorPortal } from './pages/DoctorPortal';
 import { EvaluationDetailPage } from './pages/EvaluationDetailPage';
 import { HRAdminPage } from './pages/HRAdminPage';
 import { PricingPage } from './pages/PricingPage';
+import { OurTechnologyPage } from './pages/OurTechnologyPage';
 import { useLanguage } from './contexts/LanguageContext';
 import { LanguageSwitcher } from './components/common/LanguageSwitcher';
 import { Button } from './components/common/Button';
 import { getEvaluationsCount, getUserProfile } from './services/firestoreService';
 import { ThemeSwitcher } from './components/common/ThemeSwitcher';
 import { useReminderNotifications } from './hooks/useReminderNotifications';
+import { LoadingSpinner } from './components/common/LoadingSpinner';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
   const [currentUser, setCurrentUser] = useState<firebase.User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Exam flow state
   const [healthData, setHealthData] = useState<HealthData | null>(null);
@@ -115,6 +118,17 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = 'auto';
+    }
+    return () => {
+        document.body.style.overflow = 'auto';
+    };
+  }, [isMobileMenuOpen]);
+
   const handleSignOut = async () => {
     try {
       await auth.signOut();
@@ -133,6 +147,7 @@ const App: React.FC = () => {
       setTeamId(null);
       setSelectedEvaluation(null);
       setEvaluationsCount(0);
+      setIsMobileMenuOpen(false);
       setCurrentPage(Page.Home);
     } catch (error) {
       console.error("Error signing out:", error);
@@ -146,6 +161,7 @@ const App: React.FC = () => {
         setSelectedEvaluation(null);
     }
     setCurrentPage(page);
+    setIsMobileMenuOpen(false);
   };
 
   const renderPage = () => {
@@ -159,23 +175,23 @@ const App: React.FC = () => {
 
     switch (currentPage) {
       case Page.Home:
-        return <HomePage setCurrentPage={setCurrentPage} />;
+        return <HomePage setCurrentPage={handleSetCurrentPage} evaluationsCount={evaluationsCount} />;
       
       case Page.Auth:
         if (currentUser) {
-            setCurrentPage(Page.Exam);
+            handleSetCurrentPage(Page.Exam);
             return null;
         }
-        return <AuthPage setCurrentPage={setCurrentPage} />;
+        return <AuthPage setCurrentPage={handleSetCurrentPage} />;
 
       case Page.Exam:
         if (!currentUser) {
-          setCurrentPage(Page.Auth);
+          handleSetCurrentPage(Page.Auth);
           return null;
         }
         return (
           <ExamPage
-            setCurrentPage={setCurrentPage}
+            setCurrentPage={handleSetCurrentPage}
             setAnalysisResults={setAnalysisResults}
             setHealthData={setHealthData}
             healthData={healthData}
@@ -192,12 +208,12 @@ const App: React.FC = () => {
         );
       case Page.Results:
         if (!currentUser) {
-          setCurrentPage(Page.Auth);
+          handleSetCurrentPage(Page.Auth);
           return null;
         }
         return (
           <ResultsPage
-            setCurrentPage={setCurrentPage}
+            setCurrentPage={handleSetCurrentPage}
             analysisResults={analysisResults}
             summary={ophthalmologistSummary}
             ophthalmologists={ophthalmologists}
@@ -210,29 +226,31 @@ const App: React.FC = () => {
         );
        case Page.Profile:
         if (!currentUser || !userProfile) {
-          setCurrentPage(Page.Auth);
+          handleSetCurrentPage(Page.Auth);
           return null;
         }
         return <ProfilePage userProfile={userProfile} setUserProfile={setUserProfile} />;
       case Page.Payment:
         if (!currentUser) {
-          setCurrentPage(Page.Auth);
+          handleSetCurrentPage(Page.Auth);
           return null;
         }
-        return <PaymentPage setCurrentPage={setCurrentPage} />;
+        return <PaymentPage setCurrentPage={handleSetCurrentPage} />;
       case Page.Pricing:
-        return <PricingPage setCurrentPage={setCurrentPage} currentUser={currentUser} />;
+        return <PricingPage setCurrentPage={handleSetCurrentPage} currentUser={currentUser} />;
+      case Page.OurTechnology:
+        return <OurTechnologyPage setCurrentPage={handleSetCurrentPage} />;
       case Page.Admin:
         if (!currentUser || !isAdmin) {
-          setCurrentPage(Page.Home);
+          handleSetCurrentPage(Page.Home);
           return null;
         }
         return <AdminPage currentUser={currentUser} />;
       case Page.Support:
-        return <SupportPage setCurrentPage={setCurrentPage} />;
+        return <SupportPage setCurrentPage={handleSetCurrentPage} />;
       case Page.DoctorPortal:
         if (!currentUser || !isDoctor) {
-            setCurrentPage(Page.Home);
+            handleSetCurrentPage(Page.Home);
             return null;
         }
         return <DoctorPortal setCurrentPage={handleSetCurrentPage} />;
@@ -244,12 +262,12 @@ const App: React.FC = () => {
           return <EvaluationDetailPage evaluation={selectedEvaluation} setCurrentPage={handleSetCurrentPage} />;
       case Page.HR_ADMIN:
           if (!currentUser || !isHrAdmin) {
-              setCurrentPage(Page.Home);
+              handleSetCurrentPage(Page.Home);
               return null;
           }
           return <HRAdminPage isAdmin={isAdmin} teamId={teamId} />;
       default:
-        return <HomePage setCurrentPage={setCurrentPage} />;
+        return <HomePage setCurrentPage={handleSetCurrentPage} evaluationsCount={evaluationsCount} />;
     }
   };
 
@@ -258,88 +276,64 @@ const App: React.FC = () => {
   return (
     <div className={`min-h-screen flex flex-col ${isExamFlow ? 'bg-white dark:bg-dark-card' : 'bg-neutral-light dark:bg-dark-background'}`}>
       {!isExamFlow && (
-        <header className="bg-white dark:bg-dark-card shadow-md sticky top-0 z-50">
-          <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-y-2">
-            <div 
-              className="flex items-center space-x-2 cursor-pointer"
-              onClick={() => setCurrentPage(Page.Home)}
-              aria-label={t('appName')}
-            >
-              <EyeIcon className="w-8 h-8 text-accent dark:text-dark-accent" />
-              <span className="text-xl font-bold text-primary-dark dark:text-dark-text-primary">{t('appName')}</span>
+        <>
+          <header className="bg-white dark:bg-dark-card shadow-md sticky top-0 z-50">
+            <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+              <div 
+                className="flex items-center space-x-2 cursor-pointer"
+                onClick={() => handleSetCurrentPage(Page.Home)}
+                aria-label={t('appName')}
+              >
+                <EyeIcon className="w-8 h-8 text-accent dark:text-dark-accent" />
+                <span className="font-orbitron text-2xl font-bold tracking-wide text-primary-dark dark:text-dark-text-primary">{t('appName')}</span>
+              </div>
+              
+              {/* Simplified Header Controls - Always visible */}
+              <div className="flex items-center gap-x-1 sm:gap-x-2">
+                <LanguageSwitcher />
+                <ThemeSwitcher />
+                <button 
+                  onClick={() => setIsMobileMenuOpen(true)} 
+                  className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-dark-border/50 focus:outline-none focus:ring-2 focus:ring-accent dark:focus:ring-dark-accent" 
+                  aria-label="Open menu"
+                >
+                  <MenuIcon className="w-6 h-6 text-primary-dark dark:text-dark-text-primary" />
+                </button>
+              </div>
+            </nav>
+          </header>
+
+          {/* Menu Overlay - Now used for all screen sizes */}
+          {isMobileMenuOpen && (
+            <div className="fixed inset-0 bg-primary-dark/95 dark:bg-dark-background/95 z-[100] flex flex-col items-center justify-center p-8 animate-fadeIn">
+              <button onClick={() => setIsMobileMenuOpen(false)} className="absolute top-5 right-5 p-2" aria-label="Close menu">
+                  <XIcon className="w-8 h-8 text-white" />
+              </button>
+              
+              <nav className="flex flex-col items-center text-center gap-y-6">
+                {isAuthLoading ? (
+                  <LoadingSpinner />
+                ) : currentUser ? (
+                  <>
+                    <Button onClick={() => handleSetCurrentPage(Page.Profile)} variant="ghost" className="text-2xl text-white py-2">{t('header_myProfileLink')}</Button>
+                    <Button onClick={() => handleSetCurrentPage(Page.OurTechnology)} variant="ghost" className="text-2xl text-white py-2">{t('header_ourTechnologyLink')}</Button>
+                    <Button onClick={() => handleSetCurrentPage(Page.Pricing)} variant="ghost" className="text-2xl text-white py-2">{t('header_pricingLink')}</Button>
+                    {isAdmin && <Button onClick={() => handleSetCurrentPage(Page.Admin)} variant="ghost" className="text-2xl text-white py-2">{t('header_adminPanel')}</Button>}
+                    {isDoctor && <Button onClick={() => handleSetCurrentPage(Page.DoctorPortal)} variant="ghost" className="text-2xl text-white py-2">{t('header_doctorPortal')}</Button>}
+                    {isHrAdmin && <Button onClick={() => handleSetCurrentPage(Page.HR_ADMIN)} variant="ghost" className="text-2xl text-white py-2">{t('header_hrAdminPanel')}</Button>}
+                    <Button onClick={handleSignOut} variant="outline" size="lg" className="text-xl text-white border-white mt-8 px-8 py-3">{t('header_logoutButton')}</Button>
+                  </>
+                ) : (
+                  <>
+                    <Button onClick={() => handleSetCurrentPage(Page.OurTechnology)} variant="ghost" className="text-2xl text-white py-2">{t('header_ourTechnologyLink')}</Button>
+                    <Button onClick={() => handleSetCurrentPage(Page.Pricing)} variant="ghost" className="text-2xl text-white py-2">{t('header_pricingLink')}</Button>
+                    <Button onClick={() => handleSetCurrentPage(Page.Auth)} variant="primary" size="lg" className="text-xl mt-8 px-8 py-3">{t('header_loginRegisterButton')}</Button>
+                  </>
+                )}
+              </nav>
             </div>
-            <div className="flex items-center flex-wrap justify-end gap-x-2 sm:gap-x-4 gap-y-2">
-              <LanguageSwitcher />
-              <ThemeSwitcher />
-              {isAuthLoading ? (
-                <div className="w-32 h-9 bg-gray-200 dark:bg-dark-border/50 rounded-lg animate-pulse"></div>
-              ) : currentUser ? (
-                <div className="flex items-center flex-wrap justify-end gap-x-2 sm:gap-x-4 gap-y-2">
-                  <button 
-                    onClick={() => setCurrentPage(Page.Profile)}
-                    className="text-sm font-medium text-primary-dark hover:text-accent dark:text-dark-text-primary dark:hover:text-dark-accent transition-colors"
-                  >
-                    {t('header_myProfileLink')}
-                  </button>
-                  {isAdmin && (
-                    <Button 
-                      onClick={() => setCurrentPage(Page.Admin)} 
-                      variant="ghost" 
-                      size="sm"
-                    >
-                      {t('header_adminPanel')}
-                    </Button>
-                  )}
-                  {isDoctor && (
-                    <Button 
-                      onClick={() => setCurrentPage(Page.DoctorPortal)} 
-                      variant="ghost" 
-                      size="sm"
-                    >
-                      {t('header_doctorPortal')}
-                    </Button>
-                  )}
-                  {isHrAdmin && (
-                    <Button 
-                      onClick={() => setCurrentPage(Page.HR_ADMIN)} 
-                      variant="ghost" 
-                      size="sm"
-                    >
-                      {t('header_hrAdminPanel')}
-                    </Button>
-                  )}
-                  <span className="text-sm text-primary-dark/80 dark:text-dark-text-secondary hidden md:inline" title={currentUser.email || ''}>
-                    {t('header_welcomeMessage', { email: currentUser.displayName?.split(' ')[0] || 'User' })}
-                  </span>
-                  <Button
-                    onClick={handleSignOut}
-                    variant="outline"
-                    size="sm"
-                  >
-                    {t('header_logoutButton')}
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-x-2 sm:gap-x-4">
-                  <Button
-                      onClick={() => setCurrentPage(Page.Pricing)}
-                      variant="ghost"
-                      size="sm"
-                  >
-                      {t('header_pricingLink')}
-                  </Button>
-                  <Button
-                    onClick={() => setCurrentPage(Page.Auth)}
-                    variant="primary"
-                    size="sm"
-                  >
-                    {t('header_loginRegisterButton')}
-                  </Button>
-                </div>
-              )}
-            </div>
-          </nav>
-        </header>
+          )}
+        </>
       )}
 
       <main className="flex-grow">
@@ -351,7 +345,7 @@ const App: React.FC = () => {
           <div className="container mx-auto px-4">
             <p className="text-sm opacity-80">&copy; {new Date().getFullYear()} {t('footerText')} {t('footerDisclaimer')}</p>
             <button 
-                onClick={() => setCurrentPage(Page.Support)}
+                onClick={() => handleSetCurrentPage(Page.Support)}
                 className="text-sm text-accent hover:underline mt-2 inline-block dark:text-dark-accent"
               >
                 {t('footer_supportLink')}

@@ -10,13 +10,32 @@ import { TestimonialsSection } from '../components/home/TestimonialsSection';
 
 interface HomePageProps {
   setCurrentPage: (page: Page) => void;
+  evaluationsCount: number;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage }) => {
+export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsCount }) => {
   const { t } = useLanguage();
   const features = getFeaturesList(t);
   const featuresRef = useRef<HTMLDivElement>(null);
   const [featuresVisible, setFeaturesVisible] = useState(false);
+
+  // States for the spotlight effect
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [spotlightOpacity, setSpotlightOpacity] = useState(0);
+
+  // Event handlers for the spotlight effect
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
+  const handleMouseEnter = () => {
+    setSpotlightOpacity(1);
+  };
+
+  const handleMouseLeave = () => {
+    setSpotlightOpacity(0);
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -57,7 +76,12 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage }) => {
   return (
     <PageContainer>
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-transparent rounded-3xl shadow-2xl my-12">
+      <section 
+        className="relative overflow-hidden bg-transparent rounded-3xl shadow-2xl my-12"
+        onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
         {/* Background Video */}
         <div className="absolute inset-0 z-0">
           <video
@@ -70,14 +94,22 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage }) => {
           />
           <div className="absolute inset-0 bg-gradient-to-br from-[#0f172a]/80 via-[#1e293b]/70 to-[#0f172a]/90" />
           <div className="absolute inset-0 backdrop-blur-[2px]" />
+          {/* Spotlight Effect Div */}
+          <div
+            className="absolute inset-0 transition-opacity duration-500"
+            style={{
+              opacity: spotlightOpacity,
+              background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, rgba(59, 187, 217, 0.15), transparent 80%)`,
+            }}
+          />
         </div>
 
         {/* Content */}
-        <div className="relative z-10 text-center px-6 py-28 md:py-40 text-white flex flex-col items-center">
-          <h1 className="text-5xl md:text-6xl font-bold leading-snug max-w-4xl drop-shadow-xl">
+        <div className="relative z-10 text-center px-6 py-24 sm:py-32 lg:py-40 text-white flex flex-col items-center">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight max-w-4xl drop-shadow-xl">
             {t('appMotto')}
           </h1>
-          <p className="mt-6 text-xl md:text-2xl max-w-2xl text-white/90">
+          <p className="mt-6 text-lg sm:text-xl lg:text-2xl max-w-2xl text-white/90">
             {t('appSubMotto')}
           </p>
           <Button
@@ -86,7 +118,7 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage }) => {
             variant="primary"
             className="mt-10 px-10 py-4 text-lg font-semibold shadow-lg hover:shadow-2xl transform transition-transform hover:scale-105"
           >
-            {t('home_ctaButton')}
+            {evaluationsCount === 0 ? t('home_ctaButton_free') : t('home_ctaButton')}
           </Button>
         </div>
       </section>

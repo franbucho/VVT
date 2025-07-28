@@ -19,45 +19,45 @@ export const SpeedIcon: React.FC<{ className?: string }> = ({ className = "w-10 
   </svg>
 );
 
-const ResultsInMinutesIcon: React.FC<{ className?: string }> = ({ className = "w-8 h-8 text-accent dark:text-dark-accent" }) => (
+const FeatureSpeedIcon: React.FC<{ className?: string }> = ({ className = "w-8 h-8 text-accent dark:text-dark-accent" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
   </svg>
 );
-const NoEquipmentIcon: React.FC<{ className?: string }> = ({ className = "w-8 h-8 text-accent dark:text-dark-accent" }) => (
+const FeatureDeviceIcon: React.FC<{ className?: string }> = ({ className = "w-8 h-8 text-accent dark:text-dark-accent" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
   </svg>
 );
-const HighAccuracyIcon: React.FC<{ className?: string }> = ({ className = "w-8 h-8 text-accent dark:text-dark-accent" }) => (
+const FeatureAccuracyIcon: React.FC<{ className?: string }> = ({ className = "w-8 h-8 text-accent dark:text-dark-accent" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 .75l-1.5-1.5M21 10.5l-1.5 1.5M21 13.5l-1.5-1.5M4.5 13.5l-1.5 1.5M12 3v1.5m0 15V21m-6.75-1.5l-1.5 1.5M21 19.5l-1.5-1.5M17.25 21v-1.5M12 17.25a.75.75 0 01.75-.75h2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-.75.75h-2.25a.75.75 0 01-.75-.75V17.25zM9.75 15.75a.75.75 0 01.75-.75h2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-.75.75h-2.25a.75.75 0 01-.75-.75V15.75zM5.25 12a.75.75 0 01.75-.75h2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-.75.75H6a.75.75 0 01-.75-.75V12zM5.25 7.5a.75.75 0 01.75-.75h2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-.75.75H6a.75.75 0 01-.75-.75V7.5zM9.75 9a.75.75 0 01.75-.75h2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-.75.75h-2.25a.75.75 0 01-.75-.75V9zM14.25 6a.75.75 0 01.75-.75h2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-.75.75h-2.25a.75.75 0 01-.75-.75V6z" />
   </svg>
 );
-const SecurePrivateIcon: React.FC<{ className?: string }> = ({ className = "w-8 h-8 text-accent dark:text-dark-accent" }) => (
+const FeatureSecureIcon: React.FC<{ className?: string }> = ({ className = "w-8 h-8 text-accent dark:text-dark-accent" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036h.008v.008h-.008v-.008z" />
   </svg>
 );
 
 export const getFeaturesList = (t: (key: keyof TranslationKeys) => string): Feature[] => [
   {
-    icon: <ResultsInMinutesIcon />,
+    icon: <FeatureSpeedIcon />,
     titleKey: t('feature_resultsInMinutes_title'),
     descriptionKey: t('feature_resultsInMinutes_description')
   },
   {
-    icon: <NoEquipmentIcon />,
+    icon: <FeatureDeviceIcon />,
     titleKey: t('feature_noExpensiveEquipment_title'),
     descriptionKey: t('feature_noExpensiveEquipment_description')
   },
   {
-    icon: <HighAccuracyIcon />,
+    icon: <FeatureAccuracyIcon />,
     titleKey: t('feature_highAccuracyPotential_title'),
     descriptionKey: t('feature_highAccuracyPotential_description')
   },
    {
-    icon: <SecurePrivateIcon />,
+    icon: <FeatureSecureIcon />,
     titleKey: t('feature_securePrivate_title'),
     descriptionKey: t('feature_securePrivate_description')
   }
@@ -174,6 +174,18 @@ export const MoonIcon: React.FC<{ className?: string }> = ({ className = "w-6 h-
   </svg>
 );
 
+export const MenuIcon: React.FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+  </svg>
+);
+
+export const XIcon: React.FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+
 export const BriefcaseIcon: React.FC<{ className?: string }> = ({ className = "w-8 h-8" }) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.075c0 1.313-.972 2.463-2.243 2.723-1.27.26-2.535.26-3.805 0-1.27-.26-2.243-1.41-2.243-2.723V14.15m6.29 0v-2.859c0-.909-.434-1.742-1.155-2.238l-2.243-1.495a1.875 1.875 0 0 0-2.243 0l-2.243 1.495c-.721.496-1.155 1.329-1.155 2.238V14.15m6.29 0h-6.29m6.29 0c.618 0 1.125-.506 1.125-1.125v-2.859c0-.618-.507-1.125-1.125-1.125h-6.29c-.618 0-1.125.507-1.125 1.125v2.859c0 .618.507 1.125 1.125 1.125h6.29Z" />
@@ -204,4 +216,27 @@ export const EyeMaskOverlay: React.FC<{ className?: string }> = ({ className }) 
     </defs>
     <rect width="100%" height="100%" mask="url(#eye-mask)" />
   </svg>
+);
+
+// Icons for Our Technology Page
+export const CameraCaptureIcon: React.FC<{ className?: string }> = ({ className = "w-10 h-10" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" /><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008v-.008z" /></svg>
+);
+export const AnalyzeIcon: React.FC<{ className?: string }> = ({ className = "w-10 h-10" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.17 48.17 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
+);
+export const ReportIcon: React.FC<{ className?: string }> = ({ className = "w-10 h-10" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+);
+export const ConnectIcon: React.FC<{ className?: string }> = ({ className = "w-10 h-10" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.962c.57-1.01 1.593-1.829 2.774-2.31m21.254 5.346a.375.375 0 00-.443.044l-3 3a.375.375 0 00.263.643h7.11a.375.375 0 00.263-.643l-3-3a.375.375 0 00-.443-.044z" /></svg>
+);
+export const AIIcon: React.FC<{ className?: string }> = ({ className = "w-10 h-10" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0v3h3V1.5m-3 0h3m-3.75 9a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H9.75a.75.75 0 01-.75-.75v-.008zm3.004 0a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75h-.008a.75.75 0 01-.75-.75v-.008z" /></svg>
+);
+export const CloudIcon: React.FC<{ className?: string }> = ({ className = "w-10 h-10" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+);
+export const PrivacyIcon: React.FC<{ className?: string }> = ({ className = "w-10 h-10" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9.75v.005l.004.004.005.004.004.004.004.004.004.004v-.008l-.004-.004-.004-.004-.004-.004-.005-.004zM12 12.75v.005l.004.004.005.004.004.004.004.004.004.004v-.008l-.004-.004-.004-.004-.004-.004-.005-.004z" /><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036h.008v.008h-.008v-.008z" /></svg>
 );

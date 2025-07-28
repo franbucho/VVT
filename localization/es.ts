@@ -11,6 +11,7 @@ export const es: TranslationKeys = {
   paymentPlaceholderText: "Nuestro portal de pago seguro estará disponible próximamente. En una aplicación real, esta página se integraría con un procesador de pagos como Stripe o PayPal para manejar las transacciones de forma segura.",
 
   home_ctaButton: "Iniciar Análisis",
+  home_ctaButton_free: "Inicia Tu Análisis Gratis",
   home_whyChooseNiria: "¿Por Qué Elegir Niria?",
   home_mission_title: "Nuestra Misión",
   home_mission_text: "Brindar una app intuitiva, accesible y asequible que use inteligencia artificial para identificar señales tempranas en la salud visual y guiar a las personas hacia especialistas cercanos, promoviendo la prevención como un acto de cuidado y autonomía personal.",
@@ -284,6 +285,7 @@ export const es: TranslationKeys = {
   header_doctorPortal: "Portal de Doctores",
   header_hrAdminPanel: "Panel de RRHH",
   header_pricingLink: "Precios",
+  header_ourTechnologyLink: "Nuestra Tecnología",
 
   profile_title: "Mi Perfil",
   profile_personal_info_title: "Información Personal",
@@ -543,7 +545,35 @@ export const es: TranslationKeys = {
   pricing_plan_business_feature4: "Soporte prioritario",
   pricing_cta_contact_sales: "Contactar a Ventas",
   pricing_best_value: "Mejor Valor",
-
+  
+  // Our Technology Page
+  our_tech_title: "Nuestra Tecnología",
+  our_tech_subtitle: "Descubre la innovación que impulsa el análisis inteligente de salud ocular de Niria.",
+  our_tech_how_it_works_title: "Cómo Funciona: Un Proceso Simple de Cuatro Pasos",
+  our_tech_step1_title: "1. Capturar",
+  our_tech_step1_desc: "El usuario toma una foto clara y bien iluminada de su ojo usando la cámara de su smartphone a través de nuestra interfaz guiada.",
+  our_tech_step2_title: "2. Analizar",
+  our_tech_step2_desc: "La imagen, junto con los datos de salud contextuales, se envía a nuestro backend seguro y es analizada por nuestro modelo de IA, impulsado por Gemini de Google.",
+  our_tech_step3_title: "3. Reportar",
+  our_tech_step3_desc: "En minutos, el sistema genera un informe preliminar y fácil de entender que destaca posibles áreas de preocupación y ofrece consejos de salud personalizados.",
+  our_tech_step4_title: "4. Conectar",
+  our_tech_step4_desc: "Basado en el análisis y la ubicación del usuario, proporcionamos una lista de oftalmólogos cercanos para facilitar el siguiente paso hacia la atención profesional.",
+  our_tech_key_technologies_title: "Tecnologías Clave",
+  our_tech_tech1_title: "IA y Aprendizaje Automático",
+  our_tech_tech1_desc: "En nuestro núcleo se encuentra un sofisticado modelo de IA, construido sobre Gemini de Google, entrenado para reconocer patrones visuales asociados con diversos indicadores de salud ocular. Aprende continuamente para mejorar su precisión.",
+  our_tech_tech2_title: "Infraestructura Segura en la Nube",
+  our_tech_tech2_desc: "Nuestra plataforma está construida sobre una infraestructura en la nube escalable y segura, garantizando alta disponibilidad, procesamiento rápido e integridad de los datos para cada usuario.",
+  our_tech_tech3_title: "Privacidad de Datos y Cumplimiento",
+  our_tech_tech3_desc: "Priorizamos la privacidad del usuario con encriptación de extremo a extremo y nos adherimos a estrictos estándares de protección de datos. Su información de salud es anonimizada y manejada con la máxima confidencialidad.",
+  our_tech_integration_title: "Posibilidades de Integración",
+  our_tech_integration_subtitle: "Niria está diseñada para ser una herramienta flexible y potente. Ofrecemos oportunidades de asociación para integrar nuestra tecnología en su plataforma.",
+  our_tech_integration1_title: "Plataformas de Telemedicina",
+  our_tech_integration1_desc: "Mejore sus consultas virtuales con nuestra herramienta de detección inicial para priorizar y guiar mejor a los pacientes.",
+  our_tech_integration2_title: "Programas de Bienestar Corporativo",
+  our_tech_integration2_desc: "Ofrezca un beneficio de salud proactivo a sus empleados, ayudando a detectar problemas potenciales de manera temprana y promoviendo el bienestar.",
+  our_tech_integration3_title: "Proveedores de Atención Médica",
+  our_tech_integration3_desc: "Incorpore nuestra tecnología en su proceso de admisión de pacientes para recopilar datos preliminares y optimizar el flujo de trabajo de la clínica.",
+  our_tech_contact_us_button: "Contáctenos para una Demostración",
 
   // Generic
   error_generic_api_key_missing: "El servicio de IA no está disponible: Falta la clave de API. Por favor, contacte al soporte.",

@@ -48,6 +48,7 @@
           },
           fontFamily: {
             sans: ['Inter', 'sans-serif'],
+            orbitron: ['Orbitron', 'sans-serif'],
           },
           accentColor: {
             primary: '#3BBBD9',
@@ -55,6 +56,7 @@
           },
           animation: {
             blob: 'blob 7s infinite',
+            fadeIn: 'fadeIn 0.3s ease-in-out',
           },
           keyframes: {
             blob: {
@@ -63,6 +65,10 @@
               '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
               '100%': { transform: 'translate(0px, 0px) scale(1)' },
             },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
           },
         }
       }
@@ -70,7 +76,7 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; }
     .animation-delay-2000 {
