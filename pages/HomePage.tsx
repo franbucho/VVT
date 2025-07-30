@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import firebase from 'firebase/compat/app';
 import { Page } from '../types';
 import { Button } from '../components/common/Button';
 import { FeatureCard } from '../components/home/FeatureCard';
@@ -11,9 +12,10 @@ import { TestimonialsSection } from '../components/home/TestimonialsSection';
 interface HomePageProps {
   setCurrentPage: (page: Page) => void;
   evaluationsCount: number;
+  currentUser: firebase.User | null;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsCount }) => {
+export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsCount, currentUser }) => {
   const { t } = useLanguage();
   const features = getFeaturesList(t);
   const featuresRef = useRef<HTMLDivElement>(null);
@@ -35,6 +37,14 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
 
   const handleMouseLeave = () => {
     setSpotlightOpacity(0);
+  };
+
+  const handleStartAnalysis = () => {
+    if (currentUser) {
+      setCurrentPage(Page.Exam);
+    } else {
+      setCurrentPage(Page.Auth);
+    }
   };
 
   useEffect(() => {
@@ -113,7 +123,7 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
             {t('appSubMotto')}
           </p>
           <Button
-            onClick={() => setCurrentPage(Page.Auth)}
+            onClick={handleStartAnalysis}
             size="lg"
             variant="primary"
             className="mt-10 px-10 py-4 text-lg font-semibold shadow-lg hover:shadow-2xl transform transition-transform hover:scale-105"
@@ -126,7 +136,7 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
       {/* Features Section */}
       <section id="features" ref={featuresRef} className="py-16 md:py-24">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-primary-dark dark:text-dark-text-primary text-center mb-12 md:mb-16">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 md:mb-16 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">
             {t('home_whyChooseNiria')}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">

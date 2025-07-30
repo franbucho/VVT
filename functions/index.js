@@ -571,7 +571,7 @@ exports.getHrDashboardData = functions.https.onRequest((req, res) => {
 });
 
 // Proxy to fetch nearby ophthalmologists from NPPES API
-exports.getNearbyOphthalmologistsProxy = functions.https.onRequest((req, res) => {
+exports.getNearbyOphthalmologistsProxy = functions.runWith({ failurePolicy: false }).https.onRequest((req, res) => {
     cors(req, res, async () => {
         if (req.method !== 'GET') {
             return res.status(405).json({ error: 'Method Not Allowed.' });
@@ -596,21 +596,50 @@ exports.getNearbyOphthalmologistsProxy = functions.https.onRequest((req, res) =>
 
             const response = await fetch(`${NPPES_API_URL}?${params.toString()}`);
             if (!response.ok) {
+                const errorText = await response.text();
+                console.error(`NPPES API failed with status: ${response.status}`, errorText);
                 throw new Error(`NPPES API failed with status: ${response.status}`);
             }
 
             const data = await response.json();
+
+            if (data.result_count === 0) {
+                 return res.status(200).json({ ophthalmologists: [] });
+            }
             
-            const ophthalmologists = data.results.map(provider => {
-                const practiceAddress = provider.addresses.find(addr => addr.address_purpose === 'LOCATION');
+            const providers = data.results || [];
+            
+            const ophthalmologists = providers.map(provider => {
+                const practiceAddress = (provider.addresses || []).find(addr => addr.address_purpose === 'LOCATION');
+                if (!practiceAddress) return null;
+
+                const basic = provider.basic || {};
+                let name = '';
+                if (basic.first_name || basic.last_name) {
+                    name = `${basic.first_name || ''} ${basic.last_name || ''}`.trim();
+                } else if (basic.organization_name) {
+                    name = (basic.organization_name || '').trim();
+                }
+                if (!name) return null;
+
+                const address = [
+                    practiceAddress.address_1,
+                    practiceAddress.address_2,
+                    practiceAddress.city,
+                    practiceAddress.state,
+                    practiceAddress.postal_code,
+                ].filter(part => part && typeof part === 'string' && part.trim() !== '').join(', ');
+
+                const phone = practiceAddress?.telephone_number || 'Phone not available';
+
                 return {
-                    name: `${provider.basic.first_name} ${provider.basic.last_name}`,
+                    name,
                     specialty: 'Ophthalmologist',
-                    address: practiceAddress ? `${practiceAddress.address_1}, ${practiceAddress.city}, ${practiceAddress.state} ${practiceAddress.postal_code}` : 'Address not available',
-                    phone: practiceAddress ? practiceAddress.telephone_number : 'Phone not available'
+                    address: address || 'Address not available',
+                    phone,
                 };
-            });
-            
+            }).filter(Boolean); // Filter out any null entries
+
             return res.status(200).json({ ophthalmologists });
         } catch (error) {
             console.error("Error in NPPES proxy:", error);

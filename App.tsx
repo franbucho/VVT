@@ -168,18 +168,18 @@ const App: React.FC = () => {
     if (isAuthLoading) {
       return (
         <div className="flex justify-center items-center h-full pt-20">
-            <EyeIcon className="w-16 h-16 text-accent animate-pulse" />
+            <EyeIcon className="w-16 h-16 animate-pulse" />
         </div>
       );
     }
 
     switch (currentPage) {
       case Page.Home:
-        return <HomePage setCurrentPage={handleSetCurrentPage} evaluationsCount={evaluationsCount} />;
+        return <HomePage setCurrentPage={handleSetCurrentPage} evaluationsCount={evaluationsCount} currentUser={currentUser} />;
       
       case Page.Auth:
         if (currentUser) {
-            handleSetCurrentPage(Page.Exam);
+            handleSetCurrentPage(Page.Home);
             return null;
         }
         return <AuthPage setCurrentPage={handleSetCurrentPage} />;
@@ -267,7 +267,7 @@ const App: React.FC = () => {
           }
           return <HRAdminPage isAdmin={isAdmin} teamId={teamId} />;
       default:
-        return <HomePage setCurrentPage={handleSetCurrentPage} evaluationsCount={evaluationsCount} />;
+        return <HomePage setCurrentPage={handleSetCurrentPage} evaluationsCount={evaluationsCount} currentUser={currentUser} />;
     }
   };
 
@@ -284,7 +284,7 @@ const App: React.FC = () => {
                 onClick={() => handleSetCurrentPage(Page.Home)}
                 aria-label={t('appName')}
               >
-                <EyeIcon className="w-8 h-8 text-accent dark:text-dark-accent" />
+                <EyeIcon className="w-8 h-8" />
                 <span className="font-orbitron text-2xl font-bold tracking-wide text-primary-dark dark:text-dark-text-primary">{t('appName')}</span>
               </div>
               
@@ -321,12 +321,14 @@ const App: React.FC = () => {
                     {isAdmin && <Button onClick={() => handleSetCurrentPage(Page.Admin)} variant="ghost" className="text-2xl text-white py-2">{t('header_adminPanel')}</Button>}
                     {isDoctor && <Button onClick={() => handleSetCurrentPage(Page.DoctorPortal)} variant="ghost" className="text-2xl text-white py-2">{t('header_doctorPortal')}</Button>}
                     {isHrAdmin && <Button onClick={() => handleSetCurrentPage(Page.HR_ADMIN)} variant="ghost" className="text-2xl text-white py-2">{t('header_hrAdminPanel')}</Button>}
+                    <Button onClick={() => handleSetCurrentPage(Page.Support)} variant="ghost" className="text-2xl text-white py-2">{t('footer_supportLink')}</Button>
                     <Button onClick={handleSignOut} variant="outline" size="lg" className="text-xl text-white border-white mt-8 px-8 py-3">{t('header_logoutButton')}</Button>
                   </>
                 ) : (
                   <>
                     <Button onClick={() => handleSetCurrentPage(Page.OurTechnology)} variant="ghost" className="text-2xl text-white py-2">{t('header_ourTechnologyLink')}</Button>
                     <Button onClick={() => handleSetCurrentPage(Page.Pricing)} variant="ghost" className="text-2xl text-white py-2">{t('header_pricingLink')}</Button>
+                    <Button onClick={() => handleSetCurrentPage(Page.Support)} variant="ghost" className="text-2xl text-white py-2">{t('footer_supportLink')}</Button>
                     <Button onClick={() => handleSetCurrentPage(Page.Auth)} variant="primary" size="lg" className="text-xl mt-8 px-8 py-3">{t('header_loginRegisterButton')}</Button>
                   </>
                 )}
@@ -344,12 +346,6 @@ const App: React.FC = () => {
         <footer className="bg-primary-dark dark:bg-dark-card text-white dark:text-dark-text-primary py-4 text-center mt-auto">
           <div className="container mx-auto px-4">
             <p className="text-sm opacity-80">&copy; {new Date().getFullYear()} {t('footerText')} {t('footerDisclaimer')}</p>
-            <button 
-                onClick={() => handleSetCurrentPage(Page.Support)}
-                className="text-sm text-accent hover:underline mt-2 inline-block dark:text-dark-accent"
-              >
-                {t('footer_supportLink')}
-              </button>
           </div>
         </footer>
       )}

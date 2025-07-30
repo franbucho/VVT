@@ -38,7 +38,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ setCurrentPage, curren
   return (
     <PageContainer>
       <section className="text-center py-12 md:py-20">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-primary-dark dark:text-dark-text-primary">
+        <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">
           {t('pricing_title')}
         </h1>
         <p className="mt-4 text-lg text-primary-dark/80 dark:text-dark-text-secondary max-w-2xl mx-auto">

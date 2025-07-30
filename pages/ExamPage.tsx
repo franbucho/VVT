@@ -4,7 +4,7 @@ import { Page, EyeAnalysisResult, HealthData, Ophthalmologist, UserProfile } fro
 import { Button } from '../components/common/Button';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { PageContainer } from '../components/common/PageContainer';
-import { UploadIcon, CameraIcon, XCircleIcon, EyeMaskOverlay } from '../constants';
+import { UploadIcon, CameraIcon, XCircleIcon, EyeMaskOverlay, SpeakerWaveIcon } from '../constants';
 import { useLanguage } from '../contexts/LanguageContext';
 import { HealthQuestionnaire } from '../components/exam/HealthQuestionnaire';
 import { InformedConsent } from '../components/exam/InformedConsent';
@@ -82,6 +82,32 @@ export const ExamPage: React.FC<ExamPageProps> = ({
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [isProcessingImage, setIsProcessingImage] = useState(false);
 
+  const speakInstruction = useCallback((text: string, lang: string) => {
+    try {
+        if ('speechSynthesis' in window) {
+            // Cancel any previous speech to prevent overlap
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang === 'es' ? 'es-ES' : 'en-US';
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        } else {
+            console.warn('Text-to-speech not supported in this browser.');
+        }
+    } catch (e) {
+        console.error('Error with speech synthesis:', e);
+    }
+  }, []);
+
+  // Effect to speak instruction when camera opens
+  useEffect(() => {
+    if (isCameraOn) {
+        const instructionText = t('exam_mask_instruction');
+        speakInstruction(instructionText, language);
+    }
+  }, [isCameraOn, t, language, speakInstruction]);
+
   useEffect(() => {
     try {
         const savedConsent = localStorage.getItem('niria-user-consent');
@@ -117,6 +143,10 @@ export const ExamPage: React.FC<ExamPageProps> = ({
       videoRef.current.srcObject = null;
     }
     setIsCameraOn(false);
+    // Ensure speech is stopped when camera closes
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+    }
   }, []);
 
   const startCamera = async () => {
@@ -359,6 +389,13 @@ export const ExamPage: React.FC<ExamPageProps> = ({
                 <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover transform scale-x-[-1]" muted />
                 <EyeMaskOverlay />
                 <canvas ref={canvasRef} className="hidden" />
+                <button
+                    onClick={() => speakInstruction(t('exam_mask_instruction'), language)}
+                    className="absolute top-2 right-2 p-2 rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors"
+                    aria-label="Replay instruction"
+                >
+                    <SpeakerWaveIcon className="w-5 h-5" />
+                </button>
               </div>
               <div className="flex justify-center gap-4">
                 <Button onClick={takePhoto} variant="primary" size="lg" isLoading={isProcessingImage}>

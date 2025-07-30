@@ -57,12 +57,12 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, o
         {isSubmitted ? (
             <div className="text-center py-8">
                 <CheckCircleIcon className="w-16 h-16 text-success mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary mb-2">{t('feedback_thanks_title')}</h2>
+                <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{t('feedback_thanks_title')}</h2>
                 <p className="text-primary-dark/80 dark:text-dark-text-secondary">{t('feedback_thanks_message')}</p>
             </div>
         ) : (
             <>
-                <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary mb-2">{t('feedback_title')}</h2>
+                <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{t('feedback_title')}</h2>
                 <p className="text-sm text-primary-dark/80 dark:text-dark-text-secondary mb-6">{t('feedback_subtitle')}</p>
                 
                 <div className="flex justify-center items-center mb-6" aria-label="Rate your experience">

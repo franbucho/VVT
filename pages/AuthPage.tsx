@@ -72,7 +72,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
     setIsLoading(true);
     try {
         await signInWithEmail(email, password);
-        setCurrentPage(Page.Exam);
+        setCurrentPage(Page.Home);
     } catch (err) {
         handleAuthError(err);
     } finally {
@@ -86,7 +86,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
       setIsLoading(true);
       try {
           await signUpWithEmailPassword(email, password, firstName, lastName);
-          setCurrentPage(Page.Exam);
+          setCurrentPage(Page.Home);
       } catch (err) {
           handleAuthError(err);
       } finally {
@@ -115,7 +115,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
     setIsLoading(true);
     try {
         await signInWithGoogle();
-        setCurrentPage(Page.Exam);
+        setCurrentPage(Page.Home);
     } catch (err) {
         handleAuthError(err);
     } finally {
@@ -145,7 +145,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
 
   const renderForgotPasswordForm = () => (
     <>
-      <h2 className="text-center text-2xl font-bold text-primary dark:text-dark-text-primary mb-4">{t('auth_reset_password_title')}</h2>
+      <h2 className="text-center text-2xl font-bold mb-4 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{t('auth_reset_password_title')}</h2>
       <p className="text-center text-sm text-primary/80 dark:text-dark-text-secondary mb-6">{t('auth_reset_password_instructions')}</p>
       
       <form onSubmit={handlePasswordReset}>
@@ -232,7 +232,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
   return (
     <PageContainer title={getTitle()} className="max-w-md mx-auto">
         <div className="bg-card-bg dark:bg-dark-card p-8 rounded-xl shadow-2xl">
-            <div className="flex justify-center mb-6"><EyeIcon className="w-12 h-12 text-accent dark:text-dark-accent"/></div>
+            <div className="flex justify-center mb-6"><EyeIcon className="w-12 h-12"/></div>
             {authView === 'login' && renderLoginForm()}
             {authView === 'user-signup' && renderUserSignUpForm()}
             {authView === 'doctor-signup' && renderDoctorSignUpForm()}

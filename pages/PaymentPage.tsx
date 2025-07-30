@@ -62,7 +62,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ setCurrentPage }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                 </svg>
 
-                <h2 className="text-2xl font-bold mb-2 text-primary-dark dark:text-dark-text-primary">{t('payment_unlock_title')}</h2>
+                <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{t('payment_unlock_title')}</h2>
                 <p className="text-primary-dark/80 dark:text-dark-text-secondary mb-6">{t('payment_unlock_description')}</p>
                 
                 <div className="my-6 p-4 bg-accent/10 dark:bg-dark-accent/10 rounded-lg">

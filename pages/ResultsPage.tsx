@@ -39,10 +39,13 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
 
   const summaryRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
-  const ophthRef = useRef<HTMLDivElement>(null);
+  const ophthalmologistsRef = useRef<HTMLDivElement>(null);
 
   const handleDownloadPDF = async () => {
-    if (!summaryRef.current || !detailsRef.current) return;
+    if (!summaryRef.current || !detailsRef.current) {
+        alert("Could not find report content to generate PDF.");
+        return;
+    }
     setIsDownloading(true);
 
     try {
@@ -66,17 +69,18 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
         const detailsCanvas = await html2canvas(detailsRef.current, { ...canvasOptions, windowWidth: detailsRef.current.scrollWidth, windowHeight: detailsRef.current.scrollHeight });
         await addCanvasToPdf(detailsCanvas);
 
-        // --- Page 3: Ophthalmologists (optional) ---
-        if (ophthalmologists && ophthalmologists.length > 0 && ophthRef.current) {
+        // --- Page 3: Ophthalmologists List (optional) ---
+        if (ophthalmologists && ophthalmologists.length > 0 && ophthalmologistsRef.current) {
             pdf.addPage();
-            const ophthCanvas = await html2canvas(ophthRef.current, { ...canvasOptions, windowWidth: ophthRef.current.scrollWidth, windowHeight: ophthRef.current.scrollHeight });
-            await addCanvasToPdf(ophthCanvas);
+            const listCanvas = await html2canvas(ophthalmologistsRef.current, { ...canvasOptions, windowWidth: ophthalmologistsRef.current.scrollWidth, windowHeight: ophthalmologistsRef.current.scrollHeight });
+            await addCanvasToPdf(listCanvas);
         }
         
         pdf.save("Niria-Report.pdf");
 
     } catch (error) {
         console.error("Error generating PDF:", error);
+        alert("Sorry, there was an error creating the PDF report. Please try again or contact support.");
     } finally {
         setIsDownloading(false);
     }
@@ -151,7 +155,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
               />
               {ophthalmologists && ophthalmologists.length > 0 && (
                   <ReportContents 
-                    ref={ophthRef}
+                    ref={ophthalmologistsRef}
                     currentUser={currentUser} 
                     healthData={healthData} 
                     analysisResults={analysisResults} 

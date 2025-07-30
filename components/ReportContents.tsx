@@ -134,7 +134,7 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
       <div>
         <header className="flex items-center justify-between pb-4 border-b-2 border-accent">
           <div className="flex items-center">
-            <EyeIcon className="h-8 w-8 text-accent mr-3" />
+            <EyeIcon className="h-8 w-8 mr-3" forceColor={true} />
             <h1 className="text-2xl font-bold text-primary-dark">Niria</h1>
           </div>
           <div className="text-right">
@@ -214,21 +214,21 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
             </div>
           )}
 
-          {(!pdfPage || pdfPage === 'ophthalmologists') && ophthalmologists && ophthalmologists.length > 0 && !hideOphthalmologistSection && (
-            <section className="mt-8" style={{ breakInside: 'avoid' }}>
+          {pdfPage === 'ophthalmologists' && ophthalmologists && ophthalmologists.length > 0 && (
+            <section className="mt-8">
               <h2 className="text-lg font-bold text-primary-dark border-b border-gray-200 pb-2 mb-4">{t('report_nearby_ophthalmologists')}</h2>
-              <div className="space-y-3">
+              <div className="space-y-3" style={{ columns: 2, columnGap: '20px' }}>
                 {ophthalmologists.map((doctor, index) => (
-                  <div key={index} className="p-3 bg-gray-50 rounded-md text-sm" style={{ breakInside: 'avoid' }}>
-                    <p className="font-bold text-primary-dark">{doctor.name}</p>
-                    <p className="text-gray-600">{doctor.specialty}</p>
-                    <p className="text-gray-600 mt-1">{doctor.address}</p>
-                    <p className="text-gray-600">{t('report_phone')}: {doctor.phone}</p>
+                  <div key={index} className="text-xs pb-2" style={{ breakInside: 'avoid' }}>
+                    <p className="font-semibold text-gray-900 leading-tight">{doctor.name}</p>
+                    <p className="text-gray-600 leading-tight">{doctor.address}</p>
+                    <p className="text-gray-600 leading-tight">{t('report_phone')}: {doctor.phone}</p>
                   </div>
                 ))}
               </div>
             </section>
           )}
+
         </main>
       </div>
 

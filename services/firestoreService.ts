@@ -184,8 +184,11 @@ export const saveEvaluationResult = async (
 // Reminder Functions
 export const getReminders = async (userId: string): Promise<Reminder[]> => {
     try {
-        const snapshot = await db.collection('users').doc(userId).collection('reminders').where('isActive', '==', true).orderBy('startsAt', 'desc').get();
-        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Reminder));
+        const snapshot = await db.collection('users').doc(userId).collection('reminders').where('isActive', '==', true).get();
+        const reminders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Reminder));
+        // Sort on the client to avoid composite index requirement
+        reminders.sort((a, b) => b.startsAt.toMillis() - a.startsAt.toMillis());
+        return reminders;
     } catch (error) {
         console.error("Error fetching reminders:", error);
         throw new Error("Failed to fetch reminders.");

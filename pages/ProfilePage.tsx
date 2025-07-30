@@ -49,7 +49,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
   const [isDownloading, setIsDownloading] = useState<string | null>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
-  const ophthRef = useRef<HTMLDivElement>(null);
+  const ophthalmologistsRef = useRef<HTMLDivElement>(null);
   const [reportToDownload, setReportToDownload] = useState<EvaluationHistoryItem | null>(null);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -83,51 +83,52 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
     fetchPageData();
     setFormData(userProfile);
   }, [userProfile, fetchPageData]);
-  
-  const handleDownload = (evaluation: EvaluationHistoryItem) => {
-    setIsDownloading(evaluation.id);
-    setReportToDownload(evaluation);
-  };
 
   useEffect(() => {
     const generatePdf = async () => {
-        if (!reportToDownload || !summaryRef.current || !detailsRef.current) return;
-        
-        try {
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const pdfPageWidth = pdf.internal.pageSize.getWidth();
-            const canvasOptions = { scale: 2, useCORS: true, backgroundColor: '#ffffff' };
+      if (!reportToDownload || !summaryRef.current || !detailsRef.current) {
+        return;
+      }
+      setIsDownloading(reportToDownload.id);
 
-            const addCanvasToPdf = async (canvas: HTMLCanvasElement) => {
-                const imgData = canvas.toDataURL('image/png');
-                const imgProps = pdf.getImageProperties(imgData);
-                const pdfHeight = (imgProps.height * pdfPageWidth) / imgProps.width;
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfPageWidth, pdfHeight);
-            };
-    
-            const summaryCanvas = await html2canvas(summaryRef.current, { ...canvasOptions, windowWidth: summaryRef.current.scrollWidth, windowHeight: summaryRef.current.scrollHeight });
-            await addCanvasToPdf(summaryCanvas);
-    
-            pdf.addPage();
-            const detailsCanvas = await html2canvas(detailsRef.current, { ...canvasOptions, windowWidth: detailsRef.current.scrollWidth, windowHeight: detailsRef.current.scrollHeight });
-            await addCanvasToPdf(detailsCanvas);
-    
-            if (reportToDownload.ophthalmologists && reportToDownload.ophthalmologists.length > 0 && ophthRef.current) {
-                pdf.addPage();
-                const ophthCanvas = await html2canvas(ophthRef.current, { ...canvasOptions, windowWidth: ophthRef.current.scrollWidth, windowHeight: ophthRef.current.scrollHeight });
-                await addCanvasToPdf(ophthCanvas);
-            }
+      try {
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfPageWidth = pdf.internal.pageSize.getWidth();
+        const canvasOptions = { scale: 2, useCORS: true, backgroundColor: '#ffffff' };
 
-            pdf.save(`Niria-Report-${reportToDownload.id}.pdf`);
-        } catch (error) {
-            console.error("Error generating PDF:", error);
-        } finally {
-            setReportToDownload(null);
-            setIsDownloading(null);
+        const addCanvasToPdf = async (canvas: HTMLCanvasElement) => {
+          const imgData = canvas.toDataURL('image/png');
+          const imgProps = pdf.getImageProperties(imgData);
+          const pdfHeight = (imgProps.height * pdfPageWidth) / imgProps.width;
+          pdf.addImage(imgData, 'PNG', 0, 0, pdfPageWidth, pdfHeight);
+        };
+
+        const summaryCanvas = await html2canvas(summaryRef.current, { ...canvasOptions, windowWidth: summaryRef.current.scrollWidth, windowHeight: summaryRef.current.scrollHeight });
+        await addCanvasToPdf(summaryCanvas);
+
+        pdf.addPage();
+        const detailsCanvas = await html2canvas(detailsRef.current, { ...canvasOptions, windowWidth: detailsRef.current.scrollWidth, windowHeight: detailsRef.current.scrollHeight });
+        await addCanvasToPdf(detailsCanvas);
+
+        if (reportToDownload.ophthalmologists && reportToDownload.ophthalmologists.length > 0 && ophthalmologistsRef.current) {
+          pdf.addPage();
+          const listCanvas = await html2canvas(ophthalmologistsRef.current, { ...canvasOptions, windowWidth: ophthalmologistsRef.current.scrollWidth, windowHeight: ophthalmologistsRef.current.scrollHeight });
+          await addCanvasToPdf(listCanvas);
         }
+
+        pdf.save(`Niria-Report-${reportToDownload.id}.pdf`);
+      
+      } catch (error) {
+        console.error("Error generating PDF from history:", error);
+        alert("Sorry, there was an error creating the PDF report. Please try again or contact support.");
+      } finally {
+        setIsDownloading(null);
+        setReportToDownload(null);
+      }
     };
+
     if (reportToDownload) {
-        setTimeout(generatePdf, 100); 
+        generatePdf();
     }
   }, [reportToDownload]);
 
@@ -218,7 +219,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
         <div className="space-y-8">
             <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-xl shadow-2xl space-y-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-                    <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary">{t('profile_personal_info_title')}</h2>
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{t('profile_personal_info_title')}</h2>
                     {!isEditing && <Button onClick={() => setIsEditing(true)}>{t('profile_edit_button')}</Button>}
                 </div>
 
@@ -244,7 +245,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
             </div>
 
             <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-xl shadow-2xl space-y-4">
-                <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary">{t('profile_medical_info_title')}</h2>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{t('profile_medical_info_title')}</h2>
                 <InputField label={t('profile_label_allergies')} name="medicalHistory.allergies" value={formData.medicalHistory?.allergies || ''} onChange={handleInputChange} disabled={!isEditing} placeholder={t('profile_placeholder_allergies')} />
                 <InputField label={t('profile_label_conditions')} name="medicalHistory.conditions" value={formData.medicalHistory?.conditions || ''} onChange={handleInputChange} disabled={!isEditing} placeholder={t('profile_placeholder_conditions')} />
                 <InputField label={t('profile_label_surgeries')} name="medicalHistory.surgeries" value={formData.medicalHistory?.surgeries || ''} onChange={handleInputChange} disabled={!isEditing} placeholder={t('profile_placeholder_surgeries')} />
@@ -260,7 +261,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
             
             <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-xl shadow-2xl space-y-6">
                  <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary">{t('profile_reminders_title')}</h2>
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{t('profile_reminders_title')}</h2>
                     <Button onClick={() => setIsReminderModalOpen(true)}>{t('profile_reminders_add_new')}</Button>
                 </div>
                 <div className="space-y-4">
@@ -285,12 +286,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
 
 
             <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-xl shadow-2xl space-y-6">
-                <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary">{t('profile_history_title')}</h2>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{t('profile_history_title')}</h2>
                 {evaluations.length > 0 ? evaluations.map((evaluation) => (
                     <div key={evaluation.id} className="bg-gray-50 dark:bg-dark-background/50 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center">
                         <p className="font-semibold text-primary-dark dark:text-dark-text-primary">{t('history_evaluationDate')}: {evaluation.createdAt.toDate().toLocaleDateString(t('date_locale' as any))}</p>
                         <div className="flex gap-2 mt-4 sm:mt-0 flex-shrink-0">
-                            <Button onClick={() => handleDownload(evaluation)} variant="outline" size="sm" isLoading={isDownloading === evaluation.id}>
+                            <Button onClick={() => setReportToDownload(evaluation)} variant="outline" size="sm" isLoading={isDownloading === evaluation.id}>
                               {isDownloading === evaluation.id ? t('report_downloading_pdf') : t('report_download_pdf_button')}
                             </Button>
                         </div>
@@ -330,7 +331,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setUserPr
             />
             {reportToDownload.ophthalmologists && reportToDownload.ophthalmologists.length > 0 && (
                 <ReportContents 
-                    ref={ophthRef}
+                    ref={ophthalmologistsRef}
                     currentUser={auth.currentUser}
                     healthData={reportToDownload.healthData} 
                     analysisResults={reportToDownload.analysisResults} 

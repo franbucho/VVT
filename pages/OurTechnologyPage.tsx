@@ -3,7 +3,7 @@ import { Page } from '../types';
 import { Button } from '../components/common/Button';
 import { PageContainer } from '../components/common/PageContainer';
 import { useLanguage } from '../contexts/LanguageContext';
-import { CameraCaptureIcon, AnalyzeIcon, ReportIcon, ConnectIcon, AIIcon, CloudIcon, PrivacyIcon } from '../constants';
+import { CameraCaptureIcon, AnalyzeIcon, ReportIcon, ConnectIcon } from '../constants';
 
 interface OurTechnologyPageProps {
   setCurrentPage: (page: Page) => void;
@@ -24,13 +24,10 @@ export const OurTechnologyPage: React.FC<OurTechnologyPageProps> = ({ setCurrent
     </div>
   );
 
-  const TechCard: React.FC<{ icon: React.ReactNode; title: string; description: string; }> = ({ icon, title, description }) => (
-    <div className="flex items-start space-x-6 p-6 bg-white dark:bg-dark-card rounded-lg shadow-md">
-      <div className="flex-shrink-0 text-accent dark:text-dark-accent mt-1">{icon}</div>
-      <div>
+  const TechCard: React.FC<{ title: string; description: string; }> = ({ title, description }) => (
+    <div className="p-6 bg-white dark:bg-dark-card rounded-lg shadow-md">
         <h3 className="text-xl font-semibold text-primary-dark dark:text-dark-text-primary mb-2">{title}</h3>
         <p className="text-base text-primary-dark/80 dark:text-dark-text-secondary">{description}</p>
-      </div>
     </div>
   );
   
@@ -38,7 +35,7 @@ export const OurTechnologyPage: React.FC<OurTechnologyPageProps> = ({ setCurrent
     <PageContainer>
       {/* Hero Section */}
       <section className="text-center py-16 md:py-24 bg-primary-dark/5 dark:bg-dark-background/30 rounded-3xl">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-primary-dark dark:text-dark-text-primary">
+        <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">
           {t('our_tech_title')}
         </h1>
         <p className="mt-4 text-lg sm:text-xl max-w-3xl mx-auto text-primary-dark/80 dark:text-dark-text-secondary">
@@ -48,7 +45,7 @@ export const OurTechnologyPage: React.FC<OurTechnologyPageProps> = ({ setCurrent
 
       {/* How It Works Section */}
       <section className="py-16 md:py-24">
-        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-primary-dark dark:text-dark-text-primary">
+        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">
           {t('our_tech_how_it_works_title')}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -62,13 +59,13 @@ export const OurTechnologyPage: React.FC<OurTechnologyPageProps> = ({ setCurrent
       {/* Key Technologies Section */}
       <section className="py-16 md:py-24 bg-gray-50 dark:bg-dark-card/50 rounded-3xl">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-primary-dark dark:text-dark-text-primary">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">
             {t('our_tech_key_technologies_title')}
           </h2>
           <div className="space-y-8">
-            <TechCard icon={<AIIcon />} title={t('our_tech_tech1_title')} description={t('our_tech_tech1_desc')} />
-            <TechCard icon={<CloudIcon />} title={t('our_tech_tech2_title')} description={t('our_tech_tech2_desc')} />
-            <TechCard icon={<PrivacyIcon />} title={t('our_tech_tech3_title')} description={t('our_tech_tech3_desc')} />
+            <TechCard title={t('our_tech_tech1_title')} description={t('our_tech_tech1_desc')} />
+            <TechCard title={t('our_tech_tech2_title')} description={t('our_tech_tech2_desc')} />
+            <TechCard title={t('our_tech_tech3_title')} description={t('our_tech_tech3_desc')} />
           </div>
         </div>
       </section>
@@ -76,7 +73,7 @@ export const OurTechnologyPage: React.FC<OurTechnologyPageProps> = ({ setCurrent
       {/* Integration Possibilities Section */}
       <section className="py-16 md:py-24">
         <div className="text-center max-w-4xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-primary-dark dark:text-dark-text-primary">
+          <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">
             {t('our_tech_integration_title')}
           </h2>
           <p className="mt-4 text-lg text-primary-dark/80 dark:text-dark-text-secondary">

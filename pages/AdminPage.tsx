@@ -240,7 +240,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
   const renderUsersTab = () => (
     <>
       <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-4">
-        <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary">{t('admin_manageUsers')}</h2>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{t('admin_manageUsers')}</h2>
         <InputField id="user-search" type="search" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder={t('admin_search_placeholder')} wrapperClassName="!mb-0 w-full sm:w-64" label="" />
       </div>
       {message && <p className="text-green-600 bg-green-50 dark:bg-green-500/10 dark:text-green-300 p-3 rounded-md text-sm">{message}</p>}
@@ -314,7 +314,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
     const requests = users.filter(u => u.isRequestingDoctorRole && !u.isDoctor);
     return (
       <>
-        <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary">{t('admin_doctor_requests_title')}</h2>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{t('admin_doctor_requests_title')}</h2>
         {message && <p className="text-green-600 bg-green-50 dark:bg-green-500/10 dark:text-green-300 p-3 rounded-md text-sm">{message}</p>}
         {error && <p className="text-danger bg-red-50 dark:bg-red-500/10 dark:text-red-300 p-3 rounded-md text-sm">{error}</p>}
         <div className="overflow-x-auto border border-gray-200 dark:border-dark-border rounded-lg">
@@ -355,7 +355,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ currentUser }) => {
   const renderFeedbackTab = () => (
     <>
       <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-4">
-        <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary">{t('admin_feedback_title')}</h2>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{t('admin_feedback_title')}</h2>
         <div className="flex items-center gap-2">
           <label htmlFor="rating-filter" className="text-sm font-medium text-primary-dark dark:text-dark-text-secondary">{t('admin_feedback_filter_by_rating')}:</label>
           <select 

@@ -5,6 +5,7 @@ const PROXY_URL = 'https://us-central1-virtual-vision-test-app.cloudfunctions.ne
 
 /**
  * Fetches a list of nearby ophthalmologists by calling a secure backend proxy function.
+ * The backend now handles all data processing and cleaning.
  * @param stateCode The 2-letter state code (e.g., "NY").
  * @param cityName The optional city name.
  * @param limit The maximum number of results to return.
@@ -27,7 +28,6 @@ export const getNearbyOphthalmologists = async (
     
     const urlWithParams = `${PROXY_URL}?${params.toString()}`;
 
-    // Use a GET request, which aligns with the Python script and simplifies CORS.
     const response = await fetch(urlWithParams, {
       method: 'GET',
       headers: {
@@ -42,11 +42,12 @@ export const getNearbyOphthalmologists = async (
     }
 
     const data = await response.json();
+    
+    // The backend now does the processing. We just need to access the clean result.
     return data.ophthalmologists || [];
     
   } catch (err) {
     console.error("Client-side error calling getNearbyOphthalmologistsProxy:", err);
-    // Return an empty array to prevent the UI from crashing on an error.
     return [];
   }
 };

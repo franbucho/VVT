@@ -56,7 +56,7 @@ export const TestimonialsSection: React.FC = () => {
   return (
     <section id="testimonials" className="py-20 md:py-28">
       <div className="max-w-5xl mx-auto text-center">
-        <h2 className="text-3xl sm:text-4xl font-bold text-primary-dark dark:text-dark-text-primary mb-16">
+        <h2 className="text-3xl sm:text-4xl font-bold mb-16 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">
           {t('home_testimonials_title')}
         </h2>
 

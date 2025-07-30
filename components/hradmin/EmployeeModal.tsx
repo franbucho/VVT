@@ -73,7 +73,7 @@ export const EmployeeModal: React.FC<EmployeeModalProps> = ({ isOpen, onClose, o
     return (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4" onClick={onClose}>
             <div className="bg-white dark:bg-dark-card rounded-lg shadow-xl p-6 sm:p-8 max-w-lg w-full transform transition-all" onClick={(e) => e.stopPropagation()}>
-                <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary mb-6">
+                <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">
                     {employeeToEdit ? t('hr_modal_employee_title_edit') : t('hr_modal_employee_title_add')}
                 </h2>
                 <form onSubmit={handleSubmit} className="space-y-4">

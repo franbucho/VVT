@@ -15,7 +15,7 @@ export const InformedConsent: React.FC<InformedConsentProps> = ({ onAccept, onDe
     <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-xl shadow-2xl space-y-6">
       <div className="text-center">
         <ShieldCheckIcon className="w-12 h-12 text-accent dark:text-dark-accent mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-primary-dark dark:text-dark-text-primary">{t('consent_title')}</h2>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{t('consent_title')}</h2>
         <p className="mt-2 text-sm text-primary-dark/80 dark:text-dark-text-secondary">{t('consent_intro')}</p>
       </div>
 

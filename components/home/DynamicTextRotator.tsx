@@ -41,7 +41,7 @@ export const DynamicTextRotator: React.FC<DynamicTextRotatorProps> = ({ items })
       // Apply transition classes based on the isFading state
       className={`transition-all duration-1000 ease-in-out ${isFading ? 'opacity-0 translate-y-5' : 'opacity-100 translate-y-0'}`}
     >
-      <h2 className="text-3xl sm:text-4xl font-bold text-primary-dark dark:text-dark-text-primary mb-4">{currentItem.title}</h2>
+      <h2 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{currentItem.title}</h2>
       <p className="text-lg text-primary-dark/90 dark:text-dark-text-secondary max-w-3xl mx-auto leading-relaxed">
         {currentItem.text}
       </p>

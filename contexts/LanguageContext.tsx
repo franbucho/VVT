@@ -17,8 +17,25 @@ interface LanguageProviderProps {
 }
 
 const getInitialLanguage = (): Language => {
-  const storedLang = localStorage.getItem('niria-lang') as Language;
-  return translations[storedLang] ? storedLang : DEFAULT_LANGUAGE;
+  try {
+    // 1. Check for a language preference stored by the user.
+    const storedLang = localStorage.getItem('niria-lang') as Language;
+    if (storedLang && translations[storedLang]) {
+      return storedLang;
+    }
+
+    // 2. If no preference, check the browser's language setting.
+    if (typeof navigator !== 'undefined' && navigator.language) {
+      if (navigator.language.toLowerCase().startsWith('es')) {
+        return 'es';
+      }
+    }
+  } catch (e) {
+    console.error("Could not access browser storage for language detection:", e);
+  }
+  
+  // 3. Fallback to the default language.
+  return DEFAULT_LANGUAGE;
 };
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
@@ -29,7 +46,11 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   const setLanguage = (lang: Language) => {
     if (translations[lang]) {
       setLanguageState(lang);
-      localStorage.setItem('niria-lang', lang);
+      try {
+        localStorage.setItem('niria-lang', lang);
+      } catch (e) {
+        console.error("Could not save language to localStorage:", e);
+      }
     }
   };
 
