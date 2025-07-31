@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import firebase from 'firebase/compat/app';
 import { Page } from '../types';
 import { Button } from '../components/common/Button';
@@ -6,7 +6,6 @@ import { FeatureCard } from '../components/home/FeatureCard';
 import { PageContainer } from '../components/common/PageContainer';
 import { getFeaturesList } from '../constants';
 import { useLanguage } from '../contexts/LanguageContext';
-import { DynamicTextRotator } from '../components/home/DynamicTextRotator';
 import { TestimonialsSection } from '../components/home/TestimonialsSection';
 
 interface HomePageProps {
@@ -25,6 +24,18 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [spotlightOpacity, setSpotlightOpacity] = useState(0);
 
+  // States for the dynamic info carousel
+  const rotatingTexts = [
+    { title: t('home_mission_title'), text: t('home_mission_text') },
+    { title: t('home_vision_title'), text: t('home_vision_text') },
+    { title: t('home_fact_title'), text: t('home_fact1') },
+    { title: t('home_fact_title'), text: t('home_fact2') },
+    { title: t('home_fact_title'), text: t('home_fact3') },
+    { title: t('home_fact_title'), text: t('home_fact4') },
+  ];
+  const [dynamicInfoIndex, setDynamicInfoIndex] = useState(0);
+  const [isDynamicInfoFading, setIsDynamicInfoFading] = useState(false);
+  
   // Event handlers for the spotlight effect
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -74,14 +85,28 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
     };
   }, []);
 
-  const rotatingTexts = [
-    { title: t('home_mission_title'), text: t('home_mission_text') },
-    { title: t('home_vision_title'), text: t('home_vision_text') },
-    { title: t('home_fact_title'), text: t('home_fact1') },
-    { title: t('home_fact_title'), text: t('home_fact2') },
-    { title: t('home_fact_title'), text: t('home_fact3') },
-    { title: t('home_fact_title'), text: t('home_fact4') },
-  ];
+  // Autoplay for the dynamic info carousel
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIsDynamicInfoFading(true);
+      setTimeout(() => {
+        setDynamicInfoIndex(prev => (prev + 1) % rotatingTexts.length);
+        setIsDynamicInfoFading(false);
+      }, 500); // This duration must match the CSS transition duration for a smooth effect
+    }, 7000); // Rotate every 7 seconds
+    return () => clearInterval(timer);
+  }, [rotatingTexts.length]);
+
+  const goToDynamicInfoSlide = (index: number) => {
+    if (index === dynamicInfoIndex) return;
+    setIsDynamicInfoFading(true);
+    setTimeout(() => {
+      setDynamicInfoIndex(index);
+      setIsDynamicInfoFading(false);
+    }, 500);
+  };
+  
+  const currentDynamicInfo = rotatingTexts[dynamicInfoIndex];
 
   return (
     <PageContainer>
@@ -154,14 +179,56 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
       </section>
 
       {/* Testimonials Section */}
-      <TestimonialsSection />
+      <section className="py-16">
+          <TestimonialsSection />
+      </section>
 
       {/* Dynamic Info Section */}
-      <section id="mission" className="py-20 md:py-28">
-        <div className="max-w-5xl mx-auto text-center">
-           <div className="relative min-h-[20rem] flex flex-col items-center justify-center p-8 sm:p-12 bg-white dark:bg-dark-card rounded-2xl shadow-xl overflow-hidden">
-            <DynamicTextRotator items={rotatingTexts} />
+      <section id="mission" className="py-16">
+        <div className="max-w-5xl mx-auto text-center p-8 sm:p-12 bg-white dark:bg-dark-card rounded-2xl shadow-xl">
+           <div className="relative min-h-[20rem] flex flex-col items-center justify-center overflow-hidden">
+            <div className={`transition-opacity duration-500 ease-in-out ${isDynamicInfoFading ? 'opacity-0' : 'opacity-100'}`}>
+                <h2 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{currentDynamicInfo.title}</h2>
+                <p className="text-lg text-primary-dark/90 dark:text-dark-text-secondary max-w-3xl mx-auto leading-relaxed">
+                  {currentDynamicInfo.text}
+                </p>
+            </div>
           </div>
+          {/* Navigation Dots */}
+          <div className="flex justify-center mt-12 space-x-3">
+            {rotatingTexts.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToDynamicInfoSlide(index)}
+                aria-label={`Go to slide ${index + 1}`}
+                className={`w-3 h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent dark:focus:ring-dark-accent ${
+                  dynamicInfoIndex === index
+                    ? 'bg-accent dark:bg-dark-accent scale-125'
+                    : 'bg-gray-300 dark:bg-dark-border/50 hover:bg-gray-400'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Mobile App Promo Section */}
+      <section id="mobile-promo" className="py-16">
+        <div className="max-w-5xl mx-auto text-center p-8 sm:p-12 bg-white dark:bg-dark-card rounded-2xl shadow-xl">
+          <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">
+            {t('home_promo_mobile_title')}
+          </h2>
+          <p className="mt-4 text-lg text-primary-dark/80 dark:text-dark-text-secondary max-w-2xl mx-auto">
+            {t('home_promo_mobile_subtitle')}
+          </p>
+          <Button
+            onClick={() => setCurrentPage(Page.MobileApp)}
+            size="lg"
+            variant="secondary"
+            className="mt-8 px-8 py-3 text-base font-semibold"
+          >
+            {t('home_promo_mobile_cta')}
+          </Button>
         </div>
       </section>
     </PageContainer>

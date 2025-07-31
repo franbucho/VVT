@@ -108,6 +108,13 @@ export const ExamPage: React.FC<ExamPageProps> = ({
     }
   }, [isCameraOn, t, language, speakInstruction]);
 
+  // Effect to speak any error that occurs
+  useEffect(() => {
+    if (error) {
+        speakInstruction(error, language);
+    }
+  }, [error, language, speakInstruction]);
+
   useEffect(() => {
     try {
         const savedConsent = localStorage.getItem('niria-user-consent');
@@ -466,7 +473,19 @@ export const ExamPage: React.FC<ExamPageProps> = ({
                 </div>
               )}
 
-              {error && <p className="text-danger text-sm my-4 p-3 bg-red-50 border border-danger rounded-md text-center whitespace-pre-wrap">{error}</p>}
+              {error && (
+                <div className="text-danger text-sm my-4 p-4 bg-red-50 dark:bg-red-500/10 border border-danger rounded-lg text-center">
+                  <p className="font-semibold whitespace-pre-wrap">{error}</p>
+                  <div className="mt-4 text-left text-xs text-primary-dark/80 dark:text-dark-text-secondary/90 border-t border-danger/20 pt-3">
+                    <h4 className="font-bold mb-2">{t('exam_tips_title')}</h4>
+                    <ul className="list-disc list-inside space-y-1">
+                      <li>{t('exam_tip_lighting')}</li>
+                      <li>{t('exam_tip_no_backlight')}</li>
+                      <li>{t('exam_tip_clean_lens')}</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
               {isLoading && <LoadingSpinner text={t('exam_analyzingText')} className="my-6" />}
             </div>
           </>

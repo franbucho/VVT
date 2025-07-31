@@ -126,6 +126,10 @@ export const en = {
   exam_instructions_step5: "If possible, ask for assistance from another person to ensure both eyes are centered and visible in the image.",
   exam_instructional_video_aria: "Instructional video for eye capture",
   exam_mask_instruction: "Align your eyes within the ovals for the best results.",
+  exam_tips_title: "Tips for a Better Photo:",
+  exam_tip_lighting: "Ensure your face is well-lit, avoiding shadows.",
+  exam_tip_no_backlight: "Do not have a bright light source (like a window or sun) behind you.",
+  exam_tip_clean_lens: "Gently wipe your camera lens to remove any smudges.",
 
   consent_title: "Informed Consent for Data Collection",
   consent_intro: "Before proceeding, please read and accept the following terms regarding the collection and use of your data.",
@@ -155,9 +159,9 @@ export const en = {
   q_lastNameLabel: "Last Name",
   q_lastNamePlaceholder: "Doe",
   q_cityLabel: "City",
-  q_cityPlaceholder: "Select your city",
+  q_cityPlaceholder: "Selecciona tu ciudad",
   q_stateLabel: "State",
-  q_statePlaceholder: "Select your state",
+  q_statePlaceholder: "Selecciona tu estado",
   q_dob_label: "Date of Birth",
   q_dob_day_placeholder: "Day",
   q_dob_month_placeholder: "Month",
@@ -284,6 +288,7 @@ export const en = {
   header_hrAdminPanel: "HR Panel",
   header_pricingLink: "Pricing",
   header_ourTechnologyLink: "Our Technology",
+  header_mobileAppLink: "Mobile App",
 
   profile_title: "My Profile",
   profile_personal_info_title: "Personal Information",
@@ -572,6 +577,23 @@ export const en = {
   our_tech_integration3_desc: "Incorporate our technology into your patient intake process to gather preliminary data and streamline clinic workflow.",
   our_tech_contact_us_button: "Contact Us for a Demo",
   
+  // Mobile App Page
+  mobile_title: "Niria is Coming to Mobile",
+  mobile_subtitle: "Experience seamless eye health monitoring on the go. Our mobile app is launching soon!",
+  mobile_countdown_title: "Launching in",
+  mobile_days: "Days",
+  mobile_hours: "Hours",
+  mobile_minutes: "Minutes",
+  mobile_seconds: "Seconds",
+  mobile_coming_soon: "Coming Soon",
+  mobile_download_on: "Download on the",
+  mobile_get_it_on: "GET IT ON",
+
+  // Homepage Promo Section for Mobile App
+  home_promo_mobile_title: "Niria On The Go",
+  home_promo_mobile_subtitle: "Our full suite of eye health tools will soon be available in a dedicated mobile app. Get ready for a seamless experience.",
+  home_promo_mobile_cta: "Learn More & See Countdown",
+
   // Generic
   error_generic_api_key_missing: "AI service is unavailable: API Key is missing. Please contact support.",
   error_generic_api_key_invalid: "AI service is unavailable: The configured API key is invalid. Please contact support.",

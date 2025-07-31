@@ -18,6 +18,7 @@ export enum Page {
   HR_ADMIN = 'HR_ADMIN',
   Pricing = 'PRICING',
   OurTechnology = 'OUR_TECHNOLOGY',
+  MobileApp = 'MOBILE_APP',
 }
 
 export interface DoctorProfile {

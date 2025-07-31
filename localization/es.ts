@@ -128,6 +128,10 @@ export const es: TranslationKeys = {
   exam_instructions_step5: "Si es posible, solicite la asistencia de otra persona para asegurar que ambos ojos estén centrados y visibles en la imagen.",
   exam_instructional_video_aria: "Video instructivo de captura ocular",
   exam_mask_instruction: "Alinee sus ojos dentro de los óvalos para obtener los mejores resultados.",
+  exam_tips_title: "Consejos para una Mejor Foto:",
+  exam_tip_lighting: "Asegúrate de que tu rostro esté bien iluminado, evitando sombras.",
+  exam_tip_no_backlight: "No tengas una fuente de luz brillante (como una ventana o el sol) detrás de ti.",
+  exam_tip_clean_lens: "Limpia suavemente el lente de tu cámara para eliminar manchas.",
 
   consent_title: "Consentimiento Informado para la Recopilación de Datos",
   consent_intro: "Antes de continuar, por favor lea y acepte los siguientes términos sobre la recopilación y uso de sus datos.",
@@ -286,6 +290,7 @@ export const es: TranslationKeys = {
   header_hrAdminPanel: "Panel de RRHH",
   header_pricingLink: "Precios",
   header_ourTechnologyLink: "Nuestra Tecnología",
+  header_mobileAppLink: "App Móvil",
 
   profile_title: "Mi Perfil",
   profile_personal_info_title: "Información Personal",
@@ -574,6 +579,23 @@ export const es: TranslationKeys = {
   our_tech_integration3_title: "Proveedores de Atención Médica",
   our_tech_integration3_desc: "Incorpore nuestra tecnología en su proceso de admisión de pacientes para recopilar datos preliminares y optimizar el flujo de trabajo de la clínica.",
   our_tech_contact_us_button: "Contáctenos para una Demostración",
+
+  // Mobile App Page
+  mobile_title: "Niria Llega al Móvil",
+  mobile_subtitle: "Experimenta un monitoreo de salud ocular sin interrupciones dondequiera que vayas. ¡Nuestra aplicación móvil se lanzará pronto!",
+  mobile_countdown_title: "Lanzamiento en",
+  mobile_days: "Días",
+  mobile_hours: "Horas",
+  mobile_minutes: "Minutos",
+  mobile_seconds: "Segundos",
+  mobile_coming_soon: "Próximamente",
+  mobile_download_on: "Descárgalo en la",
+  mobile_get_it_on: "DISPONIBLE EN",
+
+  // Homepage Promo Section for Mobile App
+  home_promo_mobile_title: "Niria en Movimiento",
+  home_promo_mobile_subtitle: "Nuestro conjunto completo de herramientas para la salud ocular pronto estará disponible en una aplicación móvil dedicada. Prepárate para una experiencia fluida.",
+  home_promo_mobile_cta: "Saber Más y Ver Cuenta Regresiva",
 
   // Generic
   error_generic_api_key_missing: "El servicio de IA no está disponible: Falta la clave de API. Por favor, contacte al soporte.",

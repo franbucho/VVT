@@ -54,13 +54,12 @@ export const TestimonialsSection: React.FC = () => {
   const currentTestimonial = testimonials[currentIndex];
 
   return (
-    <section id="testimonials" className="py-20 md:py-28">
-      <div className="max-w-5xl mx-auto text-center">
+    <div className="max-w-5xl mx-auto text-center p-8 sm:p-12 bg-white dark:bg-dark-card rounded-2xl shadow-xl">
         <h2 className="text-3xl sm:text-4xl font-bold mb-16 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">
           {t('home_testimonials_title')}
         </h2>
 
-        <div className="relative min-h-[20rem] flex flex-col items-center justify-center p-8 sm:p-12 bg-white dark:bg-dark-card rounded-2xl shadow-xl">
+        <div className="relative min-h-[20rem] flex flex-col items-center justify-center">
           <div className={`transition-opacity duration-500 ease-in-out ${isFading ? 'opacity-0' : 'opacity-100'}`}>
             <svg className="w-10 h-10 text-accent/30 dark:text-dark-accent/30 mx-auto mb-4" viewBox="0 0 24 24" fill="currentColor">
               <path d="M6,17C4.89,17 4,16.11 4,15V11C4,9.89 4.89,9 6,9H10V7H6C3.79,7 2,8.79 2,11V15C2,17.21 3.79,19 6,19H10V17H6M18,17C16.89,17 16,16.11 16,15V11C16,9.89 16.89,9 18,9H22V7H18C15.79,7 14,8.79 14,11V15C14,17.21 15.79,19 18,19H22V17H18Z" />
@@ -91,6 +90,5 @@ export const TestimonialsSection: React.FC = () => {
           ))}
         </div>
       </div>
-    </section>
   );
 };

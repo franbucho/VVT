@@ -24,6 +24,7 @@ import { getEvaluationsCount, getUserProfile } from './services/firestoreService
 import { ThemeSwitcher } from './components/common/ThemeSwitcher';
 import { useReminderNotifications } from './hooks/useReminderNotifications';
 import { LoadingSpinner } from './components/common/LoadingSpinner';
+import { MobileAppPage } from './pages/MobileAppPage';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
@@ -54,9 +55,8 @@ const App: React.FC = () => {
   
   const { t } = useLanguage();
   
-  // Activate reminder notifications for the logged-in user
+  // Activate simple, in-app reminder notifications
   useReminderNotifications(currentUser);
-
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -240,6 +240,8 @@ const App: React.FC = () => {
         return <PricingPage setCurrentPage={handleSetCurrentPage} currentUser={currentUser} />;
       case Page.OurTechnology:
         return <OurTechnologyPage setCurrentPage={handleSetCurrentPage} />;
+      case Page.MobileApp:
+        return <MobileAppPage />;
       case Page.Admin:
         if (!currentUser || !isAdmin) {
           handleSetCurrentPage(Page.Home);
@@ -318,6 +320,7 @@ const App: React.FC = () => {
                     <Button onClick={() => handleSetCurrentPage(Page.Profile)} variant="ghost" className="text-2xl text-white py-2">{t('header_myProfileLink')}</Button>
                     <Button onClick={() => handleSetCurrentPage(Page.OurTechnology)} variant="ghost" className="text-2xl text-white py-2">{t('header_ourTechnologyLink')}</Button>
                     <Button onClick={() => handleSetCurrentPage(Page.Pricing)} variant="ghost" className="text-2xl text-white py-2">{t('header_pricingLink')}</Button>
+                    <Button onClick={() => handleSetCurrentPage(Page.MobileApp)} variant="ghost" className="text-2xl text-white py-2">{t('header_mobileAppLink')}</Button>
                     {isAdmin && <Button onClick={() => handleSetCurrentPage(Page.Admin)} variant="ghost" className="text-2xl text-white py-2">{t('header_adminPanel')}</Button>}
                     {isDoctor && <Button onClick={() => handleSetCurrentPage(Page.DoctorPortal)} variant="ghost" className="text-2xl text-white py-2">{t('header_doctorPortal')}</Button>}
                     {isHrAdmin && <Button onClick={() => handleSetCurrentPage(Page.HR_ADMIN)} variant="ghost" className="text-2xl text-white py-2">{t('header_hrAdminPanel')}</Button>}
@@ -328,6 +331,7 @@ const App: React.FC = () => {
                   <>
                     <Button onClick={() => handleSetCurrentPage(Page.OurTechnology)} variant="ghost" className="text-2xl text-white py-2">{t('header_ourTechnologyLink')}</Button>
                     <Button onClick={() => handleSetCurrentPage(Page.Pricing)} variant="ghost" className="text-2xl text-white py-2">{t('header_pricingLink')}</Button>
+                    <Button onClick={() => handleSetCurrentPage(Page.MobileApp)} variant="ghost" className="text-2xl text-white py-2">{t('header_mobileAppLink')}</Button>
                     <Button onClick={() => handleSetCurrentPage(Page.Support)} variant="ghost" className="text-2xl text-white py-2">{t('footer_supportLink')}</Button>
                     <Button onClick={() => handleSetCurrentPage(Page.Auth)} variant="primary" size="lg" className="text-xl mt-8 px-8 py-3">{t('header_loginRegisterButton')}</Button>
                   </>

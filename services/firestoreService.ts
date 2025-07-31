@@ -209,22 +209,22 @@ export const addReminder = async (userId: string, reminderData: Omit<Reminder, '
     }
 };
 
+export const updateReminderLastTriggered = async (userId: string, reminderId: string, timestamp: firebase.firestore.Timestamp): Promise<void> => {
+    try {
+        await db.collection('users').doc(userId).collection('reminders').doc(reminderId).update({
+            lastTriggeredAt: timestamp,
+        });
+    } catch (error) {
+        console.error("Error updating reminder last triggered time:", error);
+        throw new Error("Failed to update reminder.");
+    }
+};
+
 export const deleteReminder = async (userId: string, reminderId: string): Promise<void> => {
     try {
         await db.collection('users').doc(userId).collection('reminders').doc(reminderId).delete();
     } catch (error) {
         console.error("Error deleting reminder:", error);
         throw new Error("Failed to delete reminder.");
-    }
-};
-
-export const updateReminderLastTriggered = async (userId: string, reminderId: string, triggeredAt: firebase.firestore.Timestamp): Promise<void> => {
-    try {
-        await db.collection('users').doc(userId).collection('reminders').doc(reminderId).update({
-            lastTriggeredAt: triggeredAt,
-        });
-    } catch (error) {
-        console.error("Error updating reminder trigger time:", error);
-        // Don't throw, as the notification has already been sent. Log the error.
     }
 };
