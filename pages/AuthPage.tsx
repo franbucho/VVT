@@ -6,6 +6,7 @@ import { PageContainer } from '../components/common/PageContainer';
 import { EyeIcon, ShowPasswordIcon, HidePasswordIcon } from '../constants';
 import { signInWithEmail, signUpWithEmailPassword, signInWithGoogle, sendPasswordReset, signUpDoctor } from '../services/authService';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useSpotlight } from '../hooks/useSpotlight';
 
 type AuthView = 'login' | 'user-signup' | 'doctor-signup' | 'forgot-password';
 
@@ -38,6 +39,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
       state: '',
       city: '',
   });
+
+  const { spotlightProps, Spotlight } = useSpotlight();
 
   const clearFormState = () => {
       setEmail('');
@@ -231,8 +234,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ setCurrentPage }) => {
 
   return (
     <PageContainer title={getTitle()} className="max-w-md mx-auto">
-        <div className="bg-card-bg dark:bg-dark-card p-8 rounded-xl shadow-2xl">
-            <div className="flex justify-center mb-6"><EyeIcon className="w-12 h-12"/></div>
+        <div {...spotlightProps} className="relative overflow-hidden bg-white dark:bg-dark-card p-8 rounded-xl shadow-2xl">
+            <Spotlight />
+            <div className="flex justify-center mb-6"><EyeIcon className="w-20 h-20"/></div>
             {authView === 'login' && renderLoginForm()}
             {authView === 'user-signup' && renderUserSignUpForm()}
             {authView === 'doctor-signup' && renderDoctorSignUpForm()}

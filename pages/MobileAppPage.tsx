@@ -2,21 +2,28 @@ import React from 'react';
 import { PageContainer } from '../components/common/PageContainer';
 import { useCountdown } from '../hooks/useCountdown';
 import { useLanguage } from '../contexts/LanguageContext';
-import { AppStoreDownloadBadge, GooglePlayDownloadBadge } from '../constants';
+import { AppleAppStoreIcon, GooglePlayStoreIcon } from '../constants';
+import { useSpotlight } from '../hooks/useSpotlight';
 
-const CountdownSegment: React.FC<{ value: number; label: string }> = ({ value, label }) => (
-  <div className="flex flex-col items-center bg-white dark:bg-dark-card p-4 sm:p-6 rounded-xl shadow-lg w-24 sm:w-32 text-center">
-    <div className="text-4xl sm:text-6xl font-orbitron font-bold bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">
-      {String(value).padStart(2, '0')}
+const CountdownSegment: React.FC<{ value: number; label: string }> = ({ value, label }) => {
+  const { spotlightProps, Spotlight } = useSpotlight();
+  return (
+    <div {...spotlightProps} className="relative overflow-hidden flex flex-col items-center bg-white dark:bg-dark-card p-4 sm:p-6 rounded-xl shadow-lg w-24 sm:w-32 text-center">
+      <div className="text-4xl sm:text-6xl font-orbitron font-bold bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">
+        {String(value).padStart(2, '0')}
+      </div>
+      <div className="text-xs uppercase tracking-widest text-primary-dark/70 dark:text-dark-text-secondary/70 mt-2">
+        {label}
+      </div>
+      <Spotlight />
     </div>
-    <div className="text-xs uppercase tracking-widest text-primary-dark/70 dark:text-dark-text-secondary/70 mt-2">
-      {label}
-    </div>
-  </div>
-);
+  );
+};
 
 export const MobileAppPage: React.FC = () => {
   const { t } = useLanguage();
+  const { spotlightProps: appleProps, Spotlight: AppleSpotlight } = useSpotlight();
+  const { spotlightProps: googleProps, Spotlight: GoogleSpotlight } = useSpotlight();
   // Set the target launch date to Halloween 2025.
   const launchDate = '2025-10-31T00:00:00';
   const [days, hours, minutes, seconds] = useCountdown(launchDate);
@@ -47,18 +54,27 @@ export const MobileAppPage: React.FC = () => {
       <section className="pb-16 md:pb-24">
          <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
             {/* Apple App Store Card */}
-            <div className="relative flex items-center justify-center p-8 border border-gray-200 dark:border-dark-border rounded-2xl shadow-lg bg-white dark:bg-dark-card w-full max-w-xs h-36 opacity-60">
-                <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2">
-                    <span className="bg-gray-500 text-white text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full">{t('mobile_coming_soon')}</span>
-                </div>
-                <AppStoreDownloadBadge className="h-12 w-auto" />
+            <div className="relative w-full max-w-xs">
+              <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 z-10">
+                  <span className="bg-gray-500 text-white text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full">{t('mobile_coming_soon')}</span>
+              </div>
+              <div {...appleProps} className="relative overflow-hidden flex flex-col items-center justify-center p-8 border border-gray-200 dark:border-dark-border rounded-2xl shadow-lg bg-white dark:bg-dark-card h-48 opacity-60">
+                  <AppleAppStoreIcon className="w-20 h-20 text-gray-400 dark:text-dark-border" />
+                  <p className="mt-2 text-lg font-semibold text-gray-500 dark:text-dark-text-secondary/80">App Store</p>
+                  <AppleSpotlight />
+              </div>
             </div>
+
             {/* Google Play Store Card */}
-            <div className="relative flex items-center justify-center p-8 border border-gray-200 dark:border-dark-border rounded-2xl shadow-lg bg-white dark:bg-dark-card w-full max-w-xs h-36 opacity-60">
-                 <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2">
+            <div className="relative w-full max-w-xs">
+                 <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 z-10">
                     <span className="bg-gray-500 text-white text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full">{t('mobile_coming_soon')}</span>
                 </div>
-                <GooglePlayDownloadBadge className="h-12 w-auto" />
+                <div {...googleProps} className="relative overflow-hidden flex flex-col items-center justify-center p-8 border border-gray-200 dark:border-dark-border rounded-2xl shadow-lg bg-white dark:bg-dark-card h-48 opacity-60">
+                    <GooglePlayStoreIcon className="w-20 h-20 text-gray-400 dark:text-dark-border" />
+                    <p className="mt-2 text-lg font-semibold text-gray-500 dark:text-dark-text-secondary/80">Google Play</p>
+                    <GoogleSpotlight />
+                </div>
             </div>
         </div>
       </section>

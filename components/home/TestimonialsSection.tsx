@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { TranslationKeys } from '../../localization/en';
+import { useSpotlight } from '../../hooks/useSpotlight';
 
 // Define the structure for a testimonial for type safety and clarity.
 interface Testimonial {
@@ -24,6 +25,7 @@ export const TestimonialsSection: React.FC = () => {
   const { t } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFading, setIsFading] = useState(false);
+  const { spotlightProps, Spotlight } = useSpotlight({ size: 600, color: 'rgba(59, 187, 217, 0.15)' });
 
   // Memoized callback to advance to the next slide. This prevents the useEffect from re-running unnecessarily.
   const advanceSlide = useCallback(() => {
@@ -54,7 +56,10 @@ export const TestimonialsSection: React.FC = () => {
   const currentTestimonial = testimonials[currentIndex];
 
   return (
-    <div className="max-w-5xl mx-auto text-center p-8 sm:p-12 bg-white dark:bg-dark-card rounded-2xl shadow-xl">
+    <div 
+      className="relative overflow-hidden max-w-5xl mx-auto text-center p-8 sm:p-12 bg-white dark:bg-dark-card rounded-2xl shadow-xl"
+      {...spotlightProps}
+    >
         <h2 className="text-3xl sm:text-4xl font-bold mb-16 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">
           {t('home_testimonials_title')}
         </h2>
@@ -89,6 +94,9 @@ export const TestimonialsSection: React.FC = () => {
             />
           ))}
         </div>
+        
+        {/* Spotlight Effect Div */}
+        <Spotlight />
       </div>
   );
 };

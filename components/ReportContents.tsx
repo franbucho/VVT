@@ -134,7 +134,7 @@ export const ReportContents = React.forwardRef<HTMLDivElement, ReportContentsPro
       <div>
         <header className="flex items-center justify-between pb-4 border-b-2 border-accent">
           <div className="flex items-center">
-            <EyeIcon className="h-8 w-8 mr-3" forceColor={true} />
+            <EyeIcon className="h-12 w-12 mr-3" forceColor={true} />
             <h1 className="text-2xl font-bold text-primary-dark">Niria</h1>
           </div>
           <div className="text-right">

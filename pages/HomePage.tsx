@@ -7,6 +7,7 @@ import { PageContainer } from '../components/common/PageContainer';
 import { getFeaturesList } from '../constants';
 import { useLanguage } from '../contexts/LanguageContext';
 import { TestimonialsSection } from '../components/home/TestimonialsSection';
+import { useSpotlight } from '../hooks/useSpotlight';
 
 interface HomePageProps {
   setCurrentPage: (page: Page) => void;
@@ -20,10 +21,10 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
   const featuresRef = useRef<HTMLDivElement>(null);
   const [featuresVisible, setFeaturesVisible] = useState(false);
 
-  // States for the spotlight effect
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [spotlightOpacity, setSpotlightOpacity] = useState(0);
-
+  const { spotlightProps: heroSpotlightProps, Spotlight: HeroSpotlight } = useSpotlight({ size: 600, color: 'rgba(59, 187, 217, 0.15)' });
+  const { spotlightProps: dynamicInfoSpotlightProps, Spotlight: DynamicInfoSpotlight } = useSpotlight({ size: 600, color: 'rgba(59, 187, 217, 0.15)' });
+  const { spotlightProps: mobilePromoSpotlightProps, Spotlight: MobilePromoSpotlight } = useSpotlight({ size: 600, color: 'rgba(59, 187, 217, 0.15)' });
+  
   // States for the dynamic info carousel
   const rotatingTexts = [
     { title: t('home_mission_title'), text: t('home_mission_text') },
@@ -36,20 +37,6 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
   const [dynamicInfoIndex, setDynamicInfoIndex] = useState(0);
   const [isDynamicInfoFading, setIsDynamicInfoFading] = useState(false);
   
-  // Event handlers for the spotlight effect
-  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  };
-
-  const handleMouseEnter = () => {
-    setSpotlightOpacity(1);
-  };
-
-  const handleMouseLeave = () => {
-    setSpotlightOpacity(0);
-  };
-
   const handleStartAnalysis = () => {
     if (currentUser) {
       setCurrentPage(Page.Exam);
@@ -113,9 +100,7 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
       {/* Hero Section */}
       <section 
         className="relative overflow-hidden bg-transparent rounded-3xl shadow-2xl my-12"
-        onMouseMove={handleMouseMove}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        {...heroSpotlightProps}
       >
         {/* Background Video */}
         <div className="absolute inset-0 z-0">
@@ -130,13 +115,7 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
           <div className="absolute inset-0 bg-gradient-to-br from-[#0f172a]/80 via-[#1e293b]/70 to-[#0f172a]/90" />
           <div className="absolute inset-0 backdrop-blur-[2px]" />
           {/* Spotlight Effect Div */}
-          <div
-            className="absolute inset-0 transition-opacity duration-500"
-            style={{
-              opacity: spotlightOpacity,
-              background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, rgba(59, 187, 217, 0.15), transparent 80%)`,
-            }}
-          />
+          <HeroSpotlight />
         </div>
 
         {/* Content */}
@@ -185,7 +164,10 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
 
       {/* Dynamic Info Section */}
       <section id="mission" className="py-16">
-        <div className="max-w-5xl mx-auto text-center p-8 sm:p-12 bg-white dark:bg-dark-card rounded-2xl shadow-xl">
+        <div 
+          className="relative overflow-hidden max-w-5xl mx-auto text-center p-8 sm:p-12 bg-white dark:bg-dark-card rounded-2xl shadow-xl"
+          {...dynamicInfoSpotlightProps}
+        >
            <div className="relative min-h-[20rem] flex flex-col items-center justify-center overflow-hidden">
             <div className={`transition-opacity duration-500 ease-in-out ${isDynamicInfoFading ? 'opacity-0' : 'opacity-100'}`}>
                 <h2 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{currentDynamicInfo.title}</h2>
@@ -209,12 +191,17 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
               />
             ))}
           </div>
+          {/* Spotlight Effect Div */}
+          <DynamicInfoSpotlight />
         </div>
       </section>
 
       {/* Mobile App Promo Section */}
       <section id="mobile-promo" className="py-16">
-        <div className="max-w-5xl mx-auto text-center p-8 sm:p-12 bg-white dark:bg-dark-card rounded-2xl shadow-xl">
+        <div 
+          className="relative overflow-hidden max-w-5xl mx-auto text-center p-8 sm:p-12 bg-white dark:bg-dark-card rounded-2xl shadow-xl"
+          {...mobilePromoSpotlightProps}
+        >
           <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">
             {t('home_promo_mobile_title')}
           </h2>
@@ -229,6 +216,8 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
           >
             {t('home_promo_mobile_cta')}
           </Button>
+           {/* Spotlight Effect Div */}
+           <MobilePromoSpotlight />
         </div>
       </section>
     </PageContainer>

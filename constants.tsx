@@ -9,7 +9,7 @@ import { useTheme } from './contexts/ThemeContext';
 const LOGO_COLOR_URL = "https://storage.googleapis.com/felipec-_bucket/Artboard%207-8.png";
 const LOGO_WHITE_URL = "https://storage.googleapis.com/felipec-_bucket/Artboard%208-8.png";
 
-export const EyeIcon: React.FC<{ className?: string; forceColor?: boolean }> = ({ className = "w-12 h-12", forceColor = false }) => {
+export const EyeIcon: React.FC<{ className?: string; forceColor?: boolean }> = ({ className = "w-20 h-20", forceColor = false }) => {
     // If forceColor is true, we ONLY render the color logo, ignoring the theme.
     // This is crucial for components like the PDF report which always have a white background.
     if (forceColor) {
@@ -274,15 +274,11 @@ export const SpeakerWaveIcon: React.FC<{ className?: string }> = ({ className = 
 );
 
 export const AppleAppStoreIcon: React.FC<{ className?: string }> = ({ className = "w-8 h-8" }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 384 512" className={className}>
-        <path d="M318.7 268.7c-.2-36.7 35.9-64.4 71.5-64.4c-.2-36.7-32.2-64.4-68.2-64.4-32.2 0-59.5 21.3-73.8 53.6c-13.8-32.3-40.2-53.6-70.5-53.6-33.8 0-66.2 24.8-82.5 61.6-32.2 72.8-11.8 174.5 20.5 243.1c16.2 34.5 34.2 69.5 57.2 96.5c22.2 26.2 44.5 53.6 70.8 53.6s48.8-27.5 71-53.6c23-27 41-62 57.2-96.5c32.3-68.6 52.8-170.3 20.5-243.1zM192 422.3c-24.5 0-43.8-21.3-43.8-47.8c0-26.5 19.3-47.8 43.8-47.8s43.8 21.3 43.8 47.8c0 26.5-19.3 47.8-43.8 47.8z"/>
-    </svg>
+    <img src="https://storage.googleapis.com/felipec-_bucket/apple_logo.png" alt="Apple App Store Logo" className={`${className} object-contain`} />
 );
 
 export const GooglePlayStoreIcon: React.FC<{ className?: string }> = ({ className = "w-8 h-8" }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 512 512" className={className}>
-        <path d="M503.7 223.4c-3.2-11.5-12-21.3-24.3-26.5L336.5 126c-13.5-5.8-28.5 2.5-34.3 16l-44.5 104.2-11.7-12.4c-11.1-11.8-28.5-14.3-42.5-6.2L41.3 293.4c-13.9 8-20.4 25.1-14.6 39.8L83 453.6c5.8 14.7 21.5 23.2 37.1 19.5l141.2-34.3c15.6-3.8 27.3-17.1 29.7-33.1l21.2-139.3 11.7 12.4c11.1 11.8 28.5 14.3 42.5 6.2l128.6-73.4c14-8 20.4-25.1 14.7-39.8zM315.7 34.1c-11.1-13.2-29.4-19-46.2-13.5L111 86.3c-16.8 5.5-26.6 23.4-21.1 40.2l25.4 78.4 170.8-97.1-29.2-73.7z"/>
-    </svg>
+    <img src="https://storage.googleapis.com/felipec-_bucket/android.jpg" alt="Google Play Store Logo" className={`${className} object-contain`} />
 );
 
 export const AppStoreDownloadBadge: React.FC<{ className?: string }> = ({ className }) => (

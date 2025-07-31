@@ -4,6 +4,7 @@ import { Button } from '../components/common/Button';
 import { PageContainer } from '../components/common/PageContainer';
 import { useLanguage } from '../contexts/LanguageContext';
 import { CameraCaptureIcon, AnalyzeIcon, ReportIcon, ConnectIcon } from '../constants';
+import { useSpotlight } from '../hooks/useSpotlight';
 
 interface OurTechnologyPageProps {
   setCurrentPage: (page: Page) => void;
@@ -16,20 +17,28 @@ export const OurTechnologyPage: React.FC<OurTechnologyPageProps> = ({ setCurrent
     setCurrentPage(Page.Support);
   };
   
-  const StepCard: React.FC<{ icon: React.ReactNode; title: string; description: string; }> = ({ icon, title, description }) => (
-    <div className="flex flex-col items-center text-center p-6 bg-white dark:bg-dark-card rounded-xl shadow-lg hover:shadow-xl dark:hover:shadow-dark-accent/20 transition-shadow duration-300 h-full">
-      <div className="text-accent dark:text-dark-accent mb-4">{icon}</div>
-      <h3 className="text-xl font-bold text-primary-dark dark:text-dark-text-primary mb-2">{title}</h3>
-      <p className="text-sm text-primary-dark/80 dark:text-dark-text-secondary">{description}</p>
-    </div>
-  );
+  const StepCard: React.FC<{ icon: React.ReactNode; title: string; description: string; }> = ({ icon, title, description }) => {
+    const { spotlightProps, Spotlight } = useSpotlight();
+    return (
+      <div {...spotlightProps} className="relative overflow-hidden flex flex-col items-center text-center p-6 bg-white dark:bg-dark-card rounded-xl shadow-lg hover:shadow-xl dark:hover:shadow-dark-accent/20 transition-shadow duration-300 h-full">
+        <div className="text-accent dark:text-dark-accent mb-4">{icon}</div>
+        <h3 className="text-xl font-bold text-primary-dark dark:text-dark-text-primary mb-2">{title}</h3>
+        <p className="text-sm text-primary-dark/80 dark:text-dark-text-secondary">{description}</p>
+        <Spotlight />
+      </div>
+    );
+  };
 
-  const TechCard: React.FC<{ title: string; description: string; }> = ({ title, description }) => (
-    <div className="p-6 bg-white dark:bg-dark-card rounded-lg shadow-md">
-        <h3 className="text-xl font-semibold text-primary-dark dark:text-dark-text-primary mb-2">{title}</h3>
-        <p className="text-base text-primary-dark/80 dark:text-dark-text-secondary">{description}</p>
-    </div>
-  );
+  const TechCard: React.FC<{ title: string; description: string; }> = ({ title, description }) => {
+    const { spotlightProps, Spotlight } = useSpotlight();
+    return (
+      <div {...spotlightProps} className="relative overflow-hidden p-6 bg-white dark:bg-dark-card rounded-lg shadow-md">
+          <h3 className="text-xl font-semibold text-primary-dark dark:text-dark-text-primary mb-2">{title}</h3>
+          <p className="text-base text-primary-dark/80 dark:text-dark-text-secondary">{description}</p>
+          <Spotlight />
+      </div>
+    );
+  };
   
   return (
     <PageContainer>

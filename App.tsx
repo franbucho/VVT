@@ -57,6 +57,7 @@ const App: React.FC = () => {
   
   // Activate simple, in-app reminder notifications
   useReminderNotifications(currentUser);
+  
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -168,7 +169,7 @@ const App: React.FC = () => {
     if (isAuthLoading) {
       return (
         <div className="flex justify-center items-center h-full pt-20">
-            <EyeIcon className="w-16 h-16 animate-pulse" />
+            <EyeIcon className="w-24 h-24 animate-pulse" />
         </div>
       );
     }
@@ -282,12 +283,12 @@ const App: React.FC = () => {
           <header className="bg-white dark:bg-dark-card shadow-md sticky top-0 z-50">
             <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
               <div 
-                className="flex items-center space-x-2 cursor-pointer"
+                className="flex items-center space-x-2 cursor-pointer p-2 rounded-lg group"
                 onClick={() => handleSetCurrentPage(Page.Home)}
                 aria-label={t('appName')}
               >
-                <EyeIcon className="w-8 h-8" />
-                <span className="font-orbitron text-2xl font-bold tracking-wide text-primary-dark dark:text-dark-text-primary">{t('appName')}</span>
+                <EyeIcon className="w-12 h-12" />
+                <span className="font-orbitron text-2xl font-bold tracking-wide text-primary-dark dark:text-dark-text-primary transition-all duration-300 group-hover:[text-shadow:0_0_10px_#3BBBD9] dark:group-hover:[text-shadow:0_0_10px_#56CFE1]">{t('appName')}</span>
               </div>
               
               {/* Simplified Header Controls - Always visible */}
