@@ -69,12 +69,12 @@ export const TestimonialsSection: React.FC = () => {
             <svg className="w-10 h-10 text-accent/30 dark:text-dark-accent/30 mx-auto mb-4" viewBox="0 0 24 24" fill="currentColor">
               <path d="M6,17C4.89,17 4,16.11 4,15V11C4,9.89 4.89,9 6,9H10V7H6C3.79,7 2,8.79 2,11V15C2,17.21 3.79,19 6,19H10V17H6M18,17C16.89,17 16,16.11 16,15V11C16,9.89 16.89,9 18,9H22V7H18C15.79,7 14,8.79 14,11V15C14,17.21 15.79,19 18,19H22V17H18Z" />
             </svg>
-            <blockquote className="text-xl md:text-2xl italic text-primary-dark/90 dark:text-dark-text-secondary/90 leading-relaxed mb-6">
+            <blockquote className="text-xl italic text-primary-dark/90 dark:text-dark-text-secondary/90 leading-relaxed mb-6">
               {t(currentTestimonial.quoteKey)}
             </blockquote>
             <cite className="not-italic block">
-              <span className="text-lg font-semibold text-primary-dark dark:text-dark-text-primary">{t(currentTestimonial.nameKey)}</span>
-              <span className="block text-sm text-primary-dark/60 dark:text-dark-text-secondary/70 mt-1">{t(currentTestimonial.roleKey)}</span>
+              <span className="text-xl font-bold text-primary-dark dark:text-dark-text-primary">{t(currentTestimonial.nameKey)}</span>
+              <span className="block text-base text-primary-dark/60 dark:text-dark-text-secondary/70 mt-1">{t(currentTestimonial.roleKey)}</span>
             </cite>
           </div>
         </div>

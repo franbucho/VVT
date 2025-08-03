@@ -1,8 +1,7 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import firebase from 'firebase/compat/app';
 import { Page } from '../types';
 import { Button } from '../components/common/Button';
-import { FeatureCard } from '../components/home/FeatureCard';
 import { PageContainer } from '../components/common/PageContainer';
 import { getFeaturesList } from '../constants';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -18,10 +17,9 @@ interface HomePageProps {
 export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsCount, currentUser }) => {
   const { t } = useLanguage();
   const features = getFeaturesList(t);
-  const featuresRef = useRef<HTMLDivElement>(null);
-  const [featuresVisible, setFeaturesVisible] = useState(false);
 
   const { spotlightProps: heroSpotlightProps, Spotlight: HeroSpotlight } = useSpotlight({ size: 600, color: 'rgba(59, 187, 217, 0.15)' });
+  const { spotlightProps: featuresSpotlightProps, Spotlight: FeaturesSpotlight } = useSpotlight({ size: 600, color: 'rgba(59, 187, 217, 0.15)' });
   const { spotlightProps: dynamicInfoSpotlightProps, Spotlight: DynamicInfoSpotlight } = useSpotlight({ size: 600, color: 'rgba(59, 187, 217, 0.15)' });
   const { spotlightProps: mobilePromoSpotlightProps, Spotlight: MobilePromoSpotlight } = useSpotlight({ size: 600, color: 'rgba(59, 187, 217, 0.15)' });
   
@@ -37,6 +35,10 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
   const [dynamicInfoIndex, setDynamicInfoIndex] = useState(0);
   const [isDynamicInfoFading, setIsDynamicInfoFading] = useState(false);
   
+  // States for the features carousel
+  const [featureIndex, setFeatureIndex] = useState(0);
+  const [isFeatureFading, setIsFeatureFading] = useState(false);
+
   const handleStartAnalysis = () => {
     if (currentUser) {
       setCurrentPage(Page.Exam);
@@ -44,33 +46,6 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
       setCurrentPage(Page.Auth);
     }
   };
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setFeaturesVisible(true);
-          observer.unobserve(entry.target); // Observe only once
-        }
-      },
-      {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.2 // Trigger when 20% of the section is visible
-      }
-    );
-
-    const currentFeaturesRef = featuresRef.current;
-    if (currentFeaturesRef) {
-      observer.observe(currentFeaturesRef);
-    }
-
-    return () => {
-      if (currentFeaturesRef) {
-        observer.unobserve(currentFeaturesRef);
-      }
-    };
-  }, []);
 
   // Autoplay for the dynamic info carousel
   useEffect(() => {
@@ -84,6 +59,18 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
     return () => clearInterval(timer);
   }, [rotatingTexts.length]);
 
+  // Autoplay for the features carousel
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIsFeatureFading(true);
+      setTimeout(() => {
+        setFeatureIndex(prev => (prev + 1) % features.length);
+        setIsFeatureFading(false);
+      }, 500);
+    }, 7000);
+    return () => clearInterval(timer);
+  }, [features.length]);
+
   const goToDynamicInfoSlide = (index: number) => {
     if (index === dynamicInfoIndex) return;
     setIsDynamicInfoFading(true);
@@ -93,7 +80,17 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
     }, 500);
   };
   
+  const goToFeatureSlide = (index: number) => {
+    if (index === featureIndex) return;
+    setIsFeatureFading(true);
+    setTimeout(() => {
+      setFeatureIndex(index);
+      setIsFeatureFading(false);
+    }, 500);
+  };
+  
   const currentDynamicInfo = rotatingTexts[dynamicInfoIndex];
+  const currentFeature = features[featureIndex];
 
   return (
     <PageContainer>
@@ -138,22 +135,43 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
       </section>
 
       {/* Features Section */}
-      <section id="features" ref={featuresRef} className="py-16 md:py-24">
-        <div className="max-w-5xl mx-auto">
+      <section id="features" className="py-16 md:py-24">
+        <div 
+          className="relative overflow-hidden max-w-5xl mx-auto text-center p-8 sm:p-12 bg-white dark:bg-dark-card rounded-2xl shadow-xl"
+          {...featuresSpotlightProps}
+        >
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 md:mb-16 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">
             {t('home_whyChooseNiria')}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className={`transition-all duration-700 ease-out ${featuresVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-                style={{ transitionDelay: `${index * 150}ms` }}
-              >
-                <FeatureCard feature={feature} />
+          
+          <div className="relative min-h-[18rem] flex flex-col items-center justify-center overflow-hidden">
+            <div className={`transition-opacity duration-500 ease-in-out w-full max-w-lg mx-auto ${isFeatureFading ? 'opacity-0' : 'opacity-100'}`}>
+              <div className="flex flex-col items-center h-full">
+                <div className="mb-4 text-accent dark:text-dark-accent">
+                  {currentFeature.icon}
+                </div>
+                <h3 className="mb-2 text-2xl font-bold text-primary-dark dark:text-dark-text-primary text-center">{currentFeature.titleKey}</h3>
+                <p className="text-lg text-primary-dark/90 dark:text-dark-text-secondary text-center leading-relaxed">{currentFeature.descriptionKey}</p>
               </div>
+            </div>
+          </div>
+          
+          {/* Navigation Dots */}
+          <div className="flex justify-center mt-8 space-x-3">
+            {features.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToFeatureSlide(index)}
+                aria-label={`Go to feature ${index + 1}`}
+                className={`w-3 h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent dark:focus:ring-dark-accent ${
+                  featureIndex === index
+                    ? 'bg-accent dark:bg-dark-accent scale-125'
+                    : 'bg-gray-300 dark:bg-dark-border/50 hover:bg-gray-400'
+                }`}
+              />
             ))}
           </div>
+          <FeaturesSpotlight />
         </div>
       </section>
 
@@ -170,7 +188,7 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage, evaluationsC
         >
            <div className="relative min-h-[20rem] flex flex-col items-center justify-center overflow-hidden">
             <div className={`transition-opacity duration-500 ease-in-out ${isDynamicInfoFading ? 'opacity-0' : 'opacity-100'}`}>
-                <h2 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-primary-dark to-accent bg-clip-text text-transparent dark:from-dark-text-primary dark:to-dark-accent">{currentDynamicInfo.title}</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-primary-dark dark:text-dark-text-primary">{currentDynamicInfo.title}</h2>
                 <p className="text-lg text-primary-dark/90 dark:text-dark-text-secondary max-w-3xl mx-auto leading-relaxed">
                   {currentDynamicInfo.text}
                 </p>
