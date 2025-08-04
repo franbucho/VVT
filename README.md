@@ -3,7 +3,7 @@
 <p align="center"> <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" /> <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" /> <img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" /> <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" /> <img src="https://img.shields.io/badge/Google_Gemini-8E75B4?style=for-the-badge&logo=google-gemini&logoColor=white" /> </p>
 ✨ Key Features
 Feature	Description
-📸 AI Analysis	Uses Google Gemini API to analyze eye photos and generate insightful visual health summaries.
+📸 AI Analysis	Uses AI to analyze eye photos and generate insightful visual health summaries.
 🌐 Multi-language Support	Fully localized in English, Spanish, and Chinese with a scalable i18n architecture.
 🌗 Light/Dark Mode	Responsive and user-preferred UI themes.
 🔐 Secure Auth	Email/Password and Google OAuth sign-in via Firebase.
