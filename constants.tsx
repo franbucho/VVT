@@ -9,13 +9,21 @@ import { useTheme } from './contexts/ThemeContext';
 const LOGO_COLOR_URL = "https://storage.googleapis.com/felipec-_bucket/Artboard%207-8.png";
 const LOGO_WHITE_URL = "https://storage.googleapis.com/felipec-_bucket/Artboard%208-8.png";
 
-export const EyeIcon: React.FC<{ className?: string; forceColor?: boolean }> = ({ className = "w-20 h-20", forceColor = false }) => {
+export const EyeIcon: React.FC<{ className?: string; forceColor?: boolean; forceWhite?: boolean; }> = ({ className = "w-20 h-20", forceColor = false, forceWhite = false }) => {
     // If forceColor is true, we ONLY render the color logo, ignoring the theme.
     // This is crucial for components like the PDF report which always have a white background.
     if (forceColor) {
         return (
             <div className={className} aria-label="Niria Logo">
                 <img src={LOGO_COLOR_URL} alt="Niria Logo" className="w-full h-full object-contain" />
+            </div>
+        );
+    }
+
+    if (forceWhite) {
+        return (
+            <div className={className} aria-label="Niria Logo">
+                <img src={LOGO_WHITE_URL} alt="Niria Logo" className="w-full h-full object-contain" />
             </div>
         );
     }

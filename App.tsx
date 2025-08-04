@@ -280,66 +280,93 @@ const App: React.FC = () => {
     <div className={`min-h-screen flex flex-col ${isExamFlow ? 'bg-white dark:bg-dark-card' : 'bg-neutral-light dark:bg-dark-background'}`}>
       {!isExamFlow && (
         <>
-          <header className="bg-white dark:bg-dark-card shadow-md sticky top-0 z-50">
+          <header className="bg-primary-dark dark:bg-dark-card shadow-md sticky top-0 z-50">
             <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
               <div 
                 className="flex items-center space-x-2 cursor-pointer p-2 rounded-lg group"
                 onClick={() => handleSetCurrentPage(Page.Home)}
                 aria-label={t('appName')}
               >
-                <EyeIcon className="w-12 h-12" />
-                <span className="font-orbitron text-2xl font-bold tracking-wide text-primary-dark dark:text-dark-text-primary transition-all duration-300 group-hover:[text-shadow:0_0_10px_#3BBBD9] dark:group-hover:[text-shadow:0_0_10px_#56CFE1]">{t('appName')}</span>
+                <EyeIcon className="w-12 h-12" forceWhite />
+                <span className="font-orbitron text-2xl font-bold tracking-wide text-white dark:text-dark-text-primary transition-all duration-300 group-hover:[text-shadow:0_0_10px_#3BBBD9] dark:group-hover:[text-shadow:0_0_10px_#56CFE1]">{t('appName')}</span>
               </div>
               
-              {/* Simplified Header Controls - Always visible */}
-              <div className="flex items-center gap-x-1 sm:gap-x-2">
-                <LanguageSwitcher />
-                <ThemeSwitcher />
-                <button 
-                  onClick={() => setIsMobileMenuOpen(true)} 
-                  className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-dark-border/50 focus:outline-none focus:ring-2 focus:ring-accent dark:focus:ring-dark-accent" 
-                  aria-label="Open menu"
-                >
-                  <MenuIcon className="w-6 h-6 text-primary-dark dark:text-dark-text-primary" />
-                </button>
-              </div>
+              <button 
+                onClick={() => setIsMobileMenuOpen(true)} 
+                className="p-2 rounded-md hover:bg-white/10 dark:hover:bg-dark-border/50 focus:outline-none focus:ring-2 focus:ring-accent dark:focus:ring-dark-accent" 
+                aria-label="Open menu"
+              >
+                <MenuIcon className="w-6 h-6 text-white dark:text-dark-text-primary" />
+              </button>
             </nav>
           </header>
 
-          {/* Menu Overlay - Now used for all screen sizes */}
-          {isMobileMenuOpen && (
-            <div className="fixed inset-0 bg-primary-dark/95 dark:bg-dark-background/95 z-[100] flex flex-col items-center justify-center p-8 animate-fadeIn">
-              <button onClick={() => setIsMobileMenuOpen(false)} className="absolute top-5 right-5 p-2" aria-label="Close menu">
-                  <XIcon className="w-8 h-8 text-white" />
+          {/* Menu Overlay & Side Panel */}
+          {/* Backdrop */}
+          <div
+            className={`fixed inset-0 bg-black/60 z-[99] transition-opacity duration-300 ease-in-out ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+          
+          {/* Side Panel */}
+          <div className={`fixed top-0 right-0 h-full w-full max-w-xs bg-primary-dark dark:bg-dark-card shadow-2xl z-[100] transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}>
+            {/* Panel Header */}
+            <div className="flex justify-between items-center p-4 border-b border-white/10">
+              <div 
+                  className="flex items-center space-x-2 cursor-pointer"
+                  onClick={() => handleSetCurrentPage(Page.Home)}
+              >
+                  <EyeIcon className="w-10 h-10" forceWhite />
+                  <span className="font-orbitron text-xl font-bold tracking-wide text-white">{t('appName')}</span>
+              </div>
+              <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors" aria-label="Close menu">
+                  <XIcon className="w-6 h-6" />
               </button>
-              
-              <nav className="flex flex-col items-center text-center gap-y-6">
-                {isAuthLoading ? (
-                  <LoadingSpinner />
-                ) : currentUser ? (
-                  <>
-                    <Button onClick={() => handleSetCurrentPage(Page.Profile)} variant="ghost" className="text-2xl text-white py-2">{t('header_myProfileLink')}</Button>
-                    <Button onClick={() => handleSetCurrentPage(Page.OurTechnology)} variant="ghost" className="text-2xl text-white py-2">{t('header_ourTechnologyLink')}</Button>
-                    <Button onClick={() => handleSetCurrentPage(Page.Pricing)} variant="ghost" className="text-2xl text-white py-2">{t('header_pricingLink')}</Button>
-                    <Button onClick={() => handleSetCurrentPage(Page.MobileApp)} variant="ghost" className="text-2xl text-white py-2">{t('header_mobileAppLink')}</Button>
-                    {isAdmin && <Button onClick={() => handleSetCurrentPage(Page.Admin)} variant="ghost" className="text-2xl text-white py-2">{t('header_adminPanel')}</Button>}
-                    {isDoctor && <Button onClick={() => handleSetCurrentPage(Page.DoctorPortal)} variant="ghost" className="text-2xl text-white py-2">{t('header_doctorPortal')}</Button>}
-                    {isHrAdmin && <Button onClick={() => handleSetCurrentPage(Page.HR_ADMIN)} variant="ghost" className="text-2xl text-white py-2">{t('header_hrAdminPanel')}</Button>}
-                    <Button onClick={() => handleSetCurrentPage(Page.Support)} variant="ghost" className="text-2xl text-white py-2">{t('footer_supportLink')}</Button>
-                    <Button onClick={handleSignOut} variant="outline" size="lg" className="text-xl text-white border-white mt-8 px-8 py-3">{t('header_logoutButton')}</Button>
-                  </>
-                ) : (
-                  <>
-                    <Button onClick={() => handleSetCurrentPage(Page.OurTechnology)} variant="ghost" className="text-2xl text-white py-2">{t('header_ourTechnologyLink')}</Button>
-                    <Button onClick={() => handleSetCurrentPage(Page.Pricing)} variant="ghost" className="text-2xl text-white py-2">{t('header_pricingLink')}</Button>
-                    <Button onClick={() => handleSetCurrentPage(Page.MobileApp)} variant="ghost" className="text-2xl text-white py-2">{t('header_mobileAppLink')}</Button>
-                    <Button onClick={() => handleSetCurrentPage(Page.Support)} variant="ghost" className="text-2xl text-white py-2">{t('footer_supportLink')}</Button>
-                    <Button onClick={() => handleSetCurrentPage(Page.Auth)} variant="primary" size="lg" className="text-xl mt-8 px-8 py-3">{t('header_loginRegisterButton')}</Button>
-                  </>
-                )}
-              </nav>
             </div>
-          )}
+            
+            <nav className="flex flex-col p-4 flex-grow">
+                {isAuthLoading ? (
+                    <div className="flex-grow flex items-center justify-center"><LoadingSpinner /></div>
+                ) : (
+                <>
+                    {/* Links section */}
+                    <div className="flex flex-col gap-y-2">
+                        {(() => {
+                            const navLinkClasses = "w-full text-left text-lg text-white/80 font-medium rounded-md p-3 transition-all duration-200 hover:bg-white/10 hover:text-white hover:pl-4";
+                            return (
+                                <>
+                                    {currentUser && <button onClick={() => handleSetCurrentPage(Page.Profile)} className={navLinkClasses}>{t('header_myProfileLink')}</button>}
+                                    <button onClick={() => handleSetCurrentPage(Page.OurTechnology)} className={navLinkClasses}>{t('header_ourTechnologyLink')}</button>
+                                    <button onClick={() => handleSetCurrentPage(Page.Pricing)} className={navLinkClasses}>{t('header_pricingLink')}</button>
+                                    <button onClick={() => handleSetCurrentPage(Page.MobileApp)} className={navLinkClasses}>{t('header_mobileAppLink')}</button>
+                                    
+                                    {currentUser && isAdmin && <button onClick={() => handleSetCurrentPage(Page.Admin)} className={navLinkClasses}>{t('header_adminPanel')}</button>}
+                                    {currentUser && isDoctor && <button onClick={() => handleSetCurrentPage(Page.DoctorPortal)} className={navLinkClasses}>{t('header_doctorPortal')}</button>}
+                                    {currentUser && isHrAdmin && <button onClick={() => handleSetCurrentPage(Page.HR_ADMIN)} className={navLinkClasses}>{t('header_hrAdminPanel')}</button>}
+                                    
+                                    <button onClick={() => handleSetCurrentPage(Page.Support)} className={navLinkClasses}>{t('footer_supportLink')}</button>
+                                </>
+                            );
+                        })()}
+                    </div>
+
+                    {/* Bottom section */}
+                    <div className="mt-auto border-t border-white/20 pt-4 space-y-4">
+                        <div className="flex justify-center gap-x-2">
+                            <LanguageSwitcher variant="panel" />
+                            <ThemeSwitcher variant="panel" />
+                        </div>
+                        {currentUser ? (
+                            <Button onClick={handleSignOut} size="md" className="w-full bg-transparent hover:bg-white/10 border border-white/50 text-white">{t('header_logoutButton')}</Button>
+                        ) : (
+                            <Button onClick={() => handleSetCurrentPage(Page.Auth)} variant="primary" size="md" className="w-full">{t('header_loginRegisterButton')}</Button>
+                        )}
+                    </div>
+                </>
+                )}
+            </nav>
+          </div>
         </>
       )}
 

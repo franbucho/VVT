@@ -1,6 +1,7 @@
 import { Language } from "../localization";
 import { TranslationKeys, en } from "../localization/en";
 import { es } from "../localization/es";
+import { zh } from "../localization/zh";
 import { EyeAnalysisResult, HealthData } from "../types";
 
 // The API Key is expected to be injected by the build environment.
@@ -71,7 +72,12 @@ const executeGeminiFetch = async (model: string, contents: any, timeout: number 
 
 
 const getPatientContext = (healthData: HealthData, language: Language): string => {
-    const t = language === 'es' ? es : en;
+    let t: TranslationKeys;
+    switch(language) {
+      case 'es': t = es; break;
+      case 'zh': t = zh; break;
+      default: t = en;
+    }
 
     const getCheckboxValues = (group: keyof Pick<HealthData, 'primaryReason' | 'illnesses' | 'familyHistory' | 'symptoms'>, prefix: string) => {
         const items = Object.entries((healthData as any)[group])
@@ -111,9 +117,18 @@ const getPatientContext = (healthData: HealthData, language: Language): string =
 };
 
 const getAnalysisPrompt = (patientContext: string, language: Language) => {
-  const languageInstruction = language === 'es'
-    ? "Todo el texto en el campo 'summary' de la respuesta JSON DEBE estar en español."
-    : "All text in the 'summary' field of the JSON response MUST be in English.";
+  let languageInstruction;
+  switch (language) {
+    case 'es':
+      languageInstruction = "Todo el texto en el campo 'summary' de la respuesta JSON DEBE estar en español.";
+      break;
+    case 'zh':
+      languageInstruction = "JSON 响应中 'summary' 字段的所有文本必须为简体中文。";
+      break;
+    default:
+      languageInstruction = "All text in the 'summary' field of the JSON response MUST be in English.";
+  }
+
 
   const validConditions = [
       "ptosis", "subconjunctivalHemorrhage", "conjunctivitis", "abnormalPupils",

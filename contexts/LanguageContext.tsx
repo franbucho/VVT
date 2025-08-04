@@ -26,7 +26,11 @@ const getInitialLanguage = (): Language => {
 
     // 2. If no preference, check the browser's language setting.
     if (typeof navigator !== 'undefined' && navigator.language) {
-      if (navigator.language.toLowerCase().startsWith('es')) {
+      const browserLang = navigator.language.toLowerCase();
+      if (browserLang.startsWith('zh')) {
+        return 'zh';
+      }
+      if (browserLang.startsWith('es')) {
         return 'es';
       }
     }

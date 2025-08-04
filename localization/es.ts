@@ -255,7 +255,7 @@ export const es: TranslationKeys = {
   results_details_ptosis: "El párpado superior está más bajo de lo normal, lo que puede afectar la visión.",
   results_condition_subconjunctivalHemorrhage: "Hemorragia Subconjuntival",
   results_details_subconjunctivalHemorrhage: "Un vaso sanguíneo roto en la superficie del ojo, a menudo inofensivo pero debe ser revisado.",
-  results_condition_conjunctivitis: "Infección / Conjunctivitis",
+  results_condition_conjunctivitis: "Infección / Conjuntivitis",
   results_details_conjunctivitis: "Signos de inflamación o infección de la conjuntiva (conjunctivitis), como enrojecimiento y secreción.",
   results_condition_abnormalPupils: "Pupilas Anormales",
   results_details_abnormalPupils: "Las pupilas parecen de tamaño desigual, deformes o tienen un color inusual, lo que requiere evaluación médica.",
@@ -486,6 +486,7 @@ export const es: TranslationKeys = {
 
   language_switcher_en: "EN",
   language_switcher_es: "ES",
+  language_switcher_zh: "中文",
 
   support_title: "Soporte y Ayuda",
   support_heading: "¿Necesitas Ayuda?",

@@ -483,6 +483,7 @@ export const en = {
   
   language_switcher_en: "EN",
   language_switcher_es: "ES",
+  language_switcher_zh: "中文",
 
   support_title: "Support & Help",
   support_heading: "Need Assistance?",
